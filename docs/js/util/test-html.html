@@ -1,0 +1,40 @@
+<script src="type.js"></script>
+<script src="html.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+class Test {
+    #getTestMethodNames() { return Object.getOwnPropertyNames(Object.getPrototypeOf(this)).filter(n=>'test'!==n && n.startsWith('test')) }
+    run() {
+        const names = this.#getTestMethodNames()
+        for (let name of names) {
+            console.debug(name)
+            this[name].call(this)
+        }
+        console.log(`%cテスト完了！ ${names.length}`, `color:green; font-size:24px;`)
+    }
+    assertError(method, obj, args, e, msg) {
+        try { method.call(obj, ...args) }
+        catch(err) {
+            console.assert(err instanceof e)
+            //console.debug(err.message, msg)
+            console.assert(err.message===msg)
+            return
+        }
+        throw new Error('エラーになるべき所でエラーにならなかった')
+    }
+    testUrl() { console.assert(Html.Url.endsWith('test-html.html')) }
+    testDoc() { console.assert(Type.isDom(Html.Doc)); console.assert('html'===Html.Doc.tagName.toLowerCase()) }
+    testRoot() { console.assert(Type.isDom(Html.Root)); console.assert('html'===Html.Root.tagName.toLowerCase()) }
+    testBody() { console.assert(Type.isDom(Html.Body)); console.assert('body'===Html.Body.tagName.toLowerCase()) }
+    testMain() { console.assert(Type.isDom(Html.Main)); console.assert('main'===Html.Main.tagName.toLowerCase()) }
+    testHeader() { console.assert(Type.isDom(Html.Header)); console.assert('header'===Html.Header.tagName.toLowerCase()) }
+    testFooter() { console.assert(Type.isDom(Html.Footer)); console.assert('footer'===Html.Footer.tagName.toLowerCase()) }
+}
+new Test().run()
+});
+</script>
+
+<header></header>
+<main></main>
+<footer></footer>
+
