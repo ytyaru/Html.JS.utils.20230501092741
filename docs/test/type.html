@@ -16,6 +16,7 @@ class TestType extends Test {
     testIsStringUndefined() { console.assert(!Type.isString(undefined)) }
     testIsStringNull() { console.assert(!Type.isString(null)) }
     testIsStringNaN() { console.assert(!Type.isString(NaN)) }
+    testIsStringNaN() { console.assert(!Type.isString(Number.NaN)) }
     testIsStringTrue() { console.assert(!Type.isString(true)) }
     testIsStringFalse() { console.assert(!Type.isString(false)) }
     testIsStringNumPos() { console.assert(!Type.isString(1)) }
@@ -45,6 +46,7 @@ class TestType extends Test {
     testIsBoolUndefined() { console.assert(!Type.isBool(undefined)) }
     testIsBoolNull() { console.assert(!Type.isBool(null)) }
     testIsBoolNaN() { console.assert(!Type.isBool(NaN)) }
+    testIsBoolNaN() { console.assert(!Type.isBool(Number.NaN)) }
     testIsBoolTrue() { console.assert(Type.isBool(true)) }
     testIsBoolFalse() { console.assert(Type.isBool(false)) }
     testIsBoolNumPos() { console.assert(!Type.isBool(1)) }
@@ -74,6 +76,7 @@ class TestType extends Test {
     testIsNumberUndefined() { console.assert(!Type.isNumber(undefined)) }
     testIsNumberNull() { console.assert(!Type.isNumber(null)) }
     testIsNumberNaN() { console.assert(!Type.isNumber(NaN)) }
+    testIsNumberNaN() { console.assert(!Type.isNumber(Number.NaN)) }
     testIsNumberTrue() { console.assert(!Type.isNumber(true)) }
     testIsNumberFalse() { console.assert(!Type.isNumber(false)) }
     testIsNumberNumPos() { console.assert(Type.isNumber(1)) }
@@ -103,6 +106,7 @@ class TestType extends Test {
     testIsIntUndefined() { console.assert(!Type.isInt(undefined)) }
     testIsIntNull() { console.assert(!Type.isInt(null)) }
     testIsIntNaN() { console.assert(!Type.isInt(NaN)) }
+    testIsIntNaN() { console.assert(!Type.isInt(Number.NaN)) }
     testIsIntTrue() { console.assert(!Type.isInt(true)) }
     testIsIntFalse() { console.assert(!Type.isInt(false)) }
     testIsIntNumPos() { console.assert(Type.isInt(1)) }
@@ -132,6 +136,7 @@ class TestType extends Test {
     testIsFloatUndefined() { console.assert(!Type.isFloat(undefined)) }
     testIsFloatNull() { console.assert(!Type.isFloat(null)) }
     testIsFloatNaN() { console.assert(!Type.isFloat(NaN)) }
+    testIsFloatNaN() { console.assert(!Type.isFloat(Number.NaN)) }
     testIsFloatTrue() { console.assert(!Type.isFloat(true)) }
     testIsFloatFalse() { console.assert(!Type.isFloat(false)) }
     testIsFloatNumPos() { console.assert(!Type.isFloat(1)) }
@@ -161,12 +166,13 @@ class TestType extends Test {
     testIsBigIntUndefined() { console.assert(!Type.isBigInt(undefined)) }
     testIsBigIntNull() { console.assert(!Type.isBigInt(null)) }
     testIsBigIntNaN() { console.assert(!Type.isBigInt(NaN)) }
+    testIsBigIntNaN() { console.assert(!Type.isBigInt(Number.NaN)) }
     testIsBigIntTrue() { console.assert(!Type.isBigInt(true)) }
     testIsBigIntFalse() { console.assert(!Type.isBigInt(false)) }
     testIsBigIntNumPos() { console.assert(!Type.isBigInt(1)) }
     testIsBigIntNumNeg() { console.assert(!Type.isBigInt(-1)) }
     testIsBigIntFloat() { console.assert(!Type.isBigInt(3.14)) }
-    testIsBIgIntDate() { console.assert(!Type.isBIgInt(new Date())) }
+    testIsBIgIntDate() { console.assert(!Type.isBigInt(new Date())) }
     testIsBigIntBigInt() { console.assert(Type.isBigInt(BigInt(9007199254740991))) }
     testIsBigIntSymbol() { console.assert(!Type.isBigInt(Symbol("Sym"))) }
     testIsBigIntDoc() { console.assert(!Type.isBigInt(document)) }
@@ -191,6 +197,7 @@ class TestType extends Test {
     testIsSymbolUndefined() { console.assert(!Type.isSymbol(undefined)) }
     testIsSymbolNull() { console.assert(!Type.isSymbol(null)) }
     testIsSymbolNaN() { console.assert(!Type.isSymbol(NaN)) }
+    testIsSymbolNaN() { console.assert(!Type.isSymbol(Number.NaN)) }
     testIsSymbolTrue() { console.assert(!Type.isSymbol(true)) }
     testIsSymbolFalse() { console.assert(!Type.isSymbol(false)) }
     testIsSymbolNumPos() { console.assert(!Type.isSymbol(1)) }
@@ -221,6 +228,7 @@ class TestType extends Test {
     testIsElementUndefined() { console.assert(!Type.isElement(undefined)) }
     testIsElementNull() { console.assert(!Type.isElement(null)) }
     testIsElementNaN() { console.assert(!Type.isElement(NaN)) }
+    testIsElementNaN() { console.assert(!Type.isElement(Number.NaN)) }
     testIsElementTrue() { console.assert(!Type.isElement(true)) }
     testIsElementFalse() { console.assert(!Type.isElement(false)) }
     testIsElementNumPos() { console.assert(!Type.isElement(1)) }

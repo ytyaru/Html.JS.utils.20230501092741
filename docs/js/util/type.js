@@ -1,5 +1,25 @@
 (function() {
 class Type {
+    constructor() {
+        this._names = new Map()
+        //this._names.set('String', {func:this.isString, alias:['Str', 'S']})
+        this._names.set('String', ['Str', 'S'])
+        this._names.set('Boolean', ['Bool', 'B'])
+        this._names.set('Number', ['Num', 'N'])
+        this._names.set('Integer', ['Int', 'I'])
+        this._names.set('Float', ['F'])
+        this._names.set('Date', ['D'])
+        this._names.set('BigInt', [])
+        this._names.set('Symbol', [])
+        this._names.set('Element', ['Elm', 'El', 'E'])
+        this._names.set('Array', ['Ary', 'A'])
+        this._names.set('Object', ['Obj', 'O'])
+        this._names.set('Function', ['Func', 'Fun', 'Fn'])
+    }
+//    #call(name, v) {
+//        if (this.hasOwnProperty(name)) { return this[name](v) }
+//        this[this._names]
+//    }
     isString(v) { return typeof v === "string" || v instanceof String }
     isBoolean(v) { return 'boolean' === typeof v }
     isNumber(v) { return 'number' === typeof v && !isNaN(v) }
@@ -42,19 +62,39 @@ class Type {
     isO(v) { return this.isObject(v) }
 
     // array<T>
-    isStrs(v) { return Array.isArray(v) && v.every(x=>Type.isString(x)) }
-    isNums(v) { return Array.isArray(v) && v.every(x=>Type.isNumber(x)) }
-    isInts(v) { return Array.isArray(v) && v.every(x=>Type.isInteger(x)) }
+    isStrings(v) { return Array.isArray(v) && v.every(x=>Type.isString(x)) }
+    isNumbers(v) { return Array.isArray(v) && v.every(x=>Type.isNumber(x)) }
+    isIntegers(v) { return Array.isArray(v) && v.every(x=>Type.isInteger(x)) }
     isFloats(v) { return Array.isArray(v) && v.every(x=>Type.isFloat(x)) }
-    isBools(v) { return Array.isArray(v) && v.every(x=>Type.isBoolean(x)) }
+    isBooleans(v) { return Array.isArray(v) && v.every(x=>Type.isBoolean(x)) }
     isDates(v) { return Array.isArray(v) && v.every(x=>Type.isDate(x)) }
     isBigInts(v) { return Array.isArray(v) && v.every(x=>Type.isBigInt(x)) }
     isSymbols(v) { return Array.isArray(v) && v.every(x=>Type.Symbol(x)) }
+    isElements(v) { return Array.isArray(v) && v.every(x=>Type.Element(x)) }
+    isArrays(v) { return Array.isArray(v) && v.every(x=>Type.isArray(x)) }
+    isObjects(v) { return Array.isArray(v) && v.every(x=>Type.isObject(x)) }
+    isFunctions(v) { return Array.isArray(v) && v.every(x=>Type.isFunction(x)) }
+    isInstances(v) { return Array.isArray(v) && v.every(x=>Type.isInstances(x)) }
+    // array<T> short
+    isStrs(v) { return Array.isArray(v) && v.every(x=>Type.isString(x)) }
+    isNums(v) { return Array.isArray(v) && v.every(x=>Type.isNumber(x)) }
+    isInts(v) { return Array.isArray(v) && v.every(x=>Type.isInteger(x)) }
+    isBools(v) { return Array.isArray(v) && v.every(x=>Type.isBoolean(x)) }
     isEls(v) { return Array.isArray(v) && v.every(x=>Type.Element(x)) }
     isArys(v) { return Array.isArray(v) && v.every(x=>Type.isArray(x)) }
     isObjs(v) { return Array.isArray(v) && v.every(x=>Type.isObject(x)) }
     isFns(v) { return Array.isArray(v) && v.every(x=>Type.isFunction(x)) }
     isInss(v) { return Array.isArray(v) && v.every(x=>Type.isInstances(x)) }
+    // array<T> short
+    isSs(v) { return Array.isArray(v) && v.every(x=>Type.isString(x)) }
+    isNs(v) { return Array.isArray(v) && v.every(x=>Type.isNumber(x)) }
+    isIs(v) { return Array.isArray(v) && v.every(x=>Type.isInteger(x)) }
+    isFs(v) { return Array.isArray(v) && v.every(x=>Type.isFloat(x)) }
+    isDs(v) { return Array.isArray(v) && v.every(x=>Type.isDate(x)) }
+    isBs(v) { return Array.isArray(v) && v.every(x=>Type.isBoolean(x)) }
+    isEs(v) { return Array.isArray(v) && v.every(x=>Type.Element(x)) }
+    isAs(v) { return Array.isArray(v) && v.every(x=>Type.isArray(x)) }
+    isOs(v) { return Array.isArray(v) && v.every(x=>Type.isObject(x)) }
 }
 window.Type = new Type()
 String.prototype.capitalize = function(str) { return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase() }
