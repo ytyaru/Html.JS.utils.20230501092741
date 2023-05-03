@@ -260,6 +260,55 @@ class TestHtml extends Test {
             console.assert(null===Html.yanger(div,i))
         }
     }
+    testPrepend() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        const b = Html.create('b')
+        div.append(b)
+        Html.prepend(a, b)
+        Html.prepend(p, a)
+        const actual = Html.children(div)
+        console.assert(3===actual.length)
+        console.assert(p===actual[0])
+        console.assert(a===actual[1])
+        console.assert(b===actual[2])
+    }
+    testAppend() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        const b = Html.create('b')
+        div.append(p)
+        Html.append(a, p)
+        Html.append(b, a)
+        const actual = Html.children(div)
+        console.assert(3===actual.length)
+        console.assert(p===actual[0])
+        console.assert(a===actual[1])
+        console.assert(b===actual[2])
+    }
+    testInsert() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        const b = Html.create('b')
+        const i = Html.create('i')
+        const s = Html.create('s')
+        div.append(b)
+        Html.insert(a, b, 0)
+        Html.insert(i, b, 1)
+        Html.insert(p, b, -1)
+        Html.insert(s, b, 2)
+        const actual = Html.children(div)
+        console.assert(5===actual.length)
+        console.assert(p===actual[0])
+        console.assert(a===actual[1])
+        console.assert(b===actual[2])
+        console.assert(i===actual[3])
+        console.assert(s===actual[4])
+    }
+
 }
 new TestHtml().run()
 });

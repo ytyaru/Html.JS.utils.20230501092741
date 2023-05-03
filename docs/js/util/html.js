@@ -39,7 +39,8 @@ class Html {
     prepend(addEl, el) { el.parentElement.insertBefore(addEl, el) }
     append(addEl, el) { el.parentElement.insertBefore(addEl, el.nextElementSibling) }
     insert(addEl, el, i) { el.parentElement.insertBefore(addEl, this.broser(el, i)) }
-    insertChild(addEl, el, i) { el.insertBefore(addEl, el.children[i]) }
+    //insertChild(addEl, el, i) { el.insertBefore(addEl, el.children[i]) }
+    insertChild(addEl, el, i) { el.insertBefore(addEl, (0<=i) ? el.children[i] : el.children[el.children.length+i]) }
     // create
     create(tagName, attrs, text) {
         const el = document.createElement(tagName)
