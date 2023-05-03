@@ -6,12 +6,170 @@
 window.addEventListener('DOMContentLoaded', (event) => {
 class TestHtml extends Test {
     testUrl() { console.assert(Html.Url.endsWith('html.html')) }
-    testDoc() { console.assert(Type.isDom(Html.Doc)); console.assert('html'===Html.Doc.tagName.toLowerCase()) }
-    testRoot() { console.assert(Type.isDom(Html.Root)); console.assert('html'===Html.Root.tagName.toLowerCase()) }
-    testBody() { console.assert(Type.isDom(Html.Body)); console.assert('body'===Html.Body.tagName.toLowerCase()) }
-    testMain() { console.assert(Type.isDom(Html.Main)); console.assert('main'===Html.Main.tagName.toLowerCase()) }
-    testHeader() { console.assert(Type.isDom(Html.Header)); console.assert('header'===Html.Header.tagName.toLowerCase()) }
-    testFooter() { console.assert(Type.isDom(Html.Footer)); console.assert('footer'===Html.Footer.tagName.toLowerCase()) }
+    testDoc() { console.assert(Type.isElement(Html.Doc)); console.assert('html'===Html.Doc.tagName.toLowerCase()) }
+    testRoot() { console.assert(Type.isElement(Html.Root)); console.assert('html'===Html.Root.tagName.toLowerCase()) }
+    testBody() { console.assert(Type.isElement(Html.Body)); console.assert('body'===Html.Body.tagName.toLowerCase()) }
+    testMain() { console.assert(Type.isElement(Html.Main)); console.assert('main'===Html.Main.tagName.toLowerCase()) }
+    testHeader() { console.assert(Type.isElement(Html.Header)); console.assert('header'===Html.Header.tagName.toLowerCase()) }
+    testFooter() { console.assert(Type.isElement(Html.Footer)); console.assert('footer'===Html.Footer.tagName.toLowerCase()) }
+    testCreate0() {
+        const actual = Html.create('p')
+        console.assert(Type.isElement(actual))
+        console.assert(''===actual.textContent)
+        console.assert(0===actual.getAttributeNames().length)
+    }
+    testCreate1() {
+        const actual = Html.create('p', null, 'A')
+        console.assert(Type.isElement(actual))
+        console.assert('A'===actual.textContent)
+        console.assert(0===actual.getAttributeNames().length)
+    }
+    testCreate2() {
+        const actual = Html.create('p', {textContent:'A'})
+        console.assert(Type.isElement(actual))
+        console.assert('A'===actual.textContent)
+        console.assert(0===actual.getAttributeNames().length)
+    }
+    testCreate2() {
+        const actual = Html.create('p', {textContent:'A', title:'T'})
+        console.assert(Type.isElement(actual))
+        console.assert('A'===actual.textContent)
+        console.assert('T'===actual.title)
+        console.assert(1===actual.getAttributeNames().length)
+        console.assert('title'===actual.getAttributeNames()[0])
+    }
+    testCreate3() {
+        const actual = Html.create('p', {title:'T'}, 'A')
+        console.assert(Type.isElement(actual))
+        console.assert('A'===actual.textContent)
+        console.assert('T'===actual.title)
+        console.assert(1===actual.getAttributeNames().length)
+        console.assert('title'===actual.getAttributeNames()[0])
+    }
+    testGenerate0() {
+        const actual = Html.generate('p')
+        console.assert(Type.isString(actual))
+        console.assert('<p></p>'===actual)
+    }
+    testGenerate1() {
+        const actual = Html.generate('p', null, 'A')
+        console.assert(Type.isString(actual))
+        console.assert('<p>A</p>'===actual)
+    }
+    testGenerate2() {
+        const actual = Html.generate('p', {textContent:'A'})
+        console.assert(Type.isString(actual))
+        console.assert('<p>A</p>'===actual)
+    }
+    testGenerate2() {
+        const actual = Html.generate('p', {textContent:'A', title:'T'})
+        console.assert(Type.isString(actual))
+        console.assert('<p title="T">A</p>'===actual)
+    }
+    testGenerate3() {
+        const actual = Html.generate('p', {title:'T'}, 'A')
+        console.assert(Type.isString(actual))
+        console.assert('<p title="T">A</p>'===actual)
+    }
+    testToString() {
+        console.assert('[object HTMLParagraphElement]'===Html.create('p').toString())
+        console.assert('<p></p>'===Html.toString(Html.create('p')))
+        console.assert('<p title="T">A</p>'===Html.toString(Html.create('p',{title:'T'},'A')))
+    }
+    testToDom() {
+        const actual = Html.toDom('<p title="T">A</p>')
+        console.assert(actual instanceof HTMLDocument)
+        console.assert(Type.isElement(actual.children[0]))
+        console.assert('html'===actual.children[0].tagName.toLowerCase())
+        const expected = actual.children[0].querySelector('body p')
+        console.assert(Type.isElement(expected))
+        console.assert('A'===expected.textContent)
+        console.assert('T'===expected.title)
+    }
+    testToHtml() {
+        const actual = Html.toHtml('<p title="T">A</p>')
+        console.assert(Type.isElement(actual))
+        console.assert('html'===actual.tagName.toLowerCase())
+        console.assert(actual.querySelector('body p'))
+    }
+    testToElements() {
+        const actual = Html.toElements('<p title="T">A</p>')
+        console.assert(Type.isElements(actual))
+        console.assert(1===actual.length)
+        console.assert('p'===actual[0].tagName.toLowerCase())
+        console.assert('A'===actual[0].textContent)
+        console.assert('T'===actual[0].title)
+    }
+    testToElement() {
+        const actual = Html.toElement('<p title="T">A</p>')
+        console.assert('A'===actual.textContent)
+        console.assert('T'===actual.title)
+    }
+    testNext() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        div.append(p, a)
+        console.assert(a===Html.next(p))
+        console.assert(p!==Html.next(a))
+    }
+    testPrev() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        div.append(p, a)
+        console.assert(a!==Html.prev(p))
+        console.assert(p===Html.prev(a))
+    }
+    testParent() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        div.append(p, a)
+        console.assert(a!==Html.parent(p))
+        console.assert(p!==Html.parent(a))
+        console.assert(div===Html.parent(p))
+        console.assert(div===Html.parent(a))
+    }
+    testChildren() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        div.append(p, a)
+        console.assert(0===Html.children(p).length)
+        console.assert(0===Html.children(a).length)
+        console.assert(2===Html.children(div).length)
+        console.assert(p===Html.children(div)[0])
+        console.assert(a===Html.children(div)[1])
+    }
+    testChildUndefined() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        div.append(p, a)
+        console.assert(null===Html.child(p))
+        console.assert(null===Html.child(a))
+        console.assert(p===Html.child(div))
+        console.assert(p===Html.child(div))
+    }
+    testChild0() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        div.append(p, a)
+        console.assert(null===Html.child(p,0))
+        console.assert(null===Html.child(a,0))
+        console.assert(p===Html.child(div,0))
+    }
+    testChild1() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        div.append(p, a)
+        console.assert(null===Html.child(p,1))
+        console.assert(null===Html.child(a,1))
+        console.assert(a===Html.child(div,1))
+    }
 }
 new TestHtml().run()
 });

@@ -18,7 +18,13 @@ class Html {
     prev(el) { return el.previousElementSibling }
     parent(el) { return el.parentElement; }
     children(el) { return el.children }
-    child(i) { return el.children[(i && i<=0 && i<el.children.length) ? i : 0] }
+    child(el,i=0) {
+        if (0 < el.children.length) {
+            if(Type.isPosInt(i)) { return el.children[i] }
+            else if(Type.isNegInt(i)) { return el.children[el.children.length-i] }
+        }
+        return null
+    }
     broser(el, i) {
         const prop = (0<i) ? 'nextElementSibling' : 'previousElementSibling'
         //[...Array(Math.abs(i))].forEach(()=>el=el[prop])
@@ -40,8 +46,11 @@ class Html {
         return el
     }
     generate(tagName, attrs, text) { return this.toString(this.create(tagName, attrs, text)) }
-    toString(el) { return this.serializer.serializeToString(el) }
-    toDom(str) { return this.parser.parseFromString(str, 'text/xml') }
+    toString(el) { return this.serializer.serializeToString(el).replace(/ xmlns="[^"]+"/, '') }
+    toDom(str) { return this.parser.parseFromString(str, 'text/html') }
+    toHtml(str) { return this.toDom(str).children[0] }
+    toElements(str) { return [...this.toHtml(str).querySelector('body').children] }
+    toElement(str) { return this.toElements(str)[0] }
     // attr
     attr(el, key, value) { (value) ? el.setAttribute(key, value) : el.getAttribute(key) }
     attrInt(el, key, value) { return parseInt(this.attr(el, key, value)) }
