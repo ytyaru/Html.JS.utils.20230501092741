@@ -170,6 +170,96 @@ class TestHtml extends Test {
         console.assert(null===Html.child(a,1))
         console.assert(a===Html.child(div,1))
     }
+    testBroser() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        const b = Html.create('b')
+        div.append(p, a, b)
+        console.assert(a===Html.broser(p))
+        console.assert(b===Html.broser(a))
+        console.assert(null===Html.broser(b))
+        console.assert(null===Html.broser(div))
+    }
+    testBroserSelf() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        const b = Html.create('b')
+        div.append(p, a, b)
+        console.assert(p===Html.broser(p,0))
+        console.assert(a===Html.broser(a,0))
+        console.assert(b===Html.broser(b,0))
+        console.assert(div===Html.broser(div,0))
+    }
+    testBroserOlder() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        const b = Html.create('b')
+        div.append(p, a, b)
+        console.assert(null===Html.broser(p,-1))
+        console.assert(p===Html.broser(a,-1))
+        console.assert(a===Html.broser(b,-1))
+        console.assert(null===Html.broser(div,-1))
+        console.assert(null===Html.broser(p,-2))
+        console.assert(null===Html.broser(a,-2))
+        console.assert(p===Html.broser(b,-2))
+        console.assert(null===Html.broser(div,-2))
+    }
+    testBroserYanger() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        const b = Html.create('b')
+        div.append(p, a, b)
+        console.assert(a===Html.broser(p,1))
+        console.assert(b===Html.broser(a,1))
+        console.assert(null===Html.broser(b,1))
+        console.assert(null===Html.broser(div,1))
+        console.assert(b===Html.broser(p,2))
+        console.assert(null===Html.broser(a,2))
+        console.assert(null===Html.broser(b,2))
+        console.assert(null===Html.broser(div,2))
+    }
+    testOlder() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        const b = Html.create('b')
+        div.append(p, a, b)
+        for (let i of [1, -1]) {
+            console.assert(null===Html.older(p,i))
+            console.assert(p===Html.older(a,i))
+            console.assert(a===Html.older(b,i))
+            console.assert(null===Html.older(div,i))
+        }
+        for (let i of [2, -2]) {
+            console.assert(null===Html.older(p,i))
+            console.assert(null===Html.older(a,i))
+            console.assert(p===Html.older(b,i))
+            console.assert(null===Html.older(div,i))
+        }
+    }
+    testYanger() {
+        const div = Html.create('div')
+        const p = Html.create('p')
+        const a = Html.create('a')
+        const b = Html.create('b')
+        div.append(p, a, b)
+        for (let i of [1, -1]) {
+            console.assert(a===Html.yanger(p,i))
+            console.assert(b===Html.yanger(a,i))
+            console.assert(null===Html.yanger(b,i))
+            console.assert(null===Html.yanger(div,i))
+        }
+        for (let i of [2, -2]) {
+            console.assert(b===Html.yanger(p,i))
+            console.assert(null===Html.yanger(a,i))
+            console.assert(null===Html.yanger(b,i))
+            console.assert(null===Html.yanger(div,i))
+        }
+    }
 }
 new TestHtml().run()
 });

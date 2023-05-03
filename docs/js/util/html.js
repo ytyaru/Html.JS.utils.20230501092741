@@ -25,12 +25,14 @@ class Html {
         }
         return null
     }
-    broser(el, i) {
+    broser(el, i=1) {
+        if (0===i) { return el }
         const prop = (0<i) ? 'nextElementSibling' : 'previousElementSibling'
-        //[...Array(Math.abs(i))].forEach(()=>el=el[prop])
-        for (let c=0; c<Math.abs(i); c++) { el = el[prop] }
+        for (let c=0; c<Math.abs(i); c++) { el = el[prop]; if (null===el) { return el } }
         return el
     }
+    older(el, i=1) { return this.broser(el, (i<0) ? i : i*-1) }
+    yanger(el, i=1) {return this.broser(el, (i<0) ? i*-1 : i) }
     get(query) { return document.querySelector(query) }
     gets(query) { return [...document.querySelectorAll(query)] }
     // insert
