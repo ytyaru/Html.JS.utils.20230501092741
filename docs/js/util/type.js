@@ -22,7 +22,8 @@ class Type {
 //    }
     isString(v) { return typeof v === "string" || v instanceof String }
     isBoolean(v) { return 'boolean' === typeof v }
-    isNumber(v) { return 'number' === typeof v && !isNaN(v) }
+    //isNumber(v) { return 'number' === typeof v && !isNaN(v) }
+    isNumber(v) { return ('number'===typeof v && !isNaN(v)) || (this.#isObjectLike(v) && this.#getTag(v)=='[object Number]') } // https://github.com/lodash/lodash/blob/master/isNumber.js
     isInteger(v)   { return this.isNumber(v) && v % 1 === 0 }
     isPositiveInteger(v)   { return this.isInteger(v) && 0<=v }
     isNegativeInteger(v)   { return this.isInteger(v) && v<0 }
@@ -39,7 +40,15 @@ class Type {
         }
     }
     isArray(v) { return Array.isArray(v) }
-    isObject(v) { return v !== null && typeof v === 'object' }
+    isObject(v) { // https://github.com/lodash/lodash/blob/master/isPlainObject.js
+        if (!this.#isObjectLike(v) || this.#getTag(v) != '[object Object]') { return false }
+        if (Object.getPrototypeOf(v) === null) { return true }
+        let proto = v
+        while (Object.getPrototypeOf(proto) !== null) { proto = Object.getPrototypeOf(proto) }
+        return Object.getPrototypeOf(v) === proto
+    }
+    #isObjectLike(v) { return typeof v === 'object' && v !== null }
+    #getTag(v) { return (v == null) ? (v === undefined ? '[object Undefined]' : '[object Null]') : toString.call(v) }
     isFunction(v) { return typeof v === 'function' }
     isInstance(ins, cls) { return ins instanceof cls }
 

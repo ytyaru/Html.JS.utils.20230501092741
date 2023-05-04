@@ -9,6 +9,10 @@ class TestType extends Test {
     testIsStringSpace() { console.assert(Type.isString(' ')) }
     testIsStringNumStr() { console.assert(Type.isString('1')) }
     testIsStringAlpha() { console.assert(Type.isString('a')) }
+    testIsStringBlankFunc() { console.assert(Type.isString(String(''))) }
+    testIsStringSpaceFunc() { console.assert(Type.isString(String(' '))) }
+    testIsStringNumStrFunc() { console.assert(Type.isString(String('1'))) }
+    testIsStringAlphaFunc() { console.assert(Type.isString(String('a'))) }
     testIsStringBlankNew() { console.assert(Type.isString(new String(''))) }
     testIsStringSpaceNew() { console.assert(Type.isString(new String(' '))) }
     testIsStringNumStrNew() { console.assert(Type.isString(new String('1'))) }
@@ -22,6 +26,12 @@ class TestType extends Test {
     testIsStringNumPos() { console.assert(!Type.isString(1)) }
     testIsStringNumNeg() { console.assert(!Type.isString(-1)) }
     testIsStringFloat() { console.assert(!Type.isString(3.14)) }
+    testIsStringNumPosFunc() { console.assert(!Type.isString(Number(1))) }
+    testIsStringNumNegFunc() { console.assert(!Type.isString(Number(-1))) }
+    testIsStringFloatFunc() { console.assert(!Type.isString(Number(3.14))) }
+    testIsStringNumPosNew() { console.assert(!Type.isString(new Number(1))) }
+    testIsStringNumNegNew() { console.assert(!Type.isString(new Number(-1))) }
+    testIsStringFloatNew() { console.assert(!Type.isString(new Number(3.14))) }
     testIsStringBigInt() { console.assert(!Type.isString(BigInt(9007199254740991))) }
     testIsStringSymbol() { console.assert(!Type.isString(Symbol("Sym"))) }
     testIsStringDoc() { console.assert(!Type.isString(document)) }
@@ -39,6 +49,10 @@ class TestType extends Test {
     testIsBoolSpace() { console.assert(!Type.isBool(' ')) }
     testIsBoolNumStr() { console.assert(!Type.isBool('1')) }
     testIsBoolAlpha() { console.assert(!Type.isBool('a')) }
+    testIsBoolBlankFunc() { console.assert(!Type.isBool(String(''))) }
+    testIsBoolSpaceFunc() { console.assert(!Type.isBool(String(' '))) }
+    testIsBoolNumStrFunc() { console.assert(!Type.isBool(String('1'))) }
+    testIsBoolAlphaFunc() { console.assert(!Type.isBool(String('a'))) }
     testIsBoolBlankNew() { console.assert(!Type.isBool(new String(''))) }
     testIsBoolSpaceNew() { console.assert(!Type.isBool(new String(' '))) }
     testIsBoolNumStrNew() { console.assert(!Type.isBool(new String('1'))) }
@@ -52,6 +66,12 @@ class TestType extends Test {
     testIsBoolNumPos() { console.assert(!Type.isBool(1)) }
     testIsBoolNumNeg() { console.assert(!Type.isBool(-1)) }
     testIsBoolFloat() { console.assert(!Type.isBool(3.14)) }
+    testIsBoolNumPosFunc() { console.assert(!Type.isBool(Number(1))) }
+    testIsBoolNumNegFunc() { console.assert(!Type.isBool(Number(-1))) }
+    testIsBoolFloatFunc() { console.assert(!Type.isBool(Number(3.14))) }
+    testIsBoolNumPosNew() { console.assert(!Type.isBool(new Number(1))) }
+    testIsBoolNumNegNew() { console.assert(!Type.isBool(new Number(-1))) }
+    testIsBoolFloatNew() { console.assert(!Type.isBool(new Number(3.14))) }
     testIsBoolBigInt() { console.assert(!Type.isBool(BigInt(9007199254740991))) }
     testIsBoolSymbol() { console.assert(!Type.isBool(Symbol("Sym"))) }
     testIsBoolDoc() { console.assert(!Type.isBool(document)) }
@@ -69,6 +89,10 @@ class TestType extends Test {
     testIsNumberSpace() { console.assert(!Type.isNumber(' ')) }
     testIsNumberNumStr() { console.assert(!Type.isNumber('1')) }
     testIsNumberAlpha() { console.assert(!Type.isNumber('a')) }
+    testIsNumberBlankFunc() { console.assert(!Type.isNumber(String(''))) }
+    testIsNumberSpaceFunc() { console.assert(!Type.isNumber(String(' '))) }
+    testIsNumberNumStrFunc() { console.assert(!Type.isNumber(String('1'))) }
+    testIsNumberAlphaFunc() { console.assert(!Type.isNumber(String('a'))) }
     testIsNumberBlankNew() { console.assert(!Type.isNumber(new String(''))) }
     testIsNumberSpaceNew() { console.assert(!Type.isNumber(new String(' '))) }
     testIsNumberNumStrNew() { console.assert(!Type.isNumber(new String('1'))) }
@@ -82,6 +106,12 @@ class TestType extends Test {
     testIsNumberNumPos() { console.assert(Type.isNumber(1)) }
     testIsNumberNumNeg() { console.assert(Type.isNumber(-1)) }
     testIsNumberFloat() { console.assert(Type.isNumber(3.14)) }
+    testIsNumberNumPosFunc() { console.assert(Type.isNumber(Number(1))) }
+    testIsNumberNumNegFunc() { console.assert(Type.isNumber(Number(-1))) }
+    testIsNumberFloatFunc() { console.assert(Type.isNumber(Number(3.14))) }
+    testIsNumberNumPosNew() { console.assert(Type.isNumber(new Number(1))) }
+    testIsNumberNumNegNew() { console.assert(Type.isNumber(new Number(-1))) }
+    testIsNumberFloatNew() { console.assert(Type.isNumber(new Number(3.14))) }
     testIsNumberBigInt() { console.assert(!Type.isNumber(BigInt(9007199254740991))) }
     testIsNumberSymbol() { console.assert(!Type.isNumber(Symbol("Sym"))) }
     testIsNumberDoc() { console.assert(!Type.isNumber(document)) }
@@ -99,6 +129,10 @@ class TestType extends Test {
     testIsIntSpace() { console.assert(!Type.isInt(' ')) }
     testIsIntNumStr() { console.assert(!Type.isInt('1')) }
     testIsIntAlpha() { console.assert(!Type.isInt('a')) }
+    testIsIntBlankFunc() { console.assert(!Type.isInt(String(''))) }
+    testIsIntSpaceFunc() { console.assert(!Type.isInt(String(' '))) }
+    testIsIntNumStrFunc() { console.assert(!Type.isInt(String('1'))) }
+    testIsIntAlphaFunc() { console.assert(!Type.isInt(String('a'))) }
     testIsIntBlankNew() { console.assert(!Type.isInt(new String(''))) }
     testIsIntSpaceNew() { console.assert(!Type.isInt(new String(' '))) }
     testIsIntNumStrNew() { console.assert(!Type.isInt(new String('1'))) }
@@ -112,6 +146,12 @@ class TestType extends Test {
     testIsIntNumPos() { console.assert(Type.isInt(1)) }
     testIsIntNumNeg() { console.assert(Type.isInt(-1)) }
     testIsIntFloat() { console.assert(!Type.isInt(3.14)) }
+    testIsIntNumPosFunc() { console.assert(Type.isInt(Number(1))) }
+    testIsIntNumNegFunc() { console.assert(Type.isInt(Number(-1))) }
+    testIsIntFloatFunc() { console.assert(!Type.isInt(Number(3.14))) }
+    testIsIntNumPosNew() { console.assert(Type.isInt(new Number(1))) }
+    testIsIntNumNegNew() { console.assert(Type.isInt(new Number(-1))) }
+    testIsIntFloatNew() { console.assert(!Type.isInt(new Number(3.14))) }
     testIsIntBigInt() { console.assert(!Type.isInt(BigInt(9007199254740991))) }
     testIsIntSymbol() { console.assert(!Type.isInt(Symbol("Sym"))) }
     testIsIntDoc() { console.assert(!Type.isInt(document)) }
@@ -129,6 +169,10 @@ class TestType extends Test {
     testIsFloatSpace() { console.assert(!Type.isFloat(' ')) }
     testIsFloatNumStr() { console.assert(!Type.isFloat('1')) }
     testIsFloatAlpha() { console.assert(!Type.isFloat('a')) }
+    testIsFloatBlankFunc() { console.assert(!Type.isFloat(String(''))) }
+    testIsFloatSpaceFunc() { console.assert(!Type.isFloat(String(' '))) }
+    testIsFloatNumStrFunc() { console.assert(!Type.isFloat(String('1'))) }
+    testIsFloatAlphaFunc() { console.assert(!Type.isFloat(String('a'))) }
     testIsFloatBlankNew() { console.assert(!Type.isFloat(new String(''))) }
     testIsFloatSpaceNew() { console.assert(!Type.isFloat(new String(' '))) }
     testIsFloatNumStrNew() { console.assert(!Type.isFloat(new String('1'))) }
@@ -142,6 +186,12 @@ class TestType extends Test {
     testIsFloatNumPos() { console.assert(!Type.isFloat(1)) }
     testIsFloatNumNeg() { console.assert(!Type.isFloat(-1)) }
     testIsFloatFloat() { console.assert(Type.isFloat(3.14)) }
+    testIsFloatNumPosFunc() { console.assert(!Type.isFloat(Number(1))) }
+    testIsFloatNumNegFunc() { console.assert(!Type.isFloat(Number(-1))) }
+    testIsFloatFloatFunc() { console.assert(Type.isFloat(Number(3.14))) }
+    testIsFloatNumPosNew() { console.assert(!Type.isFloat(new Number(1))) }
+    testIsFloatNumNegNew() { console.assert(!Type.isFloat(new Number(-1))) }
+    testIsFloatFloatNew() { console.assert(Type.isFloat(new Number(3.14))) }
     testIsFloatBigInt() { console.assert(!Type.isFloat(BigInt(9007199254740991))) }
     testIsFloatSymbol() { console.assert(!Type.isFloat(Symbol("Sym"))) }
     testIsFloatDoc() { console.assert(!Type.isFloat(document)) }
@@ -159,6 +209,10 @@ class TestType extends Test {
     testIsBigIntSpace() { console.assert(!Type.isBigInt(' ')) }
     testIsBigIntNumStr() { console.assert(!Type.isBigInt('1')) }
     testIsBigIntAlpha() { console.assert(!Type.isBigInt('a')) }
+    testIsBigIntBlankFunc() { console.assert(!Type.isBigInt(String(''))) }
+    testIsBigIntSpaceFunc() { console.assert(!Type.isBigInt(String(' '))) }
+    testIsBigIntNumStrFunc() { console.assert(!Type.isBigInt(String('1'))) }
+    testIsBigIntAlphaFunc() { console.assert(!Type.isBigInt(String('a'))) }
     testIsBigIntBlankNew() { console.assert(!Type.isBigInt(new String(''))) }
     testIsBigIntSpaceNew() { console.assert(!Type.isBigInt(new String(' '))) }
     testIsBigIntNumStrNew() { console.assert(!Type.isBigInt(new String('1'))) }
@@ -172,6 +226,12 @@ class TestType extends Test {
     testIsBigIntNumPos() { console.assert(!Type.isBigInt(1)) }
     testIsBigIntNumNeg() { console.assert(!Type.isBigInt(-1)) }
     testIsBigIntFloat() { console.assert(!Type.isBigInt(3.14)) }
+    testIsBigIntNumPosFunc() { console.assert(!Type.isBigInt(Number(1))) }
+    testIsBigIntNumNegFunc() { console.assert(!Type.isBigInt(Number(-1))) }
+    testIsBigIntFloatFunc() { console.assert(!Type.isBigInt(Number(3.14))) }
+    testIsBigIntNumPosNew() { console.assert(!Type.isBigInt(new Number(1))) }
+    testIsBigIntNumNegNew() { console.assert(!Type.isBigInt(new Number(-1))) }
+    testIsBigIntFloatNew() { console.assert(!Type.isBigInt(new Number(3.14))) }
     testIsBIgIntDate() { console.assert(!Type.isBigInt(new Date())) }
     testIsBigIntBigInt() { console.assert(Type.isBigInt(BigInt(9007199254740991))) }
     testIsBigIntSymbol() { console.assert(!Type.isBigInt(Symbol("Sym"))) }
@@ -190,6 +250,10 @@ class TestType extends Test {
     testIsSymbolSpace() { console.assert(!Type.isSymbol(' ')) }
     testIsSymbolNumStr() { console.assert(!Type.isSymbol('1')) }
     testIsSymbolAlpha() { console.assert(!Type.isSymbol('a')) }
+    testIsSymbolBlankFunc() { console.assert(!Type.isSymbol(String(''))) }
+    testIsSymbolSpaceFunc() { console.assert(!Type.isSymbol(String(' '))) }
+    testIsSymbolNumStrFunc() { console.assert(!Type.isSymbol(String('1'))) }
+    testIsSymbolAlphaFunc() { console.assert(!Type.isSymbol(String('a'))) }
     testIsSymbolBlankNew() { console.assert(!Type.isSymbol(new String(''))) }
     testIsSymbolSpaceNew() { console.assert(!Type.isSymbol(new String(' '))) }
     testIsSymbolNumStrNew() { console.assert(!Type.isSymbol(new String('1'))) }
@@ -203,6 +267,12 @@ class TestType extends Test {
     testIsSymbolNumPos() { console.assert(!Type.isSymbol(1)) }
     testIsSymbolNumNeg() { console.assert(!Type.isSymbol(-1)) }
     testIsSymbolFloat() { console.assert(!Type.isSymbol(3.14)) }
+    testIsSymbolNumPosFunc() { console.assert(!Type.isSymbol(Number(1))) }
+    testIsSymbolNumNegFunc() { console.assert(!Type.isSymbol(Number(-1))) }
+    testIsSymbolFloatFunc() { console.assert(!Type.isSymbol(Number(3.14))) }
+    testIsSymbolNumPosNew() { console.assert(!Type.isSymbol(new Number(1))) }
+    testIsSymbolNumNegNew() { console.assert(!Type.isSymbol(new Number(-1))) }
+    testIsSymbolFloatNew() { console.assert(!Type.isSymbol(new Number(3.14))) }
     testIsSymbolDate() { console.assert(!Type.isSymbol(new Date())) }
     testIsSymbolBigInt() { console.assert(!Type.isSymbol(BigInt(9007199254740991))) }
     testIsSymbolSymbol() { console.assert(Type.isSymbol(Symbol("Sym"))) }
@@ -221,6 +291,10 @@ class TestType extends Test {
     testIsElementSpace() { console.assert(!Type.isElement(' ')) }
     testIsElementNumStr() { console.assert(!Type.isElement('1')) }
     testIsElementAlpha() { console.assert(!Type.isElement('a')) }
+    testIsElementBlankFunc() { console.assert(!Type.isElement(String(''))) }
+    testIsElementSpaceFunc() { console.assert(!Type.isElement(String(' '))) }
+    testIsElementNumStrFunc() { console.assert(!Type.isElement(String('1'))) }
+    testIsElementAlphaFunc() { console.assert(!Type.isElement(String('a'))) }
     testIsElementBlankNew() { console.assert(!Type.isElement(new String(''))) }
     testIsElementSpaceNew() { console.assert(!Type.isElement(new String(' '))) }
     testIsElementNumStrNew() { console.assert(!Type.isElement(new String('1'))) }
@@ -234,6 +308,12 @@ class TestType extends Test {
     testIsElementNumPos() { console.assert(!Type.isElement(1)) }
     testIsElementNumNeg() { console.assert(!Type.isElement(-1)) }
     testIsElementFloat() { console.assert(!Type.isElement(3.14)) }
+    testIsElementNumPosFunc() { console.assert(!Type.isElement(Number(1))) }
+    testIsElementNumNegFunc() { console.assert(!Type.isElement(Number(-1))) }
+    testIsElementFloatFunc() { console.assert(!Type.isElement(Number(3.14))) }
+    testIsElementNumPosNew() { console.assert(!Type.isElement(new Number(1))) }
+    testIsElementNumNegNew() { console.assert(!Type.isElement(new Number(-1))) }
+    testIsElementFloatNew() { console.assert(!Type.isElement(new Number(3.14))) }
     testIsElementDate() { console.assert(!Type.isElement(new Date())) }
     testIsElementBigInt() { console.assert(!Type.isElement(BigInt(9007199254740991))) }
     testIsElementSymbol() { console.assert(!Type.isElement(Symbol("Sym"))) }
@@ -247,16 +327,171 @@ class TestType extends Test {
     testIsElementFunc1() { console.assert(!Type.isElement(function(){})) }
     testIsElementInsT() { console.assert(!Type.isElement(new Map(), Map)) }
     testIsElementInsF() { console.assert(!Type.isElement(new Map(), Set)) }
-
-
-
-
-
+    // isArray
+    testIsArrayBlank() { console.assert(!Type.isArray('')) }
+    testIsArraySpace() { console.assert(!Type.isArray(' ')) }
+    testIsArrayNumStr() { console.assert(!Type.isArray('1')) }
+    testIsArrayAlpha() { console.assert(!Type.isArray('a')) }
+    testIsArrayBlankFunc() { console.assert(!Type.isArray(String(''))) }
+    testIsArraySpaceFunc() { console.assert(!Type.isArray(String(' '))) }
+    testIsArrayNumStrFunc() { console.assert(!Type.isArray(String('1'))) }
+    testIsArrayAlphaFunc() { console.assert(!Type.isArray(String('a'))) }
+    testIsArrayBlankNew() { console.assert(!Type.isArray(new String(''))) }
+    testIsArraySpaceNew() { console.assert(!Type.isArray(new String(' '))) }
+    testIsArrayNumStrNew() { console.assert(!Type.isArray(new String('1'))) }
+    testIsArrayAlphaNew() { console.assert(!Type.isArray(new String('a'))) }
+    testIsArrayUndefined() { console.assert(!Type.isArray(undefined)) }
+    testIsArrayNull() { console.assert(!Type.isArray(null)) }
+    testIsArrayNaN() { console.assert(!Type.isArray(NaN)) }
+    testIsArrayNaN() { console.assert(!Type.isArray(Number.NaN)) }
+    testIsArrayTrue() { console.assert(!Type.isArray(true)) }
+    testIsArrayFalse() { console.assert(!Type.isArray(false)) }
+    testIsArrayNumPos() { console.assert(!Type.isArray(1)) }
+    testIsArrayNumNeg() { console.assert(!Type.isArray(-1)) }
+    testIsArrayFloat() { console.assert(!Type.isArray(3.14)) }
+    testIsArrayNumPosFunc() { console.assert(!Type.isArray(Number(1))) }
+    testIsArrayNumNegFunc() { console.assert(!Type.isArray(Number(-1))) }
+    testIsArrayFloatFunc() { console.assert(!Type.isArray(Number(3.14))) }
+    testIsArrayNumPosNew() { console.assert(!Type.isArray(new Number(1))) }
+    testIsArrayNumNegNew() { console.assert(!Type.isArray(new Number(-1))) }
+    testIsArrayFloatNew() { console.assert(!Type.isArray(new Number(3.14))) }
+    testIsArrayDate() { console.assert(!Type.isArray(new Date())) }
+    testIsArrayBigInt() { console.assert(!Type.isArray(BigInt(9007199254740991))) }
+    testIsArraySymbol() { console.assert(!Type.isArray(Symbol("Sym"))) }
+    testIsArrayDoc() { console.assert(!Type.isArray(document)) }
+    testIsArrayEl() { console.assert(!Type.isArray(document.createElement('p'))) }
+    testIsArrayAry0() { console.assert(Type.isArray([])) }
+    testIsArrayAry2() { console.assert(Type.isArray([1,'A'])) }
+    testIsArrayObj0() { console.assert(!Type.isArray({})) }
+    testIsArrayObj2() { console.assert(!Type.isArray({'k':'v'})) }
+    testIsArrayFunc0() { console.assert(!Type.isArray(()=>{})) }
+    testIsArrayFunc1() { console.assert(!Type.isArray(function(){})) }
+    testIsArrayInsT() { console.assert(!Type.isArray(new Map(), Map)) }
+    testIsArrayInsF() { console.assert(!Type.isArray(new Map(), Set)) }
+    // isObject
+    testIsObjectBlank() { console.assert(!Type.isObject('')) }
+    testIsObjectSpace() { console.assert(!Type.isObject(' ')) }
+    testIsObjectNumStr() { console.assert(!Type.isObject('1')) }
+    testIsObjectAlpha() { console.assert(!Type.isObject('a')) }
+    testIsObjectBlankFunc() { console.assert(!Type.isObject(String(''))) }
+    testIsObjectSpaceFunc() { console.assert(!Type.isObject(String(' '))) }
+    testIsObjectNumStrFunc() { console.assert(!Type.isObject(String('1'))) }
+    testIsObjectAlphaFunc() { console.assert(!Type.isObject(String('a'))) }
+    testIsObjectBlankNew() { console.assert(!Type.isObject(new String(''))) }
+    testIsObjectSpaceNew() { console.assert(!Type.isObject(new String(' '))) }
+    testIsObjectNumStrNew() { console.assert(!Type.isObject(new String('1'))) }
+    testIsObjectAlphaNew() { console.assert(!Type.isObject(new String('a'))) }
+    testIsObjectUndefined() { console.assert(!Type.isObject(undefined)) }
+    testIsObjectNull() { console.assert(!Type.isObject(null)) }
+    testIsObjectNaN() { console.assert(!Type.isObject(NaN)) }
+    testIsObjectNaN() { console.assert(!Type.isObject(Number.NaN)) }
+    testIsObjectTrue() { console.assert(!Type.isObject(true)) }
+    testIsObjectFalse() { console.assert(!Type.isObject(false)) }
+    testIsObjectNumPos() { console.assert(!Type.isObject(1)) }
+    testIsObjectNumNeg() { console.assert(!Type.isObject(-1)) }
+    testIsObjectFloat() { console.assert(!Type.isObject(3.14)) }
+    testIsObjectNumPosFunc() { console.assert(!Type.isObject(Number(1))) }
+    testIsObjectNumNegFunc() { console.assert(!Type.isObject(Number(-1))) }
+    testIsObjectFloatFunc() { console.assert(!Type.isObject(Number(3.14))) }
+    testIsObjectNumPosNew() { console.assert(!Type.isObject(new Number(1))) }
+    testIsObjectNumNegNew() { console.assert(!Type.isObject(new Number(-1))) }
+    testIsObjectFloatNew() { console.assert(!Type.isObject(new Number(3.14))) }
+    testIsObjectDate() { console.assert(!Type.isObject(new Date())) }
+    testIsObjectBigInt() { console.assert(!Type.isObject(BigInt(9007199254740991))) }
+    testIsObjectSymbol() { console.assert(!Type.isObject(Symbol("Sym"))) }
+    testIsObjectDoc() { console.assert(!Type.isObject(document)) }
+    testIsObjectEl() { console.assert(!Type.isObject(document.createElement('p'))) }
+    testIsObjectAry0() { console.assert(!Type.isObject([])) }
+    testIsObjectAry2() { console.assert(!Type.isObject([1,'A'])) }
+    testIsObjectObj0() { console.assert(Type.isObject({})) }
+    testIsObjectObj2() { console.assert(Type.isObject({'k':'v'})) }
+    testIsObjectFunc0() { console.assert(!Type.isObject(()=>{})) }
+    testIsObjectFunc1() { console.assert(!Type.isObject(function(){})) }
+    testIsObjectInsT() { console.assert(!Type.isObject(new Map(), Map)) }
+    testIsObjectInsF() { console.assert(!Type.isObject(new Map(), Set)) }
+    // isFunction
+    testIsFunctionBlank() { console.assert(!Type.isFunction('')) }
+    testIsFunctionSpace() { console.assert(!Type.isFunction(' ')) }
+    testIsFunctionNumStr() { console.assert(!Type.isFunction('1')) }
+    testIsFunctionAlpha() { console.assert(!Type.isFunction('a')) }
+    testIsFunctionBlankFunc() { console.assert(!Type.isFunction(String(''))) }
+    testIsFunctionSpaceFunc() { console.assert(!Type.isFunction(String(' '))) }
+    testIsFunctionNumStrFunc() { console.assert(!Type.isFunction(String('1'))) }
+    testIsFunctionAlphaFunc() { console.assert(!Type.isFunction(String('a'))) }
+    testIsFunctionBlankNew() { console.assert(!Type.isFunction(new String(''))) }
+    testIsFunctionSpaceNew() { console.assert(!Type.isFunction(new String(' '))) }
+    testIsFunctionNumStrNew() { console.assert(!Type.isFunction(new String('1'))) }
+    testIsFunctionAlphaNew() { console.assert(!Type.isFunction(new String('a'))) }
+    testIsFunctionUndefined() { console.assert(!Type.isFunction(undefined)) }
+    testIsFunctionNull() { console.assert(!Type.isFunction(null)) }
+    testIsFunctionNaN() { console.assert(!Type.isFunction(NaN)) }
+    testIsFunctionNaN() { console.assert(!Type.isFunction(Number.NaN)) }
+    testIsFunctionTrue() { console.assert(!Type.isFunction(true)) }
+    testIsFunctionFalse() { console.assert(!Type.isFunction(false)) }
+    testIsFunctionNumPos() { console.assert(!Type.isFunction(1)) }
+    testIsFunctionNumNeg() { console.assert(!Type.isFunction(-1)) }
+    testIsFunctionFloat() { console.assert(!Type.isFunction(3.14)) }
+    testIsFunctionNumPosFunc() { console.assert(!Type.isFunction(Number(1))) }
+    testIsFunctionNumNegFunc() { console.assert(!Type.isFunction(Number(-1))) }
+    testIsFunctionFloatFunc() { console.assert(!Type.isFunction(Number(3.14))) }
+    testIsFunctionNumPosNew() { console.assert(!Type.isFunction(new Number(1))) }
+    testIsFunctionNumNegNew() { console.assert(!Type.isFunction(new Number(-1))) }
+    testIsFunctionFloatNew() { console.assert(!Type.isFunction(new Number(3.14))) }
+    testIsFunctionDate() { console.assert(!Type.isFunction(new Date())) }
+    testIsFunctionBigInt() { console.assert(!Type.isFunction(BigInt(9007199254740991))) }
+    testIsFunctionSymbol() { console.assert(!Type.isFunction(Symbol("Sym"))) }
+    testIsFunctionDoc() { console.assert(!Type.isFunction(document)) }
+    testIsFunctionEl() { console.assert(!Type.isFunction(document.createElement('p'))) }
+    testIsFunctionAry0() { console.assert(!Type.isFunction([])) }
+    testIsFunctionAry2() { console.assert(!Type.isFunction([1,'A'])) }
+    testIsFunctionObj0() { console.assert(!Type.isFunction({})) }
+    testIsFunctionObj2() { console.assert(!Type.isFunction({'k':'v'})) }
+    testIsFunctionFunc0() { console.assert(Type.isFunction(()=>{})) }
+    testIsFunctionFunc1() { console.assert(Type.isFunction(function(){})) }
+    testIsFunctionInsT() { console.assert(!Type.isFunction(new Map(), Map)) }
+    testIsFunctionInsF() { console.assert(!Type.isFunction(new Map(), Set)) }
+    // isInstance
+//    testIsInstanceBlank() { console.assert(Type.isInstance('', String)) }
+//    testIsInstanceSpace() { console.assert(Type.isInstance(' ', String)) }
+//    testIsInstanceNumStr() { console.assert(Type.isInstance('1', String)) }
+//    testIsInstanceAlpha() { console.assert(Type.isInstance('a', String)) }
+//    testIsInstanceBlankNew() { console.assert(Type.isInstance(String(''), String)) }
+//    testIsInstanceSpaceNew() { console.assert(Type.isInstance(String(' '), String)) }
+//    testIsInstanceNumStrNew() { console.assert(Type.isInstance(String('1'), String)) }
+//    testIsInstanceAlphaNew() { console.assert(Type.isInstance(String('a'), String)) }
+    testIsInstanceBlankNew() { console.assert(Type.isInstance(new String(''), String)) }
+    testIsInstanceSpaceNew() { console.assert(Type.isInstance(new String(' '), String)) }
+    testIsInstanceNumStrNew() { console.assert(Type.isInstance(new String('1'), String)) }
+    testIsInstanceAlphaNew() { console.assert(Type.isInstance(new String('a'), String)) }
+//    testIsInstanceUndefined() { console.assert(Type.isInstance(undefined, undefined)) }
+//    testIsInstanceNull() { console.assert(Type.isInstance(null, null)) }
+//    testIsInstanceNaN() { console.assert(Type.isInstance(NaN, NaN)) }
+//    testIsInstanceNaN() { console.assert(Type.isInstance(Number.NaN, Number.NaN)) }
+//    testIsInstanceTrue() { console.assert(Type.isInstance(true, Boolean)) }
+//    testIsInstanceFalse() { console.assert(Type.isInstance(false, Boolean)) }
+//    testIsInstanceNumPos() { console.assert(Type.isInstance(1, Number)) }
+//    testIsInstanceNumNeg() { console.assert(Type.isInstance(-1, Number)) }
+//    testIsInstanceFloat() { console.assert(Type.isInstance(3.14, Number)) }
+    testIsInstanceDate() { console.assert(Type.isInstance(new Date(), Date)) }
+//    testIsInstanceBigInt() { console.assert(Type.isInstance(BigInt(9007199254740991), BigInt)) }
+//    testIsInstanceSymbol() { console.assert(Type.isInstance(Symbol("Sym"), Symbol)) }
+//    testIsInstanceBigInt() { console.assert(Type.isInstance(new BigInt(9007199254740991), BigInt)) }
+//    testIsInstanceSymbol() { console.assert(Type.isInstance(new Symbol("Sym"), Symbol)) }
+//    testIsInstanceDoc() { console.assert(Type.isInstance(document, document)) }
+    testIsInstanceEl() { console.assert(Type.isInstance(document.createElement('p'), Element)) }
+    testIsInstanceAry0() { console.assert(Type.isInstance([], Array)) }
+    testIsInstanceAry2() { console.assert(Type.isInstance([1,'A'], Array)) }
+    testIsInstanceObj0() { console.assert(Type.isInstance({}, Object)) }
+    testIsInstanceObj2() { console.assert(Type.isInstance({'k':'v'}, Object)) }
+    testIsInstanceFunc0() { console.assert(Type.isInstance(()=>{}, Function)) }
+    testIsInstanceFunc1() { console.assert(Type.isInstance(function(){}, Function)) }
+    testIsInstanceInsT() { console.assert(Type.isInstance(new Map(), Map)) }
+    testIsInstanceInsF() { console.assert(!Type.isInstance(new Map(), Set)) }
 }
 new TestType().run()
 });
 </script>
-
+ 
 <h1></h1>
 <header></header>
 <main></main>
