@@ -164,6 +164,36 @@ class TestType extends Test {
     testIsIntFunc1() { console.assert(!Type.isInt(function(){})) }
     testIsIntInsT() { console.assert(!Type.isInt(new Map(), Map)) }
     testIsIntInsF() { console.assert(!Type.isInt(new Map(), Set)) }
+    // isPosInt
+    testIsPosIntNull() { console.assert(!Type.isPosInt(null)) }
+    testIsPosIntNaN() { console.assert(!Type.isPosInt(NaN)) }
+    testIsPosIntNaN() { console.assert(!Type.isPosInt(Number.NaN)) }
+    testIsPosIntTrue() { console.assert(!Type.isPosInt(true)) }
+    testIsPosIntFalse() { console.assert(!Type.isPosInt(false)) }
+    testIsPosIntNumPos() { console.assert(Type.isPosInt(1)) }
+    testIsPosIntNumNeg() { console.assert(!Type.isPosInt(-1)) }
+    testIsPosIntFloat() { console.assert(!Type.isPosInt(3.14)) }
+    testIsPosIntNumPosFunc() { console.assert(Type.isPosInt(Number(1))) }
+    testIsPosIntNumNegFunc() { console.assert(!Type.isPosInt(Number(-1))) }
+    testIsPosIntFloatFunc() { console.assert(!Type.isPosInt(Number(3.14))) }
+    testIsPosIntNumPosNew() { console.assert(Type.isPosInt(new Number(1))) }
+    testIsPosIntNumNegNew() { console.assert(!Type.isPosInt(new Number(-1))) }
+    testIsPosIntFloatNew() { console.assert(!Type.isPosInt(new Number(3.14))) }
+    // isNegInt
+    testIsNegIntNull() { console.assert(!Type.isNegInt(null)) }
+    testIsNegIntNaN() { console.assert(!Type.isNegInt(NaN)) }
+    testIsNegIntNaN() { console.assert(!Type.isNegInt(Number.NaN)) }
+    testIsNegIntTrue() { console.assert(!Type.isNegInt(true)) }
+    testIsNegIntFalse() { console.assert(!Type.isNegInt(false)) }
+    testIsNegIntNumPos() { console.assert(!Type.isNegInt(1)) }
+    testIsNegIntNumNeg() { console.assert(Type.isNegInt(-1)) }
+    testIsNegIntFloat() { console.assert(!Type.isNegInt(3.14)) }
+    testIsNegIntNumPosFunc() { console.assert(!Type.isNegInt(Number(1))) }
+    testIsNegIntNumNegFunc() { console.assert(Type.isNegInt(Number(-1))) }
+    testIsNegIntFloatFunc() { console.assert(!Type.isNegInt(Number(3.14))) }
+    testIsNegIntNumPosNew() { console.assert(!Type.isNegInt(new Number(1))) }
+    testIsNegIntNumNegNew() { console.assert(Type.isNegInt(new Number(-1))) }
+    testIsNegIntFloatNew() { console.assert(!Type.isNegInt(new Number(3.14))) }
     // isFloat
     testIsFloatBlank() { console.assert(!Type.isFloat('')) }
     testIsFloatSpace() { console.assert(!Type.isFloat(' ')) }
@@ -204,6 +234,47 @@ class TestType extends Test {
     testIsFloatFunc1() { console.assert(!Type.isFloat(function(){})) }
     testIsFloatInsT() { console.assert(!Type.isFloat(new Map(), Map)) }
     testIsFloatInsF() { console.assert(!Type.isFloat(new Map(), Set)) }
+    // isDate
+    testIsDateBlank() { console.assert(!Type.isDate('')) }
+    testIsDateSpace() { console.assert(!Type.isDate(' ')) }
+    testIsDateNumStr() { console.assert(!Type.isDate('1')) }
+    testIsDateAlpha() { console.assert(!Type.isDate('a')) }
+    testIsDateBlankFunc() { console.assert(!Type.isDate(String(''))) }
+    testIsDateSpaceFunc() { console.assert(!Type.isDate(String(' '))) }
+    testIsDateNumStrFunc() { console.assert(!Type.isDate(String('1'))) }
+    testIsDateAlphaFunc() { console.assert(!Type.isDate(String('a'))) }
+    testIsDateBlankNew() { console.assert(!Type.isDate(new String(''))) }
+    testIsDateSpaceNew() { console.assert(!Type.isDate(new String(' '))) }
+    testIsDateNumStrNew() { console.assert(!Type.isDate(new String('1'))) }
+    testIsDateAlphaNew() { console.assert(!Type.isDate(new String('a'))) }
+    testIsDateUndefined() { console.assert(!Type.isDate(undefined)) }
+    testIsDateNull() { console.assert(!Type.isDate(null)) }
+    testIsDateNaN() { console.assert(!Type.isDate(NaN)) }
+    testIsDateNaN() { console.assert(!Type.isDate(Number.NaN)) }
+    testIsDateTrue() { console.assert(!Type.isDate(true)) }
+    testIsDateFalse() { console.assert(!Type.isDate(false)) }
+    testIsDateNumPos() { console.assert(!Type.isDate(1)) }
+    testIsDateNumNeg() { console.assert(!Type.isDate(-1)) }
+    testIsDateFloat() { console.assert(!Type.isDate(3.14)) }
+    testIsDateNumPosFunc() { console.assert(!Type.isDate(Number(1))) }
+    testIsDateNumNegFunc() { console.assert(!Type.isDate(Number(-1))) }
+    testIsDateFloatFunc() { console.assert(!Type.isDate(Number(3.14))) }
+    testIsDateNumPosNew() { console.assert(!Type.isDate(new Number(1))) }
+    testIsDateNumNegNew() { console.assert(!Type.isDate(new Number(-1))) }
+    testIsDateFloatNew() { console.assert(!Type.isDate(new Number(3.14))) }
+    testIsDateDate() { console.assert(Type.isDate(new Date())) }
+    testIsDateBigInt() { console.assert(!Type.isDate(BigInt(9007199254740991))) }
+    testIsDateSymbol() { console.assert(!Type.isDate(Symbol("Sym"))) }
+    testIsDateDoc() { console.assert(!Type.isDate(document)) }
+    testIsDateEl() { console.assert(!Type.isDate(document.createElement('p'))) }
+    testIsDateAry0() { console.assert(!Type.isDate([])) }
+    testIsDateAry2() { console.assert(!Type.isDate([1,'A'])) }
+    testIsDateObj0() { console.assert(!Type.isDate({})) }
+    testIsDateObj2() { console.assert(!Type.isDate({'k':'v'})) }
+    testIsDateFunc0() { console.assert(!Type.isDate(()=>{})) }
+    testIsDateFunc1() { console.assert(!Type.isDate(function(){})) }
+    testIsDateInsT() { console.assert(!Type.isDate(new Map(), Map)) }
+    testIsDateInsF() { console.assert(!Type.isDate(new Map(), Set)) }
     // isBigInt
     testIsBigIntBlank() { console.assert(!Type.isBigInt('')) }
     testIsBigIntSpace() { console.assert(!Type.isBigInt(' ')) }
@@ -487,6 +558,235 @@ class TestType extends Test {
     testIsInstanceFunc1() { console.assert(Type.isInstance(function(){}, Function)) }
     testIsInstanceInsT() { console.assert(Type.isInstance(new Map(), Map)) }
     testIsInstanceInsF() { console.assert(!Type.isInstance(new Map(), Set)) }
+
+    // isStrings
+    testIsStringsAry0() { console.assert(Type.isStrings([])) } // trueになっちゃう
+    testIsStringsAryStr() { console.assert(Type.isStrings(['A','B'])) }
+    testIsStringsAryNum() { console.assert(!Type.isStrings([1,2.2])) }
+    testIsStringsAryInt() { console.assert(!Type.isStrings([0,1,-2])) }
+    testIsStringsAryFloat() { console.assert(!Type.isStrings([0.0,1.1,-2.2])) }
+    testIsStringsAryBool() { console.assert(!Type.isStrings([true,false])) }
+    testIsStringsAryDate() { console.assert(!Type.isStrings([new Date(), new Date()])) }
+    testIsStringsAryBigInt() { console.assert(!Type.isStrings([BigInt(1), BigInt(2)])) }
+    testIsStringsArySymbol() { console.assert(!Type.isStrings([Symbol('A'), Symbol('B')])) }
+    testIsStringsAryElement() { console.assert(!Type.isStrings([document.createElement('a'), document.createElement('b')])) }
+    testIsStringsAryAry() { console.assert(!Type.isStrings([[],[]])) }
+    testIsStringsAryObj() { console.assert(!Type.isStrings([{},{}])) }
+    testIsStringsAryFn0() { console.assert(!Type.isStrings([()=>{},()=>{}])) }
+    testIsStringsAryFn1() { console.assert(!Type.isStrings([function(){},function(){}])) }
+    testIsStringsAryIns() { console.assert(!Type.isStrings([new Map(),new Set()])) }
+    // isNumbers
+    testIsNumbersAry0() { console.assert(Type.isNumbers([])) }
+    testIsNumbersAryStr() { console.assert(!Type.isNumbers(['A','B'])) }
+    testIsNumbersAryNum() { console.assert(Type.isNumbers([1,2.2])) }
+    testIsNumbersAryInt() { console.assert(Type.isNumbers([0,1,-2])) }
+    testIsNumbersAryFloat() { console.assert(Type.isNumbers([0.0,1.1,-2.2])) }
+    testIsNumbersAryBool() { console.assert(!Type.isNumbers([true,false])) }
+    testIsNumbersAryDate() { console.assert(!Type.isNumbers([new Date(), new Date()])) }
+    testIsNumbersAryBigInt() { console.assert(!Type.isNumbers([BigInt(1), BigInt(2)])) }
+    testIsNumbersArySymbol() { console.assert(!Type.isNumbers([Symbol('A'), Symbol('B')])) }
+    testIsNumbersAryElement() { console.assert(!Type.isNumbers([document.createElement('a'), document.createElement('b')])) }
+    testIsNumbersAryAry() { console.assert(!Type.isNumbers([[],[]])) }
+    testIsNumbersAryObj() { console.assert(!Type.isNumbers([{},{}])) }
+    testIsNumbersAryFn0() { console.assert(!Type.isNumbers([()=>{},()=>{}])) }
+    testIsNumbersAryFn1() { console.assert(!Type.isNumbers([function(){},function(){}])) }
+    testIsNumbersAryIns() { console.assert(!Type.isNumbers([new Map(),new Set()])) }
+    // isIntegers
+    testIsIntegersAry0() { console.assert(Type.isIntegers([])) }
+    testIsIntegersAryStr() { console.assert(!Type.isIntegers(['A','B'])) }
+    testIsIntegersAryNum() { console.assert(!Type.isIntegers([1,2.2])) }
+    testIsIntegersAryInt() { console.assert(Type.isIntegers([0,1,-2])) }
+    testIsIntegersAryFloat() { console.assert(!Type.isIntegers([0.0,1.1,-2.2])) }
+    testIsIntegersAryBool() { console.assert(!Type.isIntegers([true,false])) }
+    testIsIntegersAryDate() { console.assert(!Type.isIntegers([new Date(), new Date()])) }
+    testIsIntegersAryBigInt() { console.assert(!Type.isIntegers([BigInt(1), BigInt(2)])) }
+    testIsIntegersArySymbol() { console.assert(!Type.isIntegers([Symbol('A'), Symbol('B')])) }
+    testIsIntegersAryElement() { console.assert(!Type.isIntegers([document.createElement('a'), document.createElement('b')])) }
+    testIsIntegersAryAry() { console.assert(!Type.isIntegers([[],[]])) }
+    testIsIntegersAryObj() { console.assert(!Type.isIntegers([{},{}])) }
+    testIsIntegersAryFn0() { console.assert(!Type.isIntegers([()=>{},()=>{}])) }
+    testIsIntegersAryFn1() { console.assert(!Type.isIntegers([function(){},function(){}])) }
+    testIsIntegersAryIns() { console.assert(!Type.isIntegers([new Map(),new Set()])) }
+    // isPositiveIntegers
+    testIsPositiveIntegersAry0() { console.assert(Type.isPositiveIntegers([])) }
+    testIsPositiveIntegersAryStr() { console.assert(!Type.isPositiveIntegers(['A','B'])) }
+    testIsPositiveIntegersAryNum() { console.assert(!Type.isPositiveIntegers([1,2.2])) }
+    testIsPositiveIntegersAryPosInt() { console.assert(Type.isPositiveIntegers([0,1,2])) }
+    testIsPositiveIntegersAryNegInt() { console.assert(!Type.isPositiveIntegers([-1,-2])) }
+    testIsPositiveIntegersAryInt() { console.assert(!Type.isPositiveIntegers([0,-1])) }
+    testIsPositiveIntegersAryFloat() { console.assert(!Type.isPositiveIntegers([0.0,1.1,-2.2])) }
+    testIsPositiveIntegersAryBool() { console.assert(!Type.isPositiveIntegers([true,false])) }
+    testIsPositiveIntegersAryDate() { console.assert(!Type.isPositiveIntegers([new Date(), new Date()])) }
+    testIsPositiveIntegersAryBigInt() { console.assert(!Type.isPositiveIntegers([BigInt(1), BigInt(2)])) }
+    testIsPositiveIntegersArySymbol() { console.assert(!Type.isPositiveIntegers([Symbol('A'), Symbol('B')])) }
+    testIsPositiveIntegersAryElement() { console.assert(!Type.isPositiveIntegers([document.createElement('a'), document.createElement('b')])) }
+    testIsPositiveIntegersAryAry() { console.assert(!Type.isPositiveIntegers([[],[]])) }
+    testIsPositiveIntegersAryObj() { console.assert(!Type.isPositiveIntegers([{},{}])) }
+    testIsPositiveIntegersAryFn0() { console.assert(!Type.isPositiveIntegers([()=>{},()=>{}])) }
+    testIsPositiveIntegersAryFn1() { console.assert(!Type.isPositiveIntegers([function(){},function(){}])) }
+    testIsPositiveIntegersAryIns() { console.assert(!Type.isPositiveIntegers([new Map(),new Set()])) }
+    // isNegativeIntegers
+    testIsNegativeIntegersAry0() { console.assert(Type.isNegativeIntegers([])) }
+    testIsNegativeIntegersAryStr() { console.assert(!Type.isNegativeIntegers(['A','B'])) }
+    testIsNegativeIntegersAryNum() { console.assert(!Type.isNegativeIntegers([1,2.2])) }
+    testIsPositiveIntegersAryPosInt() { console.assert(!Type.isNegativeIntegers([0,1,2])) }
+    testIsPositiveIntegersAryNegInt() { console.assert(Type.isNegativeIntegers([-1,-2])) }
+    testIsPositiveIntegersAryInt() { console.assert(!Type.isNegativeIntegers([0,-1])) }
+    testIsNegativeIntegersAryFloat() { console.assert(!Type.isNegativeIntegers([0.0,1.1,-2.2])) }
+    testIsNegativeIntegersAryBool() { console.assert(!Type.isNegativeIntegers([true,false])) }
+    testIsNegativeIntegersAryDate() { console.assert(!Type.isNegativeIntegers([new Date(), new Date()])) }
+    testIsNegativeIntegersAryBigInt() { console.assert(!Type.isNegativeIntegers([BigInt(1), BigInt(2)])) }
+    testIsNegativeIntegersArySymbol() { console.assert(!Type.isNegativeIntegers([Symbol('A'), Symbol('B')])) }
+    testIsNegativeIntegersAryElement() { console.assert(!Type.isNegativeIntegers([document.createElement('a'), document.createElement('b')])) }
+    testIsNegativeIntegersAryAry() { console.assert(!Type.isNegativeIntegers([[],[]])) }
+    testIsNegativeIntegersAryObj() { console.assert(!Type.isNegativeIntegers([{},{}])) }
+    testIsNegativeIntegersAryFn0() { console.assert(!Type.isNegativeIntegers([()=>{},()=>{}])) }
+    testIsNegativeIntegersAryFn1() { console.assert(!Type.isNegativeIntegers([function(){},function(){}])) }
+    testIsNegativeIntegersAryIns() { console.assert(!Type.isNegativeIntegers([new Map(),new Set()])) }
+    // isFloats
+    testIsFloatsAry0() { console.assert(Type.isFloats([])) }
+    testIsFloatsAryStr() { console.assert(!Type.isFloats(['A','B'])) }
+    testIsFloatsAryNum() { console.assert(!Type.isFloats([1,2.2])) }
+    testIsFloatsAryInt() { console.assert(!Type.isFloats([0,1,-2])) }
+    testIsFloatsAryFloat() { console.assert(Type.isFloats([0.0,1.1,-2.2])) }
+    testIsFloatsAryBool() { console.assert(!Type.isFloats([true,false])) }
+    testIsFloatsAryDate() { console.assert(!Type.isFloats([new Date(), new Date()])) }
+    testIsFloatsAryBigInt() { console.assert(!Type.isFloats([BigInt(1), BigInt(2)])) }
+    testIsFloatsArySymbol() { console.assert(!Type.isFloats([Symbol('A'), Symbol('B')])) }
+    testIsFloatsAryElement() { console.assert(!Type.isFloats([document.createElement('a'), document.createElement('b')])) }
+    testIsFloatsAryAry() { console.assert(!Type.isFloats([[],[]])) }
+    testIsFloatsAryObj() { console.assert(!Type.isFloats([{},{}])) }
+    testIsFloatsAryFn0() { console.assert(!Type.isFloats([()=>{},()=>{}])) }
+    testIsFloatsAryFn1() { console.assert(!Type.isFloats([function(){},function(){}])) }
+    testIsFloatsAryIns() { console.assert(!Type.isFloats([new Map(),new Set()])) }
+    // isBooleans
+    testIsBooleansAry0() { console.assert(Type.isBooleans([])) }
+    testIsBooleansAryStr() { console.assert(!Type.isBooleans(['A','B'])) }
+    testIsBooleansAryNum() { console.assert(!Type.isBooleans([1,2.2])) }
+    testIsBooleansAryInt() { console.assert(!Type.isBooleans([0,1,-2])) }
+    testIsBooleansAryFloat() { console.assert(!Type.isBooleans([0.0,1.1,-2.2])) }
+    testIsBooleansAryBool() { console.assert(Type.isBooleans([true,false])) }
+    testIsBooleansAryDate() { console.assert(!Type.isBooleans([new Date(), new Date()])) }
+    testIsBooleansAryBigInt() { console.assert(!Type.isBooleans([BigInt(1), BigInt(2)])) }
+    testIsBooleansArySymbol() { console.assert(!Type.isBooleans([Symbol('A'), Symbol('B')])) }
+    testIsBooleansAryElement() { console.assert(!Type.isBooleans([document.createElement('a'), document.createElement('b')])) }
+    testIsBooleansAryAry() { console.assert(!Type.isBooleans([[],[]])) }
+    testIsBooleansAryObj() { console.assert(!Type.isBooleans([{},{}])) }
+    testIsBooleansAryFn0() { console.assert(!Type.isBooleans([()=>{},()=>{}])) }
+    testIsBooleansAryFn1() { console.assert(!Type.isBooleans([function(){},function(){}])) }
+    testIsBooleansAryIns() { console.assert(!Type.isBooleans([new Map(),new Set()])) }
+    // isDates
+    testIsDatesAry0() { console.assert(Type.isDates([])) }
+    testIsDatesAryStr() { console.assert(!Type.isDates(['A','B'])) }
+    testIsDatesAryNum() { console.assert(!Type.isDates([1,2.2])) }
+    testIsDatesAryInt() { console.assert(!Type.isDates([0,1,-2])) }
+    testIsDatesAryFloat() { console.assert(!Type.isDates([0.0,1.1,-2.2])) }
+    testIsDatesAryBool() { console.assert(!Type.isDates([true,false])) }
+    testIsDatesAryDate() { console.assert(Type.isDates([new Date(), new Date()])) }
+    testIsDatesAryBigInt() { console.assert(!Type.isDates([BigInt(1), BigInt(2)])) }
+    testIsDatesArySymbol() { console.assert(!Type.isDates([Symbol('A'), Symbol('B')])) }
+    testIsDatesAryElement() { console.assert(!Type.isDates([document.createElement('a'), document.createElement('b')])) }
+    testIsDatesAryAry() { console.assert(!Type.isDates([[],[]])) }
+    testIsDatesAryObj() { console.assert(!Type.isDates([{},{}])) }
+    testIsDatesAryFn0() { console.assert(!Type.isDates([()=>{},()=>{}])) }
+    testIsDatesAryFn1() { console.assert(!Type.isDates([function(){},function(){}])) }
+    testIsDatesAryIns() { console.assert(!Type.isDates([new Map(),new Set()])) }
+    // isBigInts
+    testIsBigIntsAry0() { console.assert(Type.isBigInts([])) }
+    testIsBigIntsAryStr() { console.assert(!Type.isBigInts(['A','B'])) }
+    testIsBigIntsAryNum() { console.assert(!Type.isBigInts([1,2.2])) }
+    testIsBigIntsAryInt() { console.assert(!Type.isBigInts([0,1,-2])) }
+    testIsBigIntsAryFloat() { console.assert(!Type.isBigInts([0.0,1.1,-2.2])) }
+    testIsBigIntsAryBool() { console.assert(!Type.isBigInts([true,false])) }
+    testIsBigIntsAryDate() { console.assert(!Type.isBigInts([new Date(), new Date()])) }
+    testIsBigIntsAryBigInt() { console.assert(Type.isBigInts([BigInt(1), BigInt(2)])) }
+    testIsBigIntsArySymbol() { console.assert(!Type.isBigInts([Symbol('A'), Symbol('B')])) }
+    testIsBigIntsAryElement() { console.assert(!Type.isBigInts([document.createElement('a'), document.createElement('b')])) }
+    testIsBigIntsAryAry() { console.assert(!Type.isBigInts([[],[]])) }
+    testIsBigIntsAryObj() { console.assert(!Type.isBigInts([{},{}])) }
+    testIsBigIntsAryFn0() { console.assert(!Type.isBigInts([()=>{},()=>{}])) }
+    testIsBigIntsAryFn1() { console.assert(!Type.isBigInts([function(){},function(){}])) }
+    testIsBigIntsAryIns() { console.assert(!Type.isBigInts([new Map(),new Set()])) }
+    // isSymbols
+    testIsSymbolsAry0() { console.assert(Type.isSymbols([])) }
+    testIsSymbolsAryStr() { console.assert(!Type.isSymbols(['A','B'])) }
+    testIsSymbolsAryNum() { console.assert(!Type.isSymbols([1,2.2])) }
+    testIsSymbolsAryInt() { console.assert(!Type.isSymbols([0,1,-2])) }
+    testIsSymbolsAryFloat() { console.assert(!Type.isSymbols([0.0,1.1,-2.2])) }
+    testIsSymbolsAryBool() { console.assert(!Type.isSymbols([true,false])) }
+    testIsSymbolsAryDate() { console.assert(!Type.isSymbols([new Date(), new Date()])) }
+    testIsSymbolsAryBigInt() { console.assert(!Type.isSymbols([BigInt(1), BigInt(2)])) }
+    testIsSymbolsArySymbol() { console.assert(Type.isSymbols([Symbol('A'), Symbol('B')])) }
+    testIsSymbolsAryElement() { console.assert(!Type.isSymbols([document.createElement('a'), document.createElement('b')])) }
+    testIsSymbolsAryAry() { console.assert(!Type.isSymbols([[],[]])) }
+    testIsSymbolsAryObj() { console.assert(!Type.isSymbols([{},{}])) }
+    testIsSymbolsAryFn0() { console.assert(!Type.isSymbols([()=>{},()=>{}])) }
+    testIsSymbolsAryFn1() { console.assert(!Type.isSymbols([function(){},function(){}])) }
+    testIsSymbolsAryIns() { console.assert(!Type.isSymbols([new Map(),new Set()])) }
+    // isElements
+    testIsElementsAry0() { console.assert(Type.isElements([])) }
+    testIsElementsAryStr() { console.assert(!Type.isElements(['A','B'])) }
+    testIsElementsAryNum() { console.assert(!Type.isElements([1,2.2])) }
+    testIsElementsAryInt() { console.assert(!Type.isElements([0,1,-2])) }
+    testIsElementsAryFloat() { console.assert(!Type.isElements([0.0,1.1,-2.2])) }
+    testIsElementsAryBool() { console.assert(!Type.isElements([true,false])) }
+    testIsElementsAryDate() { console.assert(!Type.isElements([new Date(), new Date()])) }
+    testIsElementsAryBigInt() { console.assert(!Type.isElements([BigInt(1), BigInt(2)])) }
+    testIsElementsArySymbol() { console.assert(!Type.isElements([Symbol('A'), Symbol('B')])) }
+    testIsElementsAryElement() { console.assert(Type.isElements([document.createElement('a'), document.createElement('b')])) }
+    testIsElementsAryAry() { console.assert(!Type.isElements([[],[]])) }
+    testIsElementsAryObj() { console.assert(!Type.isElements([{},{}])) }
+    testIsElementsAryFn0() { console.assert(!Type.isElements([()=>{},()=>{}])) }
+    testIsElementsAryFn1() { console.assert(!Type.isElements([function(){},function(){}])) }
+    testIsElementsAryIns() { console.assert(!Type.isElements([new Map(),new Set()])) }
+    // isArrays
+    testIsArraysAry0() { console.assert(Type.isArrays([])) }
+    testIsArraysAryStr() { console.assert(!Type.isArrays(['A','B'])) }
+    testIsArraysAryNum() { console.assert(!Type.isArrays([1,2.2])) }
+    testIsArraysAryInt() { console.assert(!Type.isArrays([0,1,-2])) }
+    testIsArraysAryFloat() { console.assert(!Type.isArrays([0.0,1.1,-2.2])) }
+    testIsArraysAryBool() { console.assert(!Type.isArrays([true,false])) }
+    testIsArraysAryDate() { console.assert(!Type.isArrays([new Date(), new Date()])) }
+    testIsArraysAryBigInt() { console.assert(!Type.isArrays([BigInt(1), BigInt(2)])) }
+    testIsArraysArySymbol() { console.assert(!Type.isArrays([Symbol('A'), Symbol('B')])) }
+    testIsArraysAryElement() { console.assert(!Type.isArrays([document.createElement('a'), document.createElement('b')])) }
+    testIsArraysAryAry() { console.assert(Type.isArrays([[],[]])) }
+    testIsArraysAryObj() { console.assert(!Type.isArrays([{},{}])) }
+    testIsArraysAryFn0() { console.assert(!Type.isArrays([()=>{},()=>{}])) }
+    testIsArraysAryFn1() { console.assert(!Type.isArrays([function(){},function(){}])) }
+    testIsArraysAryIns() { console.assert(!Type.isArrays([new Map(),new Set()])) }
+    // isObjects
+    testIsObjectsAry0() { console.assert(Type.isObjects([])) }
+    testIsObjectsAryStr() { console.assert(!Type.isObjects(['A','B'])) }
+    testIsObjectsAryNum() { console.assert(!Type.isObjects([1,2.2])) }
+    testIsObjectsAryInt() { console.assert(!Type.isObjects([0,1,-2])) }
+    testIsObjectsAryFloat() { console.assert(!Type.isObjects([0.0,1.1,-2.2])) }
+    testIsObjectsAryBool() { console.assert(!Type.isObjects([true,false])) }
+    testIsObjectsAryDate() { console.assert(!Type.isObjects([new Date(), new Date()])) }
+    testIsObjectsAryBigInt() { console.assert(!Type.isObjects([BigInt(1), BigInt(2)])) }
+    testIsObjectsArySymbol() { console.assert(!Type.isObjects([Symbol('A'), Symbol('B')])) }
+    testIsObjectsAryElement() { console.assert(!Type.isObjects([document.createElement('a'), document.createElement('b')])) }
+    testIsObjectsAryAry() { console.assert(!Type.isObjects([[],[]])) }
+    testIsObjectsAryObj() { console.assert(Type.isObjects([{},{}])) }
+    testIsObjectsAryFn0() { console.assert(!Type.isObjects([()=>{},()=>{}])) }
+    testIsObjectsAryFn1() { console.assert(!Type.isObjects([function(){},function(){}])) }
+    testIsObjectsAryIns() { console.assert(!Type.isObjects([new Map(),new Set()])) }
+    // isFunctions
+    testIsFunctionsAry0() { console.assert(Type.isFunctions([])) }
+    testIsFunctionsAryStr() { console.assert(!Type.isFunctions(['A','B'])) }
+    testIsFunctionsAryNum() { console.assert(!Type.isFunctions([1,2.2])) }
+    testIsFunctionsAryInt() { console.assert(!Type.isFunctions([0,1,-2])) }
+    testIsFunctionsAryFloat() { console.assert(!Type.isFunctions([0.0,1.1,-2.2])) }
+    testIsFunctionsAryBool() { console.assert(!Type.isFunctions([true,false])) }
+    testIsFunctionsAryDate() { console.assert(!Type.isFunctions([new Date(), new Date()])) }
+    testIsFunctionsAryBigInt() { console.assert(!Type.isFunctions([BigInt(1), BigInt(2)])) }
+    testIsFunctionsArySymbol() { console.assert(!Type.isFunctions([Symbol('A'), Symbol('B')])) }
+    testIsFunctionsAryElement() { console.assert(!Type.isFunctions([document.createElement('a'), document.createElement('b')])) }
+    testIsFunctionsAryAry() { console.assert(!Type.isFunctions([[],[]])) }
+    testIsFunctionsAryObj() { console.assert(!Type.isFunctions([{},{}])) }
+    testIsFunctionsAryFn0() { console.assert(Type.isFunctions([()=>{},()=>{}])) }
+    testIsFunctionsAryFn1() { console.assert(Type.isFunctions([function(){},function(){}])) }
+    testIsFunctionsAryIns() { console.assert(!Type.isFunctions([new Map(),new Set()])) }
 }
 new TestType().run()
 });

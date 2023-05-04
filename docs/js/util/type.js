@@ -14,7 +14,7 @@ class Type {
         this._names.set('Element', ['Elm', 'El', 'E'])
         this._names.set('Array', ['Ary', 'A'])
         this._names.set('Object', ['Obj', 'O'])
-        this._names.set('Function', ['Func', 'Fun', 'Fn'])
+        this._names.set('Function', ['Func', 'Fn'])
     }
 //    #call(name, v) {
 //        if (this.hasOwnProperty(name)) { return this[name](v) }
@@ -23,12 +23,13 @@ class Type {
     isString(v) { return typeof v === "string" || v instanceof String }
     isBoolean(v) { return 'boolean' === typeof v }
     //isNumber(v) { return 'number' === typeof v && !isNaN(v) }
+    //isNumber(v) { return Number.isFinite(v) } // new Number(1) が false になってしまう
     isNumber(v) { return ('number'===typeof v && !isNaN(v)) || (this.#isObjectLike(v) && this.#getTag(v)=='[object Number]') } // https://github.com/lodash/lodash/blob/master/isNumber.js
     isInteger(v)   { return this.isNumber(v) && v % 1 === 0 }
     isPositiveInteger(v)   { return this.isInteger(v) && 0<=v }
     isNegativeInteger(v)   { return this.isInteger(v) && v<0 }
-    isFloat(v) { return this.isNumber(v) && v % 1 !== 0 }
-    isDate(v) { return date && date.getMonth && typeof date.getMonth === 'function' && Object.prototype.toString.call(date) === '[object Date]' && !isNaN(date) } // https://stackoverflow.com/questions/643782/how-to-check-whether-an-object-is-a-date
+    isFloat(v) { return this.isNumber(v) && (v % 1 !== 0 || 0===v) }
+    isDate(v) { return v && v.getMonth && typeof v.getMonth === 'function' && Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v) } // https://stackoverflow.com/questions/643782/how-to-check-whether-an-object-is-a-date
     isBigInt(v) { return 'bigint' === typeof v }
     isSymbol(v) { return 'symbol' === typeof v }
     isElement(v) {
@@ -78,6 +79,8 @@ class Type {
     isStrings(v) { return Array.isArray(v) && v.every(x=>this.isString(x)) }
     isNumbers(v) { return Array.isArray(v) && v.every(x=>this.isNumber(x)) }
     isIntegers(v) { return Array.isArray(v) && v.every(x=>this.isInteger(x)) }
+    isPositiveIntegers(v) { return Array.isArray(v) && v.every(x=>this.isPositiveInteger(x)) }
+    isNegativeIntegers(v) { return Array.isArray(v) && v.every(x=>this.isNegativeInteger(x)) }
     isFloats(v) { return Array.isArray(v) && v.every(x=>this.isFloat(x)) }
     isBooleans(v) { return Array.isArray(v) && v.every(x=>this.isBoolean(x)) }
     isDates(v) { return Array.isArray(v) && v.every(x=>this.isDate(x)) }
@@ -87,7 +90,6 @@ class Type {
     isArrays(v) { return Array.isArray(v) && v.every(x=>this.isArray(x)) }
     isObjects(v) { return Array.isArray(v) && v.every(x=>this.isObject(x)) }
     isFunctions(v) { return Array.isArray(v) && v.every(x=>this.isFunction(x)) }
-    isInstances(v) { return Array.isArray(v) && v.every(x=>this.isInstances(x)) }
     // array<T> short
     isStrs(v) { return Array.isArray(v) && v.every(x=>this.isString(x)) }
     isNums(v) { return Array.isArray(v) && v.every(x=>this.isNumber(x)) }
@@ -97,7 +99,6 @@ class Type {
     isArys(v) { return Array.isArray(v) && v.every(x=>this.isArray(x)) }
     isObjs(v) { return Array.isArray(v) && v.every(x=>this.isObject(x)) }
     isFns(v) { return Array.isArray(v) && v.every(x=>this.isFunction(x)) }
-    isInss(v) { return Array.isArray(v) && v.every(x=>this.isInstances(x)) }
     // array<T> short
     isSs(v) { return Array.isArray(v) && v.every(x=>this.isString(x)) }
     isNs(v) { return Array.isArray(v) && v.every(x=>this.isNumber(x)) }
