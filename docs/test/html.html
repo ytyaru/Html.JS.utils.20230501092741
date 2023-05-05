@@ -308,7 +308,43 @@ class TestHtml extends Test {
         console.assert(i===actual[3])
         console.assert(s===actual[4])
     }
-
+    testAttrGet() {
+        const p = Html.create('p')
+        p.title = 'T'
+        console.assert('T'===Html.attr(p, 'title'))
+    }
+    testAttrSet() {
+        const p = Html.create('p')
+        p.title = 'T'
+        Html.attr(p, 'title', 'U')
+        console.assert('U'===Html.attr(p, 'title'))
+    }
+    testAttrInt() {
+        const td = Html.create('td')
+        td.setAttribute('colspan', '2')
+        console.assert(2===Html.attrInt(td, 'colspan'))
+    }
+    testAttrFloat() {
+        const td = Html.create('td')
+        td.setAttribute('colspan', '2.1')
+        console.assert(2.1===Html.attrFloat(td, 'colspan'))
+    }
+    testAttrs() {
+        const p = Html.create('p')
+        Html.attr(p, 'title', 'T')
+        Html.attr(p, 'width', '123')
+        Html.attr(p, 'height', '567.8')
+        p.title = 'T'
+        console.assert('T'===Html.attr(p, 'title'))
+        const attrs = Html.attrs(p)
+        const keys = Object.keys(attrs)
+        console.assert(keys.includes('title'))
+        console.assert(keys.includes('width'))
+        console.assert(keys.includes('height'))
+        console.assert('T'===attrs['title'])
+        console.assert('123'===attrs['width'])
+        console.assert('567.8'===attrs['height'])
+    }
 }
 new TestHtml().run()
 });

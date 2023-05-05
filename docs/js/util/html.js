@@ -2,9 +2,7 @@
 class Html {
     constructor() {
         this.parser = new DOMParser()
-//        this.parser.parseFromString(html, 'text/xml')
         this.serializer = new XMLSerializer()
-//        this.serializer.serializeToString(doc);
     }
     // get
     get Url() { return location.href }
@@ -39,7 +37,6 @@ class Html {
     prepend(addEl, el) { el.parentElement.insertBefore(addEl, el) }
     append(addEl, el) { el.parentElement.insertBefore(addEl, el.nextElementSibling) }
     insert(addEl, el, i) { el.parentElement.insertBefore(addEl, this.broser(el, i)) }
-    //insertChild(addEl, el, i) { el.insertBefore(addEl, el.children[i]) }
     insertChild(addEl, el, i) { el.insertBefore(addEl, (0<=i) ? el.children[i] : el.children[el.children.length+i]) }
     // create
     create(tagName, attrs, text) {
@@ -55,9 +52,14 @@ class Html {
     toElements(str) { return [...this.toHtml(str).querySelector('body').children] }
     toElement(str) { return this.toElements(str)[0] }
     // attr
-    attr(el, key, value) { (value) ? el.setAttribute(key, value) : el.getAttribute(key) }
+    attr(el, key, value) { return (value) ? el.setAttribute(key, value) : el.getAttribute(key) }
     attrInt(el, key, value) { return parseInt(this.attr(el, key, value)) }
     attrFloat(el, key, value) { return parseFloat(this.attr(el, key, value)) }
+    attrs(el) {
+        const attrs = {}
+        for (let key of el.getAttributeNames()) { attrs[key] = el.getAttribute(key) }
+        return attrs
+    }
 }
 window.Html = new Html()
 })()
