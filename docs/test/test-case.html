@@ -8,6 +8,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         throw() { throw new Error('A') }
         notThrow() {}
         throwTypeError() { throw new TypeError('A') }
+        throwErrorMsg() { throw new TypeError('This is TypeError.') }
         get Name() { return 'C' }
     }
     const test = new TestCase()
@@ -25,8 +26,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
         ()=>test.assertError(Error, 'B', ()=>new C().throw()),
         ()=>test.assertError(Error, 'A', ()=>new C().notThrow()),
         ()=>test.assertError(EvalError, 'A', ()=>new C().throwTypeError()),
-//        ()=>test.assertError(Error, 'A', new C(), 'throw', []),
-//        ()=>test.assertError(()=>throw new Error('A'), 'A'),
+        ()=>test.assertError(TypeError, /is TypeE/, ()=>new C().throwErrorMsg()),
+        ()=>test.assertError(TypeError, /^This /, ()=>new C().throwErrorMsg()),
+        ()=>test.assertError(TypeError, /rror.$/, ()=>new C().throwErrorMsg()),
+        ()=>test.assertError(TypeError, /間違った期待値/, ()=>new C().throwErrorMsg()),
     ])
 });
 </script>

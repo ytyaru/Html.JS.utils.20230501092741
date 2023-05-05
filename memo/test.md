@@ -8,7 +8,8 @@ test.run([
 ()=>''===new Some().method(),
 ()=>{ return ''===new Some().method() },
 ()=>{ try { new Some().methodError() } catch(e) { return true } return false },
-()=>{ Test.assertError(TypeError, /ErrorMessageRegExp/, new Some(), 'methodError', [params]) },
+()=>{ test.assertError(TypeError, 'ErrorMessage', ()=>new Some().methodError(param)) },
+()=>{ test.assertError(TypeError, /ErrorMessageRegExp/, ()=>new Some().methodError(param)) },
 ])
 ```
 
@@ -93,5 +94,53 @@ AssertError
   異なるエラーが発生した（想定外エラー）
   エラーが発生しなかった
   メッセージが違う
+```
+
+# 思想
+
+* なるだけ簡単に実装する
+* なるだけ短く書けるようにする
+
+　省けそうなもの。
+
+* テストケース名（無名関数の配列を渡してその位置で識別する）
+* 結果真偽用メソッド（`assertEqual`等を使わず真偽値を返すようにする）
+
+## ダメだったケース
+
+　エラー系のテストケースを作成するとき、以下のように無名関数にしたかった。が、引数を変数に代入しないとエラーになる仕様だった。冗長で面倒でわかりにくく忘れやすいのでやめた。
+
+main.js
+```js
+const test = new TestCase()
+test.run([
+    (msg='A')=>{throw new Error('A')},
+    (Error)=>{throw new Error('A')},
+    (Error, msg='A')=>{throw new Error('A')},
+    (Error, msg='A')=>{new C().throw()},
+])
+```
+
+　上記を実装すると`Function.arguments`が必要だが、使うとエラーが出た。
+
+test-case.js
+```js
+    run(tests) {
+        const results = []
+        this.#setHtml()
+        for (let i=0; i<tests.length; i++) {
+            // TypeError: 'caller', 'callee', and 'arguments' properties may not be accessed on strict mode functions or the arguments objects for calls to them
+            results.push((2<=tests[i].arguments) ? this.assertError(tests[i].arguments[0], tests[i].arguments[1], tests[i]) : tests[i].call())
+        }
+```
+
+　なので仕方なく`TestCase.assertError(e, msg, method)`で実装した。以下のように冗長になってしまうが仕方ない。
+
+```js
+const test = new Test()
+test.run([
+()=>{ test.assertError(TypeError, 'ErrorMessage', ()=>new Some().methodError(param)) },
+()=>{ test.assertError(TypeError, /ErrorMessageRegExp/, ()=>new Some().methodError(param)) },
+])
 ```
 

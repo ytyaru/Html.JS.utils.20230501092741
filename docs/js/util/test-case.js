@@ -23,11 +23,19 @@ class TestCase {
         try { method() }
         catch(err) {
             if (!(err instanceof e)) { return new AssertErrorResult([false, 'エラーの型が違う']) }
-            if (err.message!==msg) { return new AssertErrorResult([false, 'エラーメッセージが違う']) }
+            if (!this.#assertErrorMessage(msg, err.message)) { return new AssertErrorResult([false, 'エラーメッセージが違う']) }
             return new AssertErrorResult([true])
         }
         return new AssertErrorResult([false, 'エラーになるべき所でエラーにならなかった'])
     }
+    #assertErrorMessage(expected, actual) {
+        if (this.#isRegExp(expected)) { if (!expected.test(actual)) { return false } }
+        else if (this.#isString(expected)){ if (actual!==expected) { return false } }
+        //if (actual!==expected) { return new AssertErrorResult([false, 'エラーメッセージが違う']) }
+        return true
+    }
+    #isString(v) { return 'string'===typeof v || v instanceof String }
+    #isRegExp(v) { return v instanceof RegExp }
     #count(results) {
         this.counts.all = results.length
         const ress = results.map(r=>(r instanceof AssertErrorResult) ? r.Params[0] : r)
