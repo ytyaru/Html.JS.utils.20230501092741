@@ -1,0 +1,38 @@
+<meta charset="utf-8">
+<script src="../js/util/test-case.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/html.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    class C {
+        throw() { throw new Error('A') }
+        notThrow() {}
+        throwTypeError() { throw new TypeError('A') }
+        get Name() { return 'C' }
+    }
+    const test = new TestCase()
+    test.run([
+        ()=>true,
+        ()=>false,
+        ()=>'C'===new C().Name,
+        ()=>'D'===new C().Name,
+//        (msg='A')=>{throw new Error('A')},
+//        (Error)=>{throw new Error('A')},
+//        (Error, msg='A')=>{throw new Error('A')},
+//        (Error, msg='A')=>{new C().throw()},
+        ()=>test.assertError(Error, 'A', ()=>{throw new Error('A')}),
+        ()=>test.assertError(Error, 'A', ()=>new C().throw()),
+        ()=>test.assertError(Error, 'B', ()=>new C().throw()),
+        ()=>test.assertError(Error, 'A', ()=>new C().notThrow()),
+        ()=>test.assertError(EvalError, 'A', ()=>new C().throwTypeError()),
+//        ()=>test.assertError(Error, 'A', new C(), 'throw', []),
+//        ()=>test.assertError(()=>throw new Error('A'), 'A'),
+    ])
+});
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
