@@ -1,0 +1,28 @@
+<meta charset="utf-8">
+<script src="../js/util/extensible-custom-error.js"></script>
+<script src="../js/util/test-case.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/html.js"></script>
+<script src="../js/util/css.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new TestCase()
+    test.run([
+        ()=>''===Css.get('--title'),
+        ()=>{Css.set('--title', 'My Title'); return 'My Title'===Css.get('--title')},
+        ()=>{Css.set('--width', '123px'); return '123px'===Css.get('--width')},
+        ()=>{Css.set('--width', '123px'); return 123===Css.getInt('--width')},
+        ()=>{Css.set('--width', '123.4px'); return 123.4===Css.getFloat('--width')},
+        ()=>{const root = document.querySelector(':root'); return 'My Title'===Css.get('--title', root)}
+//        ()=>{Css.toggle('some-class-0', p); return p.classList.contains('some-class-0')},
+//        ()=>!Css.has('some-class-1', p),
+//        ()=>{p.classList.add('some-class-2'); return Css.has('some-class-2', p); },
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+

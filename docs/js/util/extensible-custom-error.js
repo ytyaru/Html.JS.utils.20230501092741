@@ -60,5 +60,6 @@ class ExtensibleCustomError extends Error {
   }
 }
 // EvalError, InternalError, RangeError, ReferenceError, SyntaxError, TypeError, URIError
-class InvalidArgumentError extends ExtensibleCustomError{}
+class ValueError extends ExtensibleCustomError{}
+class ArgumentError extends ExtensibleCustomError{}
 
