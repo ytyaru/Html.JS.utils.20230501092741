@@ -31,7 +31,6 @@ class TestCase {
     #assertErrorMessage(expected, actual) {
         if (this.#isRegExp(expected)) { if (!expected.test(actual)) { return false } }
         else if (this.#isString(expected)){ if (actual!==expected) { return false } }
-        //if (actual!==expected) { return new AssertErrorResult([false, 'エラーメッセージが違う']) }
         return true
     }
     #isString(v) { return 'string'===typeof v || v instanceof String }
