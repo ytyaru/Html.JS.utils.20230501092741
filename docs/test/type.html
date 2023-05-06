@@ -1,9 +1,9 @@
 <meta charset="utf-8">
-<script src="../js/util/test.js"></script>
+<script src="../js/util/tester.js"></script>
 <script src="../js/util/type.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', (event) => {
-class TestType extends Test {
+class TestType extends Tester {
     // isString
     testIsStringBlank() { console.assert(Type.isString('')) }
     testIsStringSpace() { console.assert(Type.isString(' ')) }

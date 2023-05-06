@@ -1,12 +1,12 @@
 <meta charset="utf-8">
 <script src="../js/util/extensible-custom-error.js"></script>
-<script src="../js/util/test-case.js"></script>
+<script src="../js/util/test.js"></script>
 <script src="../js/util/type.js"></script>
 <script src="../js/util/html.js"></script>
 <script src="../js/util/css.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', (event) => {
-    const test = new TestCase()
+    const test = new Test()
     test.run([
         ()=>''===Css.get('--title'),
         ()=>{Css.set('--title', 'My Title'); return 'My Title'===Css.get('--title')},

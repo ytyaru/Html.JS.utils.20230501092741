@@ -1,10 +1,10 @@
 <meta charset="utf-8">
-<script src="../js/util/test.js"></script>
+<script src="../js/util/tester.js"></script>
 <script src="../js/util/type.js"></script>
 <script src="../js/util/html.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', (event) => {
-class TestHtml extends Test {
+class TestHtml extends Tester {
     testUrl() { console.assert(Html.Url.endsWith('html.html')) }
     testDoc() { console.assert(Type.isElement(Html.Doc)); console.assert('html'===Html.Doc.tagName.toLowerCase()) }
     testRoot() { console.assert(Type.isElement(Html.Root)); console.assert('html'===Html.Root.tagName.toLowerCase()) }

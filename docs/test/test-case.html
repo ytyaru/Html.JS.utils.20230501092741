@@ -1,5 +1,5 @@
 <meta charset="utf-8">
-<script src="../js/util/test-case.js"></script>
+<script src="../js/util/test.js"></script>
 <script src="../js/util/type.js"></script>
 <script src="../js/util/html.js"></script>
 <script>
@@ -11,7 +11,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         throwErrorMsg() { throw new TypeError('This is TypeError.') }
         get Name() { return 'C' }
     }
-    const test = new TestCase()
+    const test = new Test()
     test.run([
         ()=>true,
         ()=>false,
