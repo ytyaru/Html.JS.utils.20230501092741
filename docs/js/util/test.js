@@ -19,6 +19,25 @@ class Test {
         this.#count(results)
         this.#report(tests, results)
     }
+    static assertError(e, msg, method) {
+        try { method() }
+        catch(err) {
+            if (!(err instanceof e)) { return new AssertErrorResult([false, 'エラーの型が違う']) }
+            if (!this._assertErrorMessage(msg, err.message)) { return new AssertErrorResult([false, 'エラーメッセージが違う']) }
+            return new AssertErrorResult([true])
+        }
+        return new AssertErrorResult([false, 'エラーになるべき所でエラーにならなかった'])
+    }
+    static _assertErrorMessage(expected, actual) {
+        if (this._isRegExp(expected)) { if (!expected.test(actual)) { return false } }
+        else if (this._isString(expected)){ if (actual!==expected) { return false } }
+        return true
+    }
+    static _isString(v) { return 'string'===typeof v || v instanceof String }
+    static _isRegExp(v) { return v instanceof RegExp }
+
+    assertError(e, msg, method) { return Test.assertError(e, msg, method) }
+    /*
     assertError(e, msg, method) {
         try { method() }
         catch(err) {
@@ -35,6 +54,7 @@ class Test {
     }
     #isString(v) { return 'string'===typeof v || v instanceof String }
     #isRegExp(v) { return v instanceof RegExp }
+    */
     #count(results) {
         this.counts.all = results.length
         const ress = results.map(r=>(r instanceof AssertErrorResult) ? r.Params[0] : r)
@@ -100,7 +120,7 @@ class Test {
         }
         return tds
     }
-    #setHtml() { for (let name of ['title', 'h1']) { this.#setElement(name) } }
+    #setHtml() { this.#addBody(); for (let name of ['title', 'h1']) { this.#setElement(name) } }
     #getHeading() { return location.href.split('/').pop().replace(/\.html$/, '.js') + ' 単体試験' }
     #setElement(tagName) {
         const el = document.querySelector(tagName)
@@ -109,6 +129,11 @@ class Test {
             const h1 = document.createElement(tagName)
             h1.textContent = this.#getHeading()
             document.body.insertBefore(h1, document.body.children[0])
+        }
+    }
+    #addBody() {
+        if (!document.querySelector('body')) {
+            document.querySelector(':root').append(document.createElement('body'))
         }
     }
 }

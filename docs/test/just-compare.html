@@ -1,0 +1,63 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/just/compare/min.js"></script>
+<script src="../lib/loadash/4.17.21/min.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(event) => {
+const sleep = (second) => new Promise(resolve => setTimeout(resolve, second * 1000))
+const test = new Test()
+const date1 = new Date()
+await sleep(1)
+test.run([
+    ()=>compare(undefined,undefined),
+    ()=>compare(null,null),
+    ()=>compare([],[]),
+    ()=>compare({},{}),
+    ()=>compare(true,true),
+    ()=>compare(false,false),
+    ()=>!compare(true,false),
+    ()=>!compare(false,true),
+    ()=>compare('',''),
+    ()=>compare('A','A'),
+    ()=>!compare('A',''),
+    ()=>!compare('A','B'),
+    ()=>!compare('A','AA'),
+    ()=>compare(0,0),
+    ()=>!compare(0,1),
+    ()=>compare(1,1),
+    ()=>compare(-1,-1),
+    ()=>compare(0,0.0),
+    ()=>compare(0,+0),
+    ()=>compare(0,-0),
+    ()=>compare(NaN,NaN),
+    ()=>compare(Number.NaN,Number.NaN),
+    ()=>compare(NaN,Number.NaN),
+    ()=>compare(Number.NaN,NaN),
+    ()=>!compare(0,NaN),
+    ()=>!compare(0,Number.NaN),
+    ()=>!compare(0,undefined),
+    ()=>!compare(0,null),
+    ()=>!compare(0,true),
+    ()=>!compare(0,false),
+    ()=>!compare(1,true),
+    ()=>!compare(1,false),
+    ()=>compare([1],[1]),
+    ()=>!compare([1],[2]),
+    ()=>!compare([1],[1,2]),
+    ()=>compare([1,2],[1,2]),
+    ()=>!compare([1,2],[2,1]),
+    ()=>compare({k:1},{k:1}),
+    ()=>!compare({k:1},{k:2}),
+    ()=>!compare({k:1},{v:1}),
+    ()=>!compare({k:1},{k:1,v:1}),
+    ()=>compare({a:1,b:2},{a:1,b:2}),
+    ()=>compare({a:1,b:2},{b:2,a:1}),
+    ()=>compare(date1, date1),
+    ()=>!compare(date1, new Date()),
+//    ()=>!compare(new Date(), new Date()),
+//    ()=>_.isEqual(date1, date1),
+//    ()=>!_.isEqual(date1, new Date()),
+//    ()=>!_.isEqual(new Date(), new Date()),
+])
+})
+</script>

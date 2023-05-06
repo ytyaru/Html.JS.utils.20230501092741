@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../js/util/number/range.js"></script>
+<!--<script src="../lib/loadash/4.17.21/min.js"></script>-->
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script>
+const test = new Test()
+const [five, six, mThree, mTwo] = [5,6,-3,-2]
+test.run([
+    ()=>five.isRange(5,5),
+    ()=>five.isRange(5,6),
+    ()=>five.isRange(6,5),
+    ()=>five.isRange(4,5),
+    ()=>five.isRange(5,4),
+    ()=>five.isRange(4,6),
+    ()=>five.isRange(6,4),
+    ()=>!five.isRange(4,4),
+    ()=>!five.isRange(6,6),
+    ()=>mThree.isRange(-3,-3),
+    ()=>mThree.isRange(-3,-4),
+    ()=>mThree.isRange(-4,-3),
+    ()=>mThree.isRange(-2,-3),
+    ()=>mThree.isRange(-3,-2),
+    ()=>mThree.isRange(-2,-4),
+    ()=>mThree.isRange(-4,-2),
+    ()=>_.isEqual([5], five.range(5)),
+    ()=>_.isEqual([5,6], five.range(6)),
+    ()=>_.isEqual([5,6], six.range(5)),
+    ()=>_.isEqual([-3], mThree.range(mThree)),
+    ()=>_.isEqual([-3,-2], mThree.range(mTwo)),
+    ()=>_.isEqual([-3,-2], mTwo.range(mThree)),
+    ()=>_.isEqual([-2,-1,0,1,2,3,4,5], mTwo.range(five)),
+    ()=>_.isEqual([-2,-1,0,1,2,3,4,5], five.range(mTwo)),
+    ()=>_.isEqual([5], Number.range(5,5)),
+    ()=>_.isEqual([5,6], Number.range(5,6)),
+    ()=>_.isEqual([5,6], Number.range(6,5)),
+    ()=>_.isEqual([-3], Number.range(-3,-3)),
+    ()=>_.isEqual([-3,-2], Number.range(-3,-2)),
+    ()=>_.isEqual([-3,-2], Number.range(-2,-3)),
+    ()=>_.isEqual([-2,-1,0,1,2,3,4,5], Number.range(-2,5)),
+    ()=>_.isEqual([-2,-1,0,1,2,3,4,5], Number.range(5,-2)),
+    ()=>Test.assertError(Error, 'A', ()=>{throw new Error('A')}),
+    ()=>test.assertError(Error, 'A', ()=>{throw new Error('A')}),
+])
+</script>
+</head>
+<body>
+</body>
+</html>
+
