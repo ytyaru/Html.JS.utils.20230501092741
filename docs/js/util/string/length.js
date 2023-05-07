@@ -35,6 +35,9 @@ String.prototype.words = function(locale) {
 String.prototype.sentences = function(locale) {
     return Array.from(this.segmenter('sentence', locale).segment(this)).map(s=>s.segment)
 }
+Object.defineProperty(String.prototype, 'HalfWidthLength', {
+    get: function(){return this.halfWidthLength()}
+});
 Object.defineProperty(String.prototype, 'Graphemes', {
     get: function(){return Array.from(this.segmenter('grapheme').segment(this)).map(s=>s.segment)}
 });

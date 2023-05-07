@@ -1,0 +1,101 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/string/length.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+//    console.log('𠮟'.length)
+//    console.log('😭'.length)
+//    console.log('👨‍👩‍👧‍👦'.length)
+//    console.log('This is a pen. My name is Andy.'.words().length, 'This is a pen. My name is Andy.'.words())
+//    console.log('これは筆です。私はアンディです。'.words().length, 'これは筆です。私はアンディです。'.words())
+//    console.log('This is a pen. My name is Andy.'.Sentences)
+    test.run([
+        // function
+        ()=>0===''.halfWidthLength(),
+        ()=>1==='A'.halfWidthLength(),
+        ()=>9==='A'.repeat(9).halfWidthLength(),
+        ()=>2==='あ'.halfWidthLength(),
+        ()=>1==='あ'.length,
+        ()=>2==='𠮟'.halfWidthLength(),
+        ()=>2==='𠮟'.length,
+        ()=>2==='😭'.halfWidthLength(),
+        ()=>2==='😭'.length,
+        ()=>2==='👨‍👩‍👧‍👦'.halfWidthLength(),
+        ()=>11==='👨‍👩‍👧‍👦'.length,
+        ()=>0===''.graphemes().length,
+        ()=>1==='A'.graphemes().length,
+        ()=>9==='A'.repeat(9).graphemes().length,
+        ()=>1==='あ'.graphemes().length,
+        ()=>1==='𠮟'.graphemes().length,
+        ()=>1==='😭'.graphemes().length,
+        ()=>1==='👨‍👩‍👧‍👦'.graphemes().length,
+        ()=>31==='This is a pen. My name is Andy.'.graphemes().length,
+        ()=>16==='これは筆です。私はアンディです。'.graphemes().length,
+        ()=>0===''.words().length,
+        ()=>1==='A'.words().length,
+        ()=>1==='A'.repeat(9).words().length,
+        ()=>1==='あ'.words().length,
+        ()=>1==='𠮟'.words().length,
+        ()=>1==='😭'.words().length,
+        ()=>1==='👨‍👩‍👧‍👦'.words().length,
+        ()=>17==='This is a pen. My name is Andy.'.words().length,
+        ()=>10==='これは筆です。私はアンディです。'.words().length,
+        ()=>0===''.sentences().length,
+        ()=>1==='A'.sentences().length,
+        ()=>1==='A'.repeat(9).sentences().length,
+        ()=>1==='あ'.sentences().length,
+        ()=>1==='𠮟'.sentences().length,
+        ()=>1==='😭'.sentences().length,
+        ()=>1==='👨‍👩‍👧‍👦'.sentences().length,
+        ()=>2==='This is a pen. My name is Andy.'.sentences().length,
+        ()=>2==='これは筆です。私は案出井です。'.sentences().length,
+        // getter
+        ()=>0===''.HalfWidthLength,
+        ()=>1==='A'.HalfWidthLength,
+        ()=>9==='A'.repeat(9).HalfWidthLength,
+        ()=>2==='あ'.HalfWidthLength,
+        ()=>1==='あ'.length,
+        ()=>2==='𠮟'.HalfWidthLength,
+        ()=>2==='𠮟'.length,
+        ()=>2==='😭'.HalfWidthLength,
+        ()=>2==='😭'.length,
+        ()=>2==='👨‍👩‍👧‍👦'.HalfWidthLength,
+        ()=>11==='👨‍👩‍👧‍👦'.length,
+        ()=>0===''.Graphemes.length,
+        ()=>1==='A'.Graphemes.length,
+        ()=>9==='A'.repeat(9).Graphemes.length,
+        ()=>1==='あ'.Graphemes.length,
+        ()=>1==='𠮟'.Graphemes.length,
+        ()=>1==='😭'.Graphemes.length,
+        ()=>1==='👨‍👩‍👧‍👦'.Graphemes.length,
+        ()=>31==='This is a pen. My name is Andy.'.Graphemes.length,
+        ()=>16==='これは筆です。私はアンディです。'.Graphemes.length,
+        ()=>0===''.Words.length,
+        ()=>1==='A'.Words.length,
+        ()=>1==='A'.repeat(9).Words.length,
+        ()=>1==='あ'.Words.length,
+        ()=>1==='𠮟'.Words.length,
+        ()=>1==='😭'.Words.length,
+        ()=>1==='👨‍👩‍👧‍👦'.Words.length,
+        ()=>17==='This is a pen. My name is Andy.'.Words.length,
+        ()=>10==='これは筆です。私はアンディです。'.Words.length,
+        ()=>0===''.Sentences.length,
+        ()=>1==='A'.Sentences.length,
+        ()=>1==='A'.repeat(9).Sentences.length,
+        ()=>1==='あ'.Sentences.length,
+        ()=>1==='𠮟'.Sentences.length,
+        ()=>1==='😭'.Sentences.length,
+        ()=>1==='👨‍👩‍👧‍👦'.Sentences.length,
+        ()=>2==='This is a pen. My name is Andy.'.Sentences.length,
+        ()=>2==='これは筆です。私は案出井です。'.Sentences.length,
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
