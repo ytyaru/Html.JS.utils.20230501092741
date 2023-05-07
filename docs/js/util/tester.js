@@ -29,7 +29,7 @@ class Tester {
         else {
             const h1 = document.createElement(tagName)
             h1.textContent = this.#getHeading()
-            document.body.insertBefore(h1, document.body.children[0])
+            if (document.body) { document.body.insertBefore(h1, document.body.children[0]) }
         }
     }
 }
