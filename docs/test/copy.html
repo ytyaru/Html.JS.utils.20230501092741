@@ -1,0 +1,27 @@
+<meta charset="utf-8">
+<script src="../js/util/extensible-custom-error.js"></script>
+<script src="../js/util/test.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/copy.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(event) => {
+    const test = new Test()
+    const obj = {'a':'a', 'b':'b'}
+    const cpy = await deepCopy(obj)
+    cpy.a = 'A'
+    console.log(obj)
+    console.log(cpy)
+    test.run([
+        ()=>'a'===obj.a,
+        ()=>'A'===cpy.a,
+        ()=>'b'===obj.b,
+        ()=>'b'===cpy.b,
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
