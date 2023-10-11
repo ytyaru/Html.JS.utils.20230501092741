@@ -1,0 +1,19 @@
+<meta charset="utf-8">
+<script src="../js/util/extensible-custom-error.js"></script>
+<script src="../js/util/test.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/event/get-resized-observer.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(event) => {
+    const ro = getResizedObserver((entry)=>{
+        console.log(entry)
+    }, 300)
+    ro.observe(document.querySelector('main'))
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
