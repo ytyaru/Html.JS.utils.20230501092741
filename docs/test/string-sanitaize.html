@@ -1,0 +1,48 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/string/sanitaize.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    test.run([
+        // function
+        ()=>''===''.sanitaize(),
+        ()=>''===''.unsanitaize(),
+        ()=>'あ'==='あ'.sanitaize(),
+        ()=>'あ'==='あ'.unsanitaize(),
+
+        ()=>'&lt;'==='<'.sanitaize(),
+        ()=>'&gt;'==='>'.sanitaize(),
+        ()=>'&amp;'==='&'.sanitaize(),
+        ()=>'&quot;'===`"`.sanitaize(),
+        ()=>'&#39;'===`'`.sanitaize(),
+
+        ()=>'<'==='&lt;'.unsanitaize(),
+        ()=>'>'==='&gt;'.unsanitaize(),
+        ()=>'&'==='&amp;'.unsanitaize(),
+        ()=>'"'===`&quot;`.unsanitaize(),
+        ()=>`'`===`&#39;`.unsanitaize(),
+
+        ()=>'&lt;br&gt;'==='<br>'.sanitaize(),
+        ()=>'&lt;br/&gt;'==='<br/>'.sanitaize(),
+        ()=>'&lt;br /&gt;'==='<br />'.sanitaize(),
+        ()=>'&lt;p&gt;A&lt;/p&gt;'==='<p>A</p>'.sanitaize(),
+        ()=>'&lt;p&gt;&lt;b&gt;A&lt;/b&gt;&lt;/p&gt;'==='<p><b>A</b></p>'.sanitaize(),
+        ()=>'&amp;lt;'==='&lt;'.sanitaize(),
+
+        ()=>'<br>'==='&lt;br&gt;'.unsanitaize(),
+        ()=>'<br/>'==='&lt;br/&gt;'.unsanitaize(),
+        ()=>'<br />'==='&lt;br /&gt;'.unsanitaize(),
+        ()=>'<p>A</p>'==='&lt;p&gt;A&lt;/p&gt;'.unsanitaize(),
+        ()=>'<p><b>A</b></p>'==='&lt;p&gt;&lt;b&gt;A&lt;/b&gt;&lt;/p&gt;'.unsanitaize(),
+        ()=>'&lt;'==='&amp;lt;'.unsanitaize(),
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
