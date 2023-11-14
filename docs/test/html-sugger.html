@@ -1,0 +1,29 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/html.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    console.log(Html.sugger('div'))
+    console.log(Html.sugger('span'))
+    console.log(Html.sugger('#main-id'))
+    console.log(Html.sugger('.main-class'))
+    console.log(Html.sugger('#main-id style="display:none;"'))
+    const el = Html.sugger('#main-id style="display:none;"')
+    console.log(el.getAttribute('style'))
+    const test = new Test()
+    test.run([
+        ()=>{ const el = Html.sugger('div'); return ('div'===el.tagName.toLowerCase()) },
+        ()=>{ const el = Html.sugger('span'); return ('span'===el.tagName.toLowerCase()) },
+        ()=>{ const el = Html.sugger('#main-id'); return ('div'===el.tagName.toLowerCase() && 'main-id'===el.id) },
+        ()=>{ const el = Html.sugger('.main-class'); return ('div'===el.tagName.toLowerCase() && el.classList.contains('main-class')) },
+        ()=>{ const el = Html.sugger('#main-id style="display:none;"'); return ('div'===el.tagName.toLowerCase() && 'main-id'===el.id && 'display:none;'===el.getAttribute('style')) },
+    ])
+});
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
