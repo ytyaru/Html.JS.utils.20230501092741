@@ -1,0 +1,21 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/string/to-element.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    console.log('<p>やあ</p>'.toNodes()[0])
+    test.run([
+        // function
+        ()=>Type.isElement('<p>やあ</p>'.toElement()),
+//        ()=>,
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
