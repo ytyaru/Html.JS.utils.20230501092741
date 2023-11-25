@@ -9,6 +9,7 @@ String.prototype.toNodes = function() {
     const el = document.createElement('div')
     el.innerHTML = this
     return el.childNodes
+    //return Array.from(el.childNodes)
 }
 })()
 

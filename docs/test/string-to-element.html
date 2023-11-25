@@ -5,11 +5,58 @@
 <script>
 window.addEventListener('DOMContentLoaded', (event) => {
     const test = new Test()
-    console.log('<p>やあ</p>'.toNodes()[0])
+    console.log('<p>A</p>'.toNodes()[0] )
+    console.log('<p>A</p>'.toNodes()[0].constructor.name)
+    console.log('<p>A</p>'.toNodes()[0] instanceof Node)
+    console.log('<p>A</p>'.toNodes()[0] instanceof Element)
+    console.log('<p>A</p>'.toNodes()[0] instanceof HTMLElement)
+    console.log('<p>A</p>'.toNodes()[0] instanceof String)
+    console.log('<p>A</p>'.toElement().nodeType)
+    console.log(Node.ELEMENT_NODE)
+    console.log('あばば'.toNodes()[0].constructor.name)
+    console.log('あばば'.toNodes()[0] instanceof Node)
+    console.log('あばば'.toNodes()[0] instanceof Element)
+    console.log('あばば'.toNodes()[0] instanceof HTMLElement)
+    console.log('あばば'.toNodes()[0] instanceof String)
+    console.log('<p title="TITLE!">A</p>'.toElement().getAttributeNode('title'))
+    console.log('<b>B</b>text.'.toNodes())
+    console.log('<b>B</b>text.'.toNodes()[1])
     test.run([
-        // function
-        ()=>Type.isElement('<p>やあ</p>'.toElement()),
-//        ()=>,
+        // toElement()
+        // ELEMENT_NODE
+        ()=>Type.isElement('<p>A</p>'.toElement()),
+        ()=>'<p>A</p>'.toElement() instanceof Node,
+        ()=>'<p>A</p>'.toElement() instanceof Element,
+        ()=>'<p>A</p>'.toElement() instanceof HTMLElement,
+        ()=>Node.ELEMENT_NODE==='<p>A</p>'.toElement().nodeType,
+        // ATTRIBUTE_NODE
+        ()=>!Type.isElement('<p title="TITLE!">A</p>'.toElement().getAttributeNode('title')),
+        ()=> ('<p title="TITLE!">A</p>'.toElement().getAttributeNode('title') instanceof Node),
+        ()=>!('<p title="TITLE!">A</p>'.toElement().getAttributeNode('title') instanceof Element),
+        ()=>!('<p title="TITLE!">A</p>'.toElement().getAttributeNode('title') instanceof HTMLElement),
+        ()=>Node.ATTRIBUTE_NODE==='<p title="TITLE!">A</p>'.toElement().getAttributeNode('title').nodeType,
+        // TEXT_NODE
+        ()=>!Type.isElement('text.'.toElement()),
+        ()=>'text.'.toElement() instanceof Node,
+        ()=>!('text.'.toElement() instanceof Element),
+        ()=>!('text.'.toElement() instanceof HTMLElement),
+        ()=>Node.TEXT_NODE==='text.'.toElement().nodeType,
+        // toNodes()
+        // TEXT_NODE
+        ()=>!Type.isElement('<b>B</b>text.'.toNodes()[1]),
+        ()=>'<b>B</b>text.'.toNodes()[1] instanceof Node,
+        ()=>!('<b>B</b>text.'.toNodes()[1] instanceof Element),
+        ()=>!('<b>B</b>text.'.toNodes()[1] instanceof HTMLElement),
+        ()=>Node.TEXT_NODE==='<b>B</b>text.'.toNodes()[1].nodeType,
+        // Node.ELEMENT_NODE	1
+        // Node.ATTRIBUTE_NODE	2
+        // Node.TEXT_NODE	3
+        // Node.CDATA_SECTION_NODE	4
+        // Node.PROCESSING_INSTRUCTION_NODE	7
+        // Node.COMMENT_NODE	8
+        // Node.DOCUMENT_NODE	9
+        // Node.DOCUMENT_TYPE_NODE	10
+        // Node.DOCUMENT_FRAGMENT_NODE	11
     ])
 })
 </script>
