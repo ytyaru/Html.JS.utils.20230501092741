@@ -1,0 +1,36 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/string/trim.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    test.run([
+        ()=>''===''.trimLine(),
+        ()=>'a'==='a'.trimLine(),
+        ()=>' '===' '.trimLine(),
+        ()=>'　'==='　'.trimLine(),
+        ()=>''==='\n'.trimLine(),
+        ()=>'a'==='a\n'.trimLine(),
+        ()=>'b'==='\nb'.trimLine(),
+        ()=>'a\nb'==='a\nb'.trimLine(),
+        ()=>'a\nb'==='\na\nb'.trimLine(),
+        ()=>'a\nb'==='a\nb\n'.trimLine(),
+        ()=>'a\nb'==='\na\nb\n'.trimLine(),
+        ()=>'a\nb'==='\n\n\na\nb\n\n\n'.trimLine(),
+        ()=>' '===' \n'.trimLine(),
+        ()=>' '==='\n '.trimLine(),
+        ()=>' \n '===' \n '.trimLine(),
+        ()=>' '==='\n '.trimLine(),
+        ()=>' '===' \n'.trimLine(),
+        ()=>' '==='\n \n'.trimLine(),
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
