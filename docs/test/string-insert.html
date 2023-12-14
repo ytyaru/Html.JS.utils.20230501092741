@@ -1,0 +1,41 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/string/insert.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    test.run([
+        // insert
+        ()=>'a'===''.insert(0, 'a'),
+        ()=>'a'===''.insert(1, 'a'),
+        ()=>'a'===''.insert(2, 'a'),
+        ()=>'a'===''.insert(-1, 'a'),
+        ()=>'a'===''.insert(-2, 'a'),
+        ()=>'ba'==='a'.insert(0, 'b'),
+        ()=>'ba'==='a'.insert(-1, 'b'),
+        ()=>'ba'==='a'.insert(-2, 'b'),
+        ()=>'ab'==='a'.insert(1, 'b'),
+        ()=>'ab'==='a'.insert(2, 'b'),
+        ()=>'ab'==='a'.insert(3, 'b'),
+        // remove
+        ()=>''===''.remove(0),
+        ()=>''===''.remove(1),
+        ()=>''===''.remove(-1),
+        ()=>''==='a'.remove(0),
+//        ()=>''==='a'.remove(1), // error
+//        ()=>''==='a'.remove(-1), // error
+        ()=>''==='a'.remove(0, 2),
+        ()=>'b'==='ab'.remove(0),
+        ()=>'a'==='ab'.remove(1),
+//        ()=>'b'==='ab'.remove(-1), // error
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
