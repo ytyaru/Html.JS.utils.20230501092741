@@ -1,0 +1,35 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/string/count.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    test.run([
+        ()=>0===''.count(),
+        ()=>1==='\n'.count(),
+        ()=>2==='\n\n'.count(),
+        ()=>1==='a\n'.count(),
+        ()=>1==='\nb'.count(),
+        ()=>1==='a\nb'.count(),
+        ()=>1==='\na'.count(),
+        ()=>1==='a\n'.count(),
+        ()=>1==='a\nb'.count(),
+        ()=>2==='\na\n'.count(),
+        ()=>2==='\na\nb'.count(),
+        ()=>3==='\na\nb\n'.count(),
+        ()=>3==='\na\n\n'.count(),
+        ()=>4==='\n\na\n\n'.count(),
+        ()=>2==='\n\na\n\n'.count('\n\n'),
+        ()=>1==='\n\na\n\n'.count('a'),
+        ()=>1==='a\n\nab\n\nb'.count('ab'),
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
