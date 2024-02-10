@@ -1,0 +1,38 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/string/trim.js"></script>
+<script src="../js/util/dom/html-element.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    test.run([
+        ()=>false===document.body.isUserInput,
+        ()=>true===document.querySelector('input[type="radio"]').isUserInput,
+        ()=>true===document.querySelector('input[type="file"]').isUserInput,
+        ()=>true===document.querySelector('input[type="hidden"]').isUserInput, // これはtrueでいいか悩む（JSONデータと相互に保存・復元できる要素の特定という主旨に含むべきか否か判断が難しい）
+        ()=>false===document.body.hasUserInputableValue,
+        ()=>true===document.querySelector('input[type="radio"]').hasUserInputableValue,
+        ()=>false===document.querySelector('input[type="file"]').hasUserInputableValue,
+        ()=>true===document.querySelector('input[type="hidden"]').hasUserInputableValue, // これはtrueでいいか悩む（JSONデータと相互に保存・復元できる要素の特定という主旨に含むべきか否か判断が難しい）
+        ()=>undefined===document.body.jsonValue,
+        ()=>{const e=document.querySelector('input[type="radio"][value="value1"]');e.checked=true;return ('value1'===e.jsonValue)},
+        ()=>undefined===document.querySelector('input[type="file"]').jsonValue,
+        ()=>{document.body.jsonValue = '代入';return (undefined===document.body.jsonValue)},
+        ()=>{const e=document.querySelector('input[type="radio"][value="value1"]');e.jsonValue='value2';return ('value2'===e.jsonValue)},
+        ()=>{document.querySelector('input[type="file"]').jsonValue = '代入';return (undefined===document.body.jsonValue)},
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+<label><input type="radio" name="groupId" value="value1" data-sid="0" data-eid="0">ラベル1</label>
+<label><input type="radio" name="groupId" value="value2" data-sid="0" data-eid="0">ラベル2</label>
+<input type="file" value="ファイル選択">
+<input type="hidden" value="隠し値">
+</main>
+<footer></footer>
+
