@@ -1,0 +1,23 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/array/times.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    test.run([
+        ()=>{let a=0; Array.times(5, ()=>a++); return 5===a},
+        ()=>{let a=0; Array.times(5, (i)=>a+=i); return 10===a},
+        ()=>{let a=0; Array.times(5, (i,p1)=>a+=i+p1, [1]); return 15===a},
+        ()=>{let a=0; Array.times(5, (i,p1,p2)=>a+=i+p1+p2, [1,1]); return 20===a},
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+</main>
+<footer></footer>
+
