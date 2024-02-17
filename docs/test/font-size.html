@@ -1,0 +1,62 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/css.js"></script>
+<script src="../js/util/dom/client-area.js"></script>
+<script src="../js/util/dom/size.js"></script>
+<script src="../js/util/dom/font-size.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    const div0 = document.querySelector('#div0')
+    const div1 = document.querySelector('#div1')
+    const div2 = document.querySelector('#div2')
+    const div3 = document.querySelector('#div3')
+    const div4 = document.querySelector('#div4')
+    const div5 = document.querySelector('#div5')
+    const div6 = document.querySelector('#div6')
+    console.log(Font.size, Font.calc(div0.Size.contentBox.inlineSize), Font.calc(div0), Font.calc())
+//    console.log(Font.getLetterSpacing(), Font.getLineHeight(), Css.get('letter-spacing'), Css.get('line-height'))
+    console.log(Css.get('letter-spacing'), Css.get('line-height'))
+    console.log('Font.calc(div0):', Font.calc(div0))
+    console.log('Font.calc(div1):', Font.calc(div1))
+    console.log('Font.calc(div2):', Font.calc(div2))
+    test.run([
+        ()=>16 <= Font.size,
+        ()=>16 <= Font.calc(),
+        ()=>16 === Font.calc(div0),
+        ()=>16 === Font.calc(div0.Size.contentBox.inlineSize),
+        ()=>18 === Font.calc(div1),
+        ()=>18 === Font.calc(div1.Size.contentBox.inlineSize),
+        ()=>{const s=Font.calc(div2); return (16 < s && s < 18); },
+        ()=>{const s=Font.calc(div2.Size.contentBox.inlineSize); return (16 < s && s < 18); },
+//        ()=>16.05 === Font.calc(div2.Size.contentBox.inlineSize),
+        ()=>16 === Font.calc(div3),
+        ()=>16 === Font.calc(div3.Size.contentBox.inlineSize),
+        ()=>16 === Font.calc(div4),
+        ()=>16 === Font.calc(div4.Size.contentBox.inlineSize),
+        ()=>16 === Font.calc(div5),
+        ()=>16 === Font.calc(div5.Size.contentBox.inlineSize),
+        ()=>{Font.fit(div1);return 18 === Css.getInt('font-size', div1)},
+        ()=>{Font.fit(div6);return 24 === Css.getInt('font-size', div6)},
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+<!--
+<div id="div0" style="width:480px;height:111px;border:1px solid;">あいう</div>
+-->
+<div id="div0" style="width:504px;height:111px;border:1px solid;">あいう</div>
+<div id="div1" style="width:672px;height:111px;border:1px solid;">あいう</div>
+<div id="div2" style="width:674px;height:111px;border:1px solid;">あいう</div>
+<div id="div3" style="width:504px;height:111px;border:1px solid;writing-mode:vertical-rl;">あいう</div>
+<div id="div4" style="width:672px;height:111px;border:1px solid;writing-mode:vertical-rl;">あいう</div>
+<div id="div5" style="width:674px;height:111px;border:1px solid;writing-mode:vertical-rl;">あいう</div>
+<div id="div6" style="width:111px;height:1008px;border:1px solid;writing-mode:vertical-rl;">あいう</div>
+</main>
+<footer></footer>
+
