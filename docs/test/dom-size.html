@@ -1,0 +1,100 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/css.js"></script>
+<script src="../js/util/dom/size.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    const div0 = document.querySelector('#div0')
+    const div1 = document.querySelector('#div1')
+    const div2 = document.querySelector('#div2')
+    const div3 = document.querySelector('#div3')
+    console.log(div2.hasHorizontalScrollBar, div2.scrollHeight, div2.clientHeight, div2.offsetHeight)
+    console.log(div2.horizontalScrollBarSize, div2.verticalScrollBarSize)
+    console.log(div0.borderBox, div0.paddingBox, div0.contentBox)
+    console.log(div2.borderBox, div2.paddingBox, div2.contentBox)
+    test.run([
+        ()=> div0.isHorizontal,
+        ()=>!div0.isVertical,
+        ()=>!div1.isHorizontal,
+        ()=> div1.isVertical,
+        ()=> div2.hasHorizontalScrollBar,
+        ()=>!div2.hasVerticalScrollBar,
+        ()=>!div3.hasHorizontalScrollBar,
+        ()=> div3.hasVerticalScrollBar,
+        ()=> div2.hasScrollBar.horizontal,
+        ()=>!div2.hasScrollBar.vertical,
+        ()=>!div3.hasScrollBar.horizontal,
+        ()=> div3.hasScrollBar.vertical,
+        ()=> 0 < div2.horizontalScrollBarSize,
+        ()=> 0 === div2.verticalScrollBarSize,
+        ()=> 0 === div3.horizontalScrollBarSize,
+        ()=> 0 < div3.verticalScrollBarSize,
+        ()=> 0 < div2.scrollBarSize.horizontal,
+        ()=> 0 === div2.scrollBarSize.vertical,
+        ()=> 0 === div3.scrollBarSize.horizontal,
+        ()=> 0 < div3.scrollBarSize.vertical,
+        ()=> 222 === div0.borderBox.width,
+        ()=> 111 === div0.borderBox.height,
+        ()=> 222 === div0.borderBox.inlineSize,
+        ()=> 111 === div0.borderBox.blockSize,
+        ()=> 222 === div1.borderBox.width,
+        ()=> 111 === div1.borderBox.height,
+        ()=> 222 === div1.borderBox.blockSize,
+        ()=> 111 === div1.borderBox.inlineSize,
+        ()=> 222 === div2.borderBox.width,
+        ()=> 111 === div2.borderBox.height,
+        ()=> 222 === div2.borderBox.inlineSize,
+        ()=> 111 === div2.borderBox.blockSize,
+        ()=> 222 === div3.borderBox.width,
+        ()=> 111 === div3.borderBox.height,
+        ()=> 222 === div3.borderBox.inlineSize,
+        ()=> 111 === div3.borderBox.blockSize,
+        ()=> 222 === div0.paddingBox.width,
+        ()=> 111 === div0.paddingBox.height,
+        ()=> 222 === div0.paddingBox.inlineSize,
+        ()=> 111 === div0.paddingBox.blockSize,
+        ()=> 222 === div0.contentBox.width,
+        ()=> 111 === div0.contentBox.height,
+        ()=> 222 === div0.contentBox.inlineSize,
+        ()=> 111 === div0.contentBox.blockSize,
+        ()=> 222 === div1.paddingBox.width,
+        ()=> 111 === div1.paddingBox.height,
+        ()=> 222 === div1.paddingBox.blockSize,
+        ()=> 111 === div1.paddingBox.inlineSize,
+        ()=> 222 === div1.contentBox.width,
+        ()=> 111 === div1.contentBox.height,
+        ()=> 222 === div1.contentBox.blockSize,
+        ()=> 111 === div1.contentBox.inlineSize,
+        ()=> 222 === div2.paddingBox.width,
+        ()=> 111 - div2.horizontalScrollBarSize === div2.paddingBox.height,
+        ()=> 222 === div2.paddingBox.inlineSize,
+        ()=> 111 - div2.horizontalScrollBarSize === div2.paddingBox.blockSize,
+        ()=> 222 === div2.contentBox.width,
+        ()=> 111 - div2.horizontalScrollBarSize === div2.contentBox.height,
+        ()=> 222 === div2.contentBox.inlineSize,
+        ()=> 111 - div2.horizontalScrollBarSize === div2.contentBox.blockSize,
+        ()=> 222 - div3.verticalScrollBarSize === div3.paddingBox.width,
+        ()=> 111 === div3.paddingBox.height,
+        ()=> 222 - div3.verticalScrollBarSize === div3.paddingBox.inlineSize,
+        ()=> 111 === div3.paddingBox.blockSize,
+        ()=> 222 - div3.verticalScrollBarSize === div3.contentBox.width,
+        ()=> 111 === div3.contentBox.height,
+        ()=> 222 - div3.verticalScrollBarSize === div3.contentBox.inlineSize,
+        ()=> 111 === div3.contentBox.blockSize,
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+    <div id="div0" style="width:222px;height:111px;"></div>
+    <div id="div1" style="width:222px;height:111px;writing-mode:vertical-rl;"></div>
+    <div id="div2" style="width:222px;height:111px;overflow-x:scroll;overflow-y:none;"></div>
+    <div id="div3" style="width:222px;height:111px;overflow-x:none;overflow-y:scroll;"></div>
+</main>
+<footer></footer>
+
