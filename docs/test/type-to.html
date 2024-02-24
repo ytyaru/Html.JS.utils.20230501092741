@@ -8,6 +8,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
     console.log(Type.to('array'))
     console.log(Type.to('number'))
     console.log(Type.to('bigint', '12345678901234567890'))
+    /*
+    class MyClass { }
+//    window.MyClass = MyClass
+    console.log(new MyClass())
+    console.log(new MyClass() instanceof MyClass)
+    console.log(Type.to('class', 'MyClass'))
+    console.log(Type.to('class', 'MyClass') instanceof MyClass)
+    console.log(Type.to('class', 'MyClass') instanceof window.MyClass)
+    */
     test.run([
         // Name
         ()=>undefined===Type.to('undefined'),
@@ -42,6 +51,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
         //()=>Symbol('mySymbol')===Type.to('symbol', 'mySymbol'),
         ()=>'symbol'===typeof Type.to('symbol', 'mySymbol'),
         ()=>'function'===typeof Type.to('function', 'return 1'),
+//        ()=>Type.to('class', 'MyClass') instanceof MyClass,
     ])
 })
 </script>
