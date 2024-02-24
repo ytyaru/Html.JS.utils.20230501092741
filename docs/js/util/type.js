@@ -109,6 +109,26 @@ class Type {
     isEs(v) { return Array.isArray(v) && v.every(x=>Type.Element(x)) }
     isAs(v) { return Array.isArray(v) && v.every(x=>this.isArray(x)) }
     isOs(v) { return Array.isArray(v) && v.every(x=>this.isObject(x)) }
+
+    to(type, value) { // boxing  value:型変換したい値, type:型名(typeof)
+        switch(type.toLowerCase()) {
+            case 'undefined': return undefined
+            case 'null': return null
+            case 'object': return {}
+            case 'array': return []
+            case 'boolean': return ((value) ? (['true','1'].some(v=>v===value.toString().toLowerCase())) : false)
+            case 'number': return Number(value)
+            case 'integer': return parseInt(value)
+            case 'float': return parseFloat(value)
+            case 'string': return String(value)
+            case 'bigint': return BigInt(value)
+            case 'symbol': return Symbol(value)
+            case 'function': return new Function(value)
+            default: return Function(`return (${value})`)() // value: Class名（new ClassName()）
+//            default: return Function('return (' + classname + ')')()
+        }
+    }
+
 }
 window.Type = new Type()
 String.prototype.capitalize = function(str) { return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase() }

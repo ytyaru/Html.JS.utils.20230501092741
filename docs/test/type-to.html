@@ -1,0 +1,53 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    console.log(Type.to('array'))
+    console.log(Type.to('number'))
+    console.log(Type.to('bigint', '12345678901234567890'))
+    test.run([
+        // Name
+        ()=>undefined===Type.to('undefined'),
+        ()=>null===Type.to('null'),
+        //()=>({})===Type.to('object'),
+        ()=>'object'===typeof Type.to('object'),
+        //()=>[]===Type.to('array'),
+        ()=>Array.isArray(Type.to('array')),
+        ()=>false===Type.to('boolean'),
+        ()=>true===Type.to('boolean', 1),
+        ()=>true===Type.to('boolean', true),
+        ()=>false===Type.to('boolean', 0),
+        ()=>false===Type.to('boolean', false),
+        ()=>true===Type.to('boolean', '1'),
+        ()=>true===Type.to('boolean', 'true'),
+        ()=>false===Type.to('boolean', '0'),
+        ()=>false===Type.to('boolean', 'false'),
+        ()=>0===Type.to('number', '0'),
+        ()=>0.1===Type.to('number', '0.1'),
+        ()=>1===Type.to('integer', '1'),
+        ()=>1.1===Type.to('float', '1.1'),
+        ()=>0===Type.to('number', 0),
+        //()=>NaN===Type.to('number'),
+        ()=>isNaN(Type.to('number')),
+        ()=>'undefined'===Type.to('string', undefined),
+        ()=>'null'===Type.to('string', null),
+        ()=>'false'===Type.to('string', false),
+        ()=>'1.1'===Type.to('string', 1.1),
+        ()=>'a'===Type.to('string', 'a'),
+//        ()=>BigInt(12345678901234567890)===Type.to('bigint', '12345678901234567890'),
+        ()=>12345678901234567890n===Type.to('bigint', '12345678901234567890'),
+        //()=>Symbol('mySymbol')===Type.to('symbol', 'mySymbol'),
+        ()=>'symbol'===typeof Type.to('symbol', 'mySymbol'),
+        ()=>'function'===typeof Type.to('function', 'return 1'),
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
