@@ -124,7 +124,8 @@ class Type {
             case 'bigint': return BigInt(value)
             case 'symbol': return Symbol(value)
             case 'function': return new Function(value)
-            default: return Function(`return (${value})`)() // value: Class名（new ClassName()）
+            case 'class': return Function(`return (${value})`)() // value: Class名（new ClassName()） 未定義エラーになる…
+            default: throw new Error('typeは次のいずれかのみ有効です:undefined,null,object,array,boolean,number,integer,float,string,bigint,symbol,function,class')
 //            default: return Function('return (' + classname + ')')()
         }
     }
