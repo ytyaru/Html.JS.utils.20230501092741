@@ -1,0 +1,110 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/string/trim.js"></script>
+<script src="../js/util/string/dsv.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    const csv = 'a,b,c\nd,e,f'
+    const tsv = 'a\tb\tc\nd\te\tf'
+    const ssv = 'a b c\nd e f'
+    console.log(csv.Csv.load(csv))
+    console.log(tsv.Tsv.load(tsv))
+    console.log(ssv.Ssv.load(ssv))
+    test.run([
+        ()=>{ // データのみ
+            const TEXT = 'a,b,c\nd,e,f'
+            for (let [prop, delim] of Object.entries({'Csv':',','Tsv':'\t', 'Ssv':' '})) {
+                const text = TEXT.replace(/,/g, delim)
+                console.log(text)
+                const ret = text[prop].load(text)
+                if (!ret.hasOwnProperty('names')) { return false }
+                if (!ret.hasOwnProperty('types')) { return false }
+                if (!ret.hasOwnProperty('values')) { return false }
+                if (undefined!==ret.names) { return false }
+                if (undefined!==ret.types) { return false }
+                if (!Type.isAry(ret.values)) { return false }
+                if (2!==ret.values.length) { return false }
+                if (3!==ret.values[0].length) { return false }
+                if (3!==ret.values[1].length) { return false }
+                if ('a'!==ret.values[0][0]) { return false }
+                if ('b'!==ret.values[0][1]) { return false }
+                if ('c'!==ret.values[0][2]) { return false }
+                if ('d'!==ret.values[1][0]) { return false }
+                if ('e'!==ret.values[1][1]) { return false }
+                if ('f'!==ret.values[1][2]) { return false }
+            }
+            return true
+        },
+        ()=>{ // ヘッダ(名前)＋データ
+            const TEXT = 'one,two,three\na,b,c\nd,e,f'
+            for (let [prop, delim] of Object.entries({'Csv':',','Tsv':'\t', 'Ssv':' '})) {
+                const text = TEXT.replace(/,/g, delim)
+                console.log(text)
+                const ret = text[prop].load(text, true)
+                console.log(ret)
+                if (!ret.hasOwnProperty('names')) { return false }
+                if (!ret.hasOwnProperty('types')) { return false }
+                if (!ret.hasOwnProperty('values')) { return false }
+                if (!Type.isStrs(ret.names)) { return false }
+                if (3!==ret.names.length) { return false }
+                if ('one'!==ret.names[0]) { return false }
+                if ('two'!==ret.names[1]) { return false }
+                if ('three'!==ret.names[2]) { return false }
+                if (undefined!==ret.types) { return false }
+                if (!Type.isAry(ret.values)) { return false }
+                if (2!==ret.values.length) { return false }
+                if (3!==ret.values[0].length) { return false }
+                if (3!==ret.values[1].length) { return false }
+                if ('a'!==ret.values[0][0]) { return false }
+                if ('b'!==ret.values[0][1]) { return false }
+                if ('c'!==ret.values[0][2]) { return false }
+                if ('d'!==ret.values[1][0]) { return false }
+                if ('e'!==ret.values[1][1]) { return false }
+                if ('f'!==ret.values[1][2]) { return false }
+            }
+            return true
+        },
+        ()=>{ // ヘッダ(名前,型)＋データ
+            const TEXT = 'name,age,isHuman\nstr,int,bool\nYamada,12,true\nSuzuki,24,false'
+            for (let [prop, delim] of Object.entries({'Csv':',','Tsv':'\t', 'Ssv':' '})) {
+                const text = TEXT.replace(/,/g, delim)
+                console.log(text)
+                const ret = text[prop].load(text, true, true)
+                console.log(ret)
+                if (!ret.hasOwnProperty('names')) { return false }
+                if (!ret.hasOwnProperty('types')) { return false }
+                if (!ret.hasOwnProperty('values')) { return false }
+                if (!Type.isStrs(ret.names)) { return false }
+                if (3!==ret.names.length) { return false }
+                if ('name'!==ret.names[0]) { return false }
+                if ('age'!==ret.names[1]) { return false }
+                if ('isHuman'!==ret.names[2]) { return false }
+                if (!Type.isStrs(ret.types)) { return false }
+                if ('str'!==ret.types[0]) { return false }
+                if ('int'!==ret.types[1]) { return false }
+                if ('bool'!==ret.types[2]) { return false }
+                if (!Type.isAry(ret.values)) { return false }
+                if (2!==ret.values.length) { return false }
+                if (3!==ret.values[0].length) { return false }
+                if (3!==ret.values[1].length) { return false }
+                if ('Yamada'!==ret.values[0][0]) { return false }
+                if ('12'!==ret.values[0][1]) { return false }
+                if ('true'!==ret.values[0][2]) { return false }
+                if ('Suzuki'!==ret.values[1][0]) { return false }
+                if ('24'!==ret.values[1][1]) { return false }
+                if ('false'!==ret.values[1][2]) { return false }
+            }
+            return true
+        },
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
