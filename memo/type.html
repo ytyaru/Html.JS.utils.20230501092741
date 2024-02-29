@@ -1,0 +1,19 @@
+<script>
+class C {}
+const c = Reflect.construct(C.constructor, []) // TypeError: CreateListFromArrayLike called on non-object
+//const c = Reflect.construct(C.constructor.bind(C), [])
+console.log(C)
+console.log(c)
+console.log(c instanceof C)
+console.assert(c instanceof C)
+
+class D {}
+function getClass(classname){return Function('return (' + classname + ')')();}
+const cls = getClass('D');
+const ins = new cls();
+console.log(cls)
+console.log(ins)
+console.log(ins instanceof D)
+console.assert(cls===D)
+console.assert(ins instanceof D)
+</script>
