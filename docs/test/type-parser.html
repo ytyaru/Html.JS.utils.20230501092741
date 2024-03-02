@@ -1,0 +1,117 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<!--
+<script src="../js/util/type.js"></script>
+-->
+<script src="../js/util/string/case.js"></script>
+<script src="../js/util/type/type-parser.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    console.log(Type)
+    console.log(Type.parsers)
+    console.log(Type.parsers.names)
+    console.log(Type.parsers.names.every(n=>Type.hasOwnProperty(`is${n.Pascal}`)))
+    /*
+    class MyClass { }
+//    window.MyClass = MyClass
+    console.log(new MyClass())
+    console.log(new MyClass() instanceof MyClass)
+    console.log(Type.to('class', 'MyClass'))
+    console.log(Type.to('class', 'MyClass') instanceof MyClass)
+    console.log(Type.to('class', 'MyClass') instanceof window.MyClass)
+    */
+    
+    test.run([
+        ()=>Type.parsers.names.every(n=>Type.hasOwnProperty(`is${n.Pascal}`)),
+        ()=> Type.isUndefined(undefined),
+        ()=>!Type.isUndefined('undefined'),
+        ()=> Type.isNull(null),
+        ()=>!Type.isNull('null'),
+        ()=> Type.isBoolean(true),
+        ()=> Type.isBoolean(false),
+        ()=>!Type.isBoolean(1),
+        ()=>!Type.isBoolean(0),
+        ()=>!Type.isBoolean('true'),
+        ()=>!Type.isBoolean('false'),
+        ()=>!Type.isBoolean('1'),
+        ()=>!Type.isBoolean('0'),
+        ()=> Type.isBool(true),
+        ()=> Type.isBool(false),
+        ()=>!Type.isBool(1),
+        ()=>!Type.isBool(0),
+        ()=>!Type.isBool('true'),
+        ()=>!Type.isBool('false'),
+        ()=>!Type.isBool('1'),
+        ()=>!Type.isBool('0'),
+        ()=> Type.isBln(true),
+        ()=> Type.isBln(false),
+        ()=>!Type.isBln(1),
+        ()=>!Type.isBln(0),
+        ()=>!Type.isBln('true'),
+        ()=>!Type.isBln('false'),
+        ()=>!Type.isBln('1'),
+        ()=>!Type.isBln('0'),
+        ()=> Type.isB(true),
+        ()=> Type.isB(false),
+        ()=>!Type.isB(1),
+        ()=>!Type.isB(0),
+        ()=>!Type.isB('true'),
+        ()=>!Type.isB('false'),
+        ()=>!Type.isB('1'),
+        ()=>!Type.isB('0'),
+        /*
+        ()=>!Type.isBoolean('true'),
+        ()=> Type.isBoolean(false),
+        ()=>!Type.isBoolean('false'),
+        ()=>!Type.isBoolean(1),
+        ()=>!Type.isBoolean('1'),
+        ()=>!Type.isBoolean(0),
+        ()=>!Type.isBoolean('0'),
+        */
+        /*
+        // Name
+        ()=>undefined===Type.to('undefined'),
+        ()=>null===Type.to('null'),
+        //()=>({})===Type.to('object'),
+        ()=>'object'===typeof Type.to('object'),
+        //()=>[]===Type.to('array'),
+        ()=>Array.isArray(Type.to('array')),
+        ()=>false===Type.to('boolean'),
+        ()=>true===Type.to('boolean', 1),
+        ()=>true===Type.to('boolean', true),
+        ()=>false===Type.to('boolean', 0),
+        ()=>false===Type.to('boolean', false),
+        ()=>true===Type.to('boolean', '1'),
+        ()=>true===Type.to('boolean', 'true'),
+        ()=>false===Type.to('boolean', '0'),
+        ()=>false===Type.to('boolean', 'false'),
+        ()=>0===Type.to('number', '0'),
+        ()=>0.1===Type.to('number', '0.1'),
+        ()=>1===Type.to('integer', '1'),
+        ()=>1.1===Type.to('float', '1.1'),
+        ()=>0===Type.to('number', 0),
+        //()=>NaN===Type.to('number'),
+        ()=>isNaN(Type.to('number')),
+        ()=>'undefined'===Type.to('string', undefined),
+        ()=>'null'===Type.to('string', null),
+        ()=>'false'===Type.to('string', false),
+        ()=>'1.1'===Type.to('string', 1.1),
+        ()=>'a'===Type.to('string', 'a'),
+//        ()=>BigInt(12345678901234567890)===Type.to('bigint', '12345678901234567890'),
+        ()=>12345678901234567890n===Type.to('bigint', '12345678901234567890'),
+        //()=>Symbol('mySymbol')===Type.to('symbol', 'mySymbol'),
+        ()=>'symbol'===typeof Type.to('symbol', 'mySymbol'),
+        ()=>'function'===typeof Type.to('function', 'return 1'),
+//        ()=>Type.to('class', 'MyClass') instanceof MyClass,
+        */
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+

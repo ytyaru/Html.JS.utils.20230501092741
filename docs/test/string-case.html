@@ -12,11 +12,13 @@ window.addEventListener('DOMContentLoaded', (event) => {
     const pascal = 'MyNameIsAndy'
     const constant = 'MY_NAME_IS_ANDY'
     const title = 'My name is andy'
-    const notCase = 'My-name_isAndy'
+    const complexCase = 'My-name_isAndy'
+    const hasNotCase = 'hasnotcase'
     console.log(chain.toChain())
     console.log(chain)
     console.log(new String(chain))
     console.log(chain.caseNames())
+    console.log(complexCase, complexCase.toChain())
     test.run([
         // Name
         ()=>_.isEqual(['chain', 'snake', 'camel', 'pascal', 'constant', 'title'], chain.caseNames()),
@@ -26,14 +28,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
         ()=>'pascal'===pascal.caseName(),
         ()=>'constant'===constant.caseName(),
         ()=>'title'===title.caseName(),
-        ()=>''===notCase.caseName(),
+        ()=>''===complexCase.caseName(),
         ()=>chain.isSomeCase(),
         ()=>snake.isSomeCase(),
         ()=>camel.isSomeCase(),
         ()=>pascal.isSomeCase(),
         ()=>constant.isSomeCase(),
         ()=>title.isSomeCase(),
-        ()=>!notCase.isSomeCase(),
+        ()=>!complexCase.isSomeCase(),
         // is
         ()=>chain.isChain(),
         ()=>!chain.isSnake(),
@@ -71,12 +73,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
         ()=>!title.isPascal(),
         ()=>!title.isConstant(),
         ()=>title.isTitle(),
-        ()=>!notCase.isChain(),
-        ()=>!notCase.isSnake(),
-        ()=>!notCase.isCamel(),
-        ()=>!notCase.isPascal(),
-        ()=>!notCase.isConstant(),
-        ()=>!notCase.isTitle(),
+        ()=>!complexCase.isChain(),
+        ()=>!complexCase.isSnake(),
+        ()=>!complexCase.isCamel(),
+        ()=>!complexCase.isPascal(),
+        ()=>!complexCase.isConstant(),
+        ()=>!complexCase.isTitle(),
         // toChain
         ()=>chain===chain.toChain(),
         ()=>String(chain)===chain.toChain(),
@@ -113,19 +115,47 @@ window.addEventListener('DOMContentLoaded', (event) => {
         ()=>new String(title)!==title.toTitle(),
         ()=>_.isEqual(title, title.toTitle()),
         ()=>Type.isString(title, title.toTitle()),
-        // NotCase
-        ()=>notCase===notCase.toChain(),
-        ()=>notCase===notCase.toSnake(),
-        ()=>notCase===notCase.toCamel(),
-        ()=>notCase===notCase.toPascal(),
-        ()=>notCase===notCase.toConstant(),
-        ()=>notCase===notCase.toTitle(),
-        ()=>notCase===notCase.Chain,
-        ()=>notCase===notCase.Snake,
-        ()=>notCase===notCase.Camel,
-        ()=>notCase===notCase.Pascal,
-        ()=>notCase===notCase.Constant,
-        ()=>notCase===notCase.Title,
+        // NotCase 'My-name_isAndy'
+        ()=>complexCase===complexCase.toChain(),
+        ()=>complexCase===complexCase.toChain(),
+        ()=>complexCase===complexCase.toSnake(),
+        ()=>complexCase===complexCase.toCamel(),
+        ()=>complexCase===complexCase.toPascal(),
+        ()=>complexCase===complexCase.toConstant(),
+        ()=>complexCase===complexCase.toTitle(),
+        ()=>complexCase===complexCase.Chain,
+        ()=>complexCase===complexCase.Snake,
+        ()=>complexCase===complexCase.Camel,
+        ()=>complexCase===complexCase.Pascal,
+        ()=>complexCase===complexCase.Constant,
+        ()=>complexCase===complexCase.Title,
+        // hasNotCase 'hasnotcase'
+        ()=>hasNotCase===hasNotCase.toChain(),
+        ()=>hasNotCase===hasNotCase.toChain(),
+        ()=>hasNotCase===hasNotCase.toSnake(),
+        ()=>hasNotCase===hasNotCase.toCamel(),
+        ()=>'Hasnotcase'===hasNotCase.toPascal(),
+        ()=>'HASNOTCASE'===hasNotCase.toConstant(),
+        ()=>'Hasnotcase'===hasNotCase.toTitle(),
+        ()=>hasNotCase===hasNotCase.Chain,
+        ()=>hasNotCase===hasNotCase.Snake,
+        ()=>hasNotCase===hasNotCase.Camel,
+        ()=>'Hasnotcase'===hasNotCase.Pascal,
+        ()=>'HASNOTCASE'===hasNotCase.Constant,
+        ()=>'Hasnotcase'===hasNotCase.Title,
+        // 1字 'a'
+        ()=>'a'==='a'.toChain(),
+        ()=>'a'==='a'.toSnake(),
+        ()=>'a'==='a'.toCamel(),
+        ()=>'A'==='a'.toPascal(),
+        ()=>'A'==='a'.toConstant(),
+        ()=>'A'==='a'.toTitle(),
+        ()=>'a'==='a'.Chain,
+        ()=>'a'==='a'.Snake,
+        ()=>'a'==='a'.Camel,
+        ()=>'A'==='a'.Pascal,
+        ()=>'A'==='a'.Constant,
+        ()=>'A'==='a'.Title,
         // to
         ()=>{
             const ids = ['Chain', 'Constant', 'Pascal', 'Snake', 'Camel', 'Title']
@@ -141,20 +171,21 @@ window.addEventListener('DOMContentLoaded', (event) => {
             }
             return true
         },
+        ()=>'A'==='a'.Pascal
         /*
-        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>notCase.toChain()),
-        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>notCase.toSnake()),
-        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>notCase.toCamel()),
-        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>notCase.toPascal()),
-        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>notCase.toConstant()),
-        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>notCase.toTitle()),
+        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>complexCase.toChain()),
+        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>complexCase.toSnake()),
+        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>complexCase.toCamel()),
+        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>complexCase.toPascal()),
+        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>complexCase.toConstant()),
+        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>complexCase.toTitle()),
         */
         /*
-        ()=>notCase===notCase.toTitle(),
-        ()=>String(notCase)===notCase.toTitle(),
-        ()=>new String(notCase)!==notCase.toTitle(),
-        ()=>_.isEqual(notCase, notCase.toTitle()),
-        ()=>Type.isString(notCase, notCase.toTitle()),
+        ()=>complexCase===complexCase.toTitle(),
+        ()=>String(complexCase)===complexCase.toTitle(),
+        ()=>new String(complexCase)!==complexCase.toTitle(),
+        ()=>_.isEqual(complexCase, complexCase.toTitle()),
+        ()=>Type.isString(complexCase, complexCase.toTitle()),
         */
     ])
 })
