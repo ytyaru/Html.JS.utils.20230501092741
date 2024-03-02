@@ -76,7 +76,6 @@ class ObjectParser extends TypeParser {
         }
     }
 }
-
 class BooleanParser extends TypeParser {
     constructor(names='boolean,bool,bln,b'.split(',')) { super(names) }
     parse(str) { return 'true,t,1'.split(',').some(v=>v===str) }
@@ -90,26 +89,35 @@ class IntegerParser extends NumberParser {
     constructor(names='integer,int,i'.split(','), base=10) { super(names); this._base=base; }
     is(v)   { return super.is(v) && v % 1 === 0 }
     parse(str) { return parserInt(str, this._base) }
+    stringify(val) { return val.toString(this._base) }
 }
 class BinParser extends IntegerParser { constructor(names='binary,bin'.split(',')) { super(names, 2) } }
 class OctParser extends IntegerParser { constructor(names='octral,oct'.split(',')) { super(names, 8) } }
 class HexParser extends IntegerParser { constructor(names='hex') { super(names, 16) } }
 class Base32Parser extends IntegerParser { constructor(names='base32') { super(names, 32) } }
 class Base36Parser extends IntegerParser { constructor(names='base36') { super(names, 36) } }
-class Base64Parser extends IntegerParser {
+class StringParser extends TypeParser {
+    constructor(names='string,str,s'.split(',')) { super(names) }
+    static is (v) { return typeof v === 'string' || v instanceof String }
+    static iss(v) { return Array.isArray(v) && v.every(x=>isStr(x)) }
+    is(v) { return StringParser.is(v) }
+    parse(str) { return ((str.hasOwnProperty('toString')) ? str.toString() : String(str)) }
+    stringify(val) { return this.parse(val) }
+}
+class Base64Parser extends StringParser {
     constructor(names='base64') { super(names, 36) }
     parse(str) { return btoa(String.fromCharCode.apply(null, new TextEncoder().encode(str))) }
     stringify(val) { return new TextDecoder().decode(new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt()))) }
 }
-class FloatParser extends TypeParser {
+class FloatParser extends NumberParser {
     constructor(names='float,flt,f'.split(',')) { super(names); }
+    is(v) { return super.is(v) && (v % 1 !== 0 || 0===v) }
     parse(str) { return parserFloat(str) }
 }
 class BigIntParser extends TypeParser {
-    constructor(names='bigint,bi'.split(',')) { super(names) }
+    constructor(names='bigint,BigInt,bi'.split(',')) { super(names) }
     parse(str) { return BigInt(str) }
 }
-class StringParser extends TypeParser { constructor(names='string,str,s'.split(',')) { super(names) } }
 class SymbolParser extends TypeParser {
     constructor(names='symbol,sym'.split(',')) { super(names) }
     parse(str) { return Symbol(str) }
@@ -120,13 +128,34 @@ class FunctionParser extends TypeParser {
 }
 class ClassParser extends TypeParser {
     constructor(names='class,cls'.split(',')) { super(names) }
+    //is(val) { console.log(super.is(val), typeof val, val); return (super.is(val) && val.new.target) }
+    //is(val) { console.log(val, typeof val, super.is(val)); return super.is(val) }
+    is(val) { return 'function'===typeof val }
     parse(str) { return Function(`return (${str})`)() }
     //parse(str) { return this.#getClass(str) }
     //#getClass(className) { return Function(`return (${className})`)() }
     //#getClass(name) { return Function('return (' + classname + ')')() }
+    getClass(className) { return Function(`return (${className})`)() }
 }
 class InstanceParser extends TypeParser {
     constructor(names='instance,ins'.split(',')) { super(names); this._clsP=new ClassParser(); }
+    is(v, cls) { console.log(v, cls); return (v instanceof cls) }
+    //is(v) { return v instanceof cls }
+    /*
+    is(v) {
+        console.log(v)
+        if (undefined===v || null===v) { return false }
+        console.log(`v.hasOwnProperty('constructor'):`, v.hasOwnProperty('constructor'), v.constructor.name)
+//        console.log(`v.prototype.hasOwnProperty('constructor'):`, v.prototype.hasOwnProperty('constructor'), v.constructor.name)
+        //if (!v.hasOwnProperty('constructor')) { return false }
+//        if (!v.prototype.hasOwnProperty('constructor')) { return false }
+        if (!Type.isStr(v.constructor.name)) { return false }
+//        if (!v.hasOwnProperty('new')) { return false }
+//        if (!v.new.target) { return false }
+        //return v instanceof this._clsP.getClass(v.constructor.name)
+        return v instanceof v.constructor
+    }
+    */
     parse(str, params) {
         const cls = this._clsP.parse(str)
         return ((Array.isArray(params)) ? new cls() : new cls(params)) 
@@ -270,7 +299,15 @@ for (let p of type.parsers.parsers) {
     console.log(names, isStrs(names))
     if (!isStrs(names)) { continue }
     console.log(type, type.prototype, )
-    for (let n of names) { console.log(n, `is${n.Pascal}`);type[`is${n.Pascal}`] = function(v) { return p.is(v) } }
+    for (let n of names) { console.log(n, `is${n.Pascal}`);type[`is${n.Pascal}`] = function(v, p1) { return p.is(v, p1) } }
+    //for (let n of names) { console.log(n, `is${n}`);type[`is${n}`] = function(v) { return p.is(v) } }
+    //for (let n of names) { const name = (('bigint'===n) ? 'BigInt' : n.Pascal); console.log(n, `is${name}`);type[`is${name}`] = function(v) { return p.is(v) } }
+    /*
+    for (let n of names) {
+        type[`is${n.Pascal}`] = function(v) { return p.is(v) }
+        if ('bigint'===n) { type[`isBigInt`] = function(v) { return p.is(v) } }
+    }
+    */
 }
 window.Type = type
 /*
