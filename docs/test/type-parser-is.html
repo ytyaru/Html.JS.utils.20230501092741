@@ -527,51 +527,130 @@ window.addEventListener('DOMContentLoaded', (event) => {
         ()=>!Type.isInstance(MyClass, MyClass), // 関数とクラスの区別がつけられない！
         ()=> Type.isInstance(new MyClass(), MyClass), // 関数とクラスの区別がつけられない！
         ()=> Type.isInstance(ins, MyClass), // 関数とクラスの区別がつけられない！
-        /*
-        ()=>!Type.isBoolean('true'),
-        ()=> Type.isBoolean(false),
-        ()=>!Type.isBoolean('false'),
-        ()=>!Type.isBoolean(1),
-        ()=>!Type.isBoolean('1'),
-        ()=>!Type.isBoolean(0),
-        ()=>!Type.isBoolean('0'),
-        */
-        /*
-        // Name
-        ()=>undefined===Type.to('undefined'),
-        ()=>null===Type.to('null'),
-        //()=>({})===Type.to('object'),
-        ()=>'object'===typeof Type.to('object'),
-        //()=>[]===Type.to('array'),
-        ()=>Array.isArray(Type.to('array')),
-        ()=>false===Type.to('boolean'),
-        ()=>true===Type.to('boolean', 1),
-        ()=>true===Type.to('boolean', true),
-        ()=>false===Type.to('boolean', 0),
-        ()=>false===Type.to('boolean', false),
-        ()=>true===Type.to('boolean', '1'),
-        ()=>true===Type.to('boolean', 'true'),
-        ()=>false===Type.to('boolean', '0'),
-        ()=>false===Type.to('boolean', 'false'),
-        ()=>0===Type.to('number', '0'),
-        ()=>0.1===Type.to('number', '0.1'),
-        ()=>1===Type.to('integer', '1'),
-        ()=>1.1===Type.to('float', '1.1'),
-        ()=>0===Type.to('number', 0),
-        //()=>NaN===Type.to('number'),
-        ()=>isNaN(Type.to('number')),
-        ()=>'undefined'===Type.to('string', undefined),
-        ()=>'null'===Type.to('string', null),
-        ()=>'false'===Type.to('string', false),
-        ()=>'1.1'===Type.to('string', 1.1),
-        ()=>'a'===Type.to('string', 'a'),
-//        ()=>BigInt(12345678901234567890)===Type.to('bigint', '12345678901234567890'),
-        ()=>12345678901234567890n===Type.to('bigint', '12345678901234567890'),
-        //()=>Symbol('mySymbol')===Type.to('symbol', 'mySymbol'),
-        ()=>'symbol'===typeof Type.to('symbol', 'mySymbol'),
-        ()=>'function'===typeof Type.to('function', 'return 1'),
-//        ()=>Type.to('class', 'MyClass') instanceof MyClass,
-        */
+
+        ()=>!Type.isDateTime(0),
+        ()=>!Type.isDateTime(1),      // 正数
+        ()=>!Type.isDateTime(-1),     // 負数
+        ()=>!Type.isDateTime(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isDateTime(123_456),// 10進数（桁区切）
+        ()=>!Type.isDateTime(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isDateTime(0b1111), // 2進数
+        ()=>!Type.isDateTime(0o77),   // 8進数
+        ()=>!Type.isDateTime(0xff),   // 16進数
+        ()=>!Type.isDateTime(undefined),
+        ()=>!Type.isDateTime(null),
+        ()=>!Type.isDateTime(12345678901234567890n), // BigInt
+        ()=>!Type.isDateTime(0.1),    // float(浮動小数点数）
+        ()=>!Type.isDateTime(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isDateTime('0'),
+        ()=>!Type.isDateTime(Symbol('A')),
+        ()=>!Type.isDateTime(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDateTime(MyClass), // 関数とクラスの区別がつけられない！
+        ()=> Type.isDateTime(new Date()), // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDatetime(0),
+        ()=>!Type.isDatetime(1),      // 正数
+        ()=>!Type.isDatetime(-1),     // 負数
+        ()=>!Type.isDatetime(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isDatetime(123_456),// 10進数（桁区切）
+        ()=>!Type.isDatetime(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isDatetime(0b1111), // 2進数
+        ()=>!Type.isDatetime(0o77),   // 8進数
+        ()=>!Type.isDatetime(0xff),   // 16進数
+        ()=>!Type.isDatetime(undefined),
+        ()=>!Type.isDatetime(null),
+        ()=>!Type.isDatetime(12345678901234567890n), // BigInt
+        ()=>!Type.isDatetime(0.1),    // float(浮動小数点数）
+        ()=>!Type.isDatetime(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isDatetime('0'),
+        ()=>!Type.isDatetime(Symbol('A')),
+        ()=>!Type.isDatetime(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDatetime(MyClass), // 関数とクラスの区別がつけられない！
+        ()=> Type.isDateTime(new Date()), // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDt(0),
+        ()=>!Type.isDt(1),      // 正数
+        ()=>!Type.isDt(-1),     // 負数
+        ()=>!Type.isDt(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isDt(123_456),// 10進数（桁区切）
+        ()=>!Type.isDt(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isDt(0b1111), // 2進数
+        ()=>!Type.isDt(0o77),   // 8進数
+        ()=>!Type.isDt(0xff),   // 16進数
+        ()=>!Type.isDt(undefined),
+        ()=>!Type.isDt(null),
+        ()=>!Type.isDt(12345678901234567890n), // BigInt
+        ()=>!Type.isDt(0.1),    // float(浮動小数点数）
+        ()=>!Type.isDt(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isDt('0'),
+        ()=>!Type.isDt(Symbol('A')),
+        ()=>!Type.isDt(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDt(MyClass), // 関数とクラスの区別がつけられない！
+        ()=> Type.isDt(new Date()), // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDate(0),
+        ()=>!Type.isDate(1),      // 正数
+        ()=>!Type.isDate(-1),     // 負数
+        ()=>!Type.isDate(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isDate(123_456),// 10進数（桁区切）
+        ()=>!Type.isDate(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isDate(0b1111), // 2進数
+        ()=>!Type.isDate(0o77),   // 8進数
+        ()=>!Type.isDate(0xff),   // 16進数
+        ()=>!Type.isDate(undefined),
+        ()=>!Type.isDate(null),
+        ()=>!Type.isDate(12345678901234567890n), // BigInt
+        ()=>!Type.isDate(0.1),    // float(浮動小数点数）
+        ()=>!Type.isDate(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isDate('0'),
+        ()=>!Type.isDate(Symbol('A')),
+        ()=>!Type.isDate(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDate(MyClass), // 関数とクラスの区別がつけられない！
+        ()=> Type.isDate(new Date()), // 関数とクラスの区別がつけられない！
+        ()=>!Type.isTime(0),
+        ()=>!Type.isTime(1),      // 正数
+        ()=>!Type.isTime(-1),     // 負数
+        ()=>!Type.isTime(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isTime(123_456),// 10進数（桁区切）
+        ()=>!Type.isTime(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isTime(0b1111), // 2進数
+        ()=>!Type.isTime(0o77),   // 8進数
+        ()=>!Type.isTime(0xff),   // 16進数
+        ()=>!Type.isTime(undefined),
+        ()=>!Type.isTime(null),
+        ()=>!Type.isTime(12345678901234567890n), // BigInt
+        ()=>!Type.isTime(0.1),    // float(浮動小数点数）
+        ()=>!Type.isTime(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isTime('0'),
+        ()=>!Type.isTime(Symbol('A')),
+        ()=>!Type.isTime(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=>!Type.isTime(MyClass), // 関数とクラスの区別がつけられない！
+        ()=> Type.isTime(new Date()), // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDuration(0),
+        ()=>!Type.isDuration(1),      // 正数
+        ()=>!Type.isDuration(-1),     // 負数
+        ()=>!Type.isDuration(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isDuration(123_456),// 10進数（桁区切）
+        ()=>!Type.isDuration(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isDuration(0b1111), // 2進数
+        ()=>!Type.isDuration(0o77),   // 8進数
+        ()=>!Type.isDuration(0xff),   // 16進数
+        ()=>!Type.isDuration(undefined),
+        ()=>!Type.isDuration(null),
+        ()=>!Type.isDuration(12345678901234567890n), // BigInt
+        ()=>!Type.isDuration(0.1),    // float(浮動小数点数）
+        ()=>!Type.isDuration(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isDuration('0'),
+        ()=>!Type.isDuration(Symbol('A')),
+        ()=>!Type.isDuration(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDuration(MyClass), // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDuration(new Date()),
+        ()=>!Type.isDuration('P1Y2M3DT4H5M6S'),
+        ()=>!Type.isDuration('P1Y'),
+        ()=>!Type.isDuration('P2M'),
+        ()=>!Type.isDuration('P3D'),
+        ()=>!Type.isDuration('PT4H'),
+        ()=>!Type.isDuration('PT5M'),
+        ()=>!Type.isDuration('PT6S'),
+        ()=>!Type.isDuration('P1YT6S'),
+        // Color,Decimalは必要な外部ライブラリ導入してないためテスト省略
     ])
 })
 </script>

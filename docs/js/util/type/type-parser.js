@@ -130,7 +130,7 @@ class ClassParser extends TypeParser {
     constructor(names='class,cls'.split(',')) { super(names) }
     //is(val) { console.log(super.is(val), typeof val, val); return (super.is(val) && val.new.target) }
     //is(val) { console.log(val, typeof val, super.is(val)); return super.is(val) }
-    is(val) { return 'function'===typeof val }
+    is(val) { return 'function'===typeof val && val.toString().match(/^class /) }
     parse(str) { return Function(`return (${str})`)() }
     //parse(str) { return this.#getClass(str) }
     //#getClass(className) { return Function(`return (${className})`)() }
@@ -164,7 +164,7 @@ class InstanceParser extends TypeParser {
 // 特殊クラス
 //class BlobParser extends TypeParser { constructor(names='blob') { super(names) } } // Base64で代用する
 class DateTimeParser extends TypeParser { // day.js/date-fns  Temporalが実装されるまでの間どうするか。文字列として扱うか
-    constructor(names='datetime,dt') { super(names); this._regex = /\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/; }
+    constructor(names='datetime,DateTime,dt'.split(',')) { super(names); this._regex = /\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/; }
     is(v) { return v && v.getMonth && typeof v.getMonth === 'function' && Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v) } // https://stackoverflow.com/questions/643782/how-to-check-whether-an-object-is-a-date
     parse(str) {
         if (this._regex.match(str)) { return new Date(str) }
