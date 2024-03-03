@@ -268,6 +268,21 @@ class TypeClass {
     is(typeName, value) { return this._parsers.get(typeName).is(value) }
     parse(typeName, value) { return this._parsers.get(typeName).parse(value) }
     stringify(typeName, value) { return this._parsers.get(typeName).stringify(value) }
+    to(to, value, from) { this._parses.get(to).to(value, from) }
+    /*
+    to(to, value, from) { return 
+        const toP = this._parses.get(to)
+        if (from) {
+            const fromP = this._parses.get(from)
+            if (fromP && fromP.is(value)) {
+                //return toP.parse(fromP.stringify(value))
+                return toP.parse(value, from)
+            }
+        }
+            
+        value
+    }
+    */
 }
 const type = new TypeClass()
 type.parsers.add(new UndefinedParser())
