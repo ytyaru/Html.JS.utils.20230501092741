@@ -1,0 +1,679 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<!--
+<script src="../js/util/type.js"></script>
+-->
+<script src="../js/util/string/case.js"></script>
+<script src="../js/util/type/type-parser.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    console.log(Type)
+    /*
+    console.log(Type.parsers)
+    console.log(Type.parsers.names)
+    console.log(Type.parsers.names.every(n=>Type.hasOwnProperty(`is${n.Pascal}`)))
+    class MyClass { }
+    const ins = new MyClass()
+    console.log(Type.isClass(MyClass))
+    console.log('MyClass.constructor.name:', MyClass.constructor.name)
+    console.log('ins.constructor.name:', ins.constructor.name)
+    */
+    console.log(Type.parse('array', '2,4,6'))
+    /*
+    class MyClass { }
+//    window.MyClass = MyClass
+    console.log(new MyClass())
+    console.log(new MyClass() instanceof MyClass)
+    console.log(Type.to('class', 'MyClass'))
+    console.log(Type.to('class', 'MyClass') instanceof MyClass)
+    console.log(Type.to('class', 'MyClass') instanceof window.MyClass)
+    */
+    
+    test.run([
+        ()=>Type.hasOwnProperty(`parse`),
+        // 文字列から各型へ
+        ()=>undefined===Type.parse('undefined', 'undefined'),
+        ()=>undefined===Type.parse('undefined', 'A'),
+        ()=>undefined===Type.parse('undefined', ''),
+        ()=>null===Type.parse('null', 'null'),
+        ()=>null===Type.parse('null', 'A'),
+        ()=>null===Type.parse('null', ''),
+        ()=>true===Type.parse('boolean', 'true'),
+        ()=>false===Type.parse('boolean', 'false'),
+        ()=>true===Type.parse('boolean', '1'),
+        ()=>false===Type.parse('boolean', '0'),
+        ()=>true===Type.parse('bool', 'true'),
+        ()=>false===Type.parse('bool', 'false'),
+        ()=>true===Type.parse('bool', '1'),
+        ()=>false===Type.parse('bool', '0'),
+        ()=>true===Type.parse('bln', 'true'),
+        ()=>false===Type.parse('bln', 'false'),
+        ()=>true===Type.parse('bln', '1'),
+        ()=>false===Type.parse('bln', '0'),
+        ()=>true===Type.parse('b', 'true'),
+        ()=>false===Type.parse('b', 'false'),
+        ()=>true===Type.parse('b', '1'),
+        ()=>false===Type.parse('b', '0'),
+        //()=>[2,4,6]===Type.parse('array', '2,4,6'),
+        ()=>{const actual=Type.parse('array', '2,4,6'); return (Array.isArray(actual) && '[2, 4, 6]'===actual);},
+        ()=>123===Type.parse('integer', '123'),
+        ()=>123===Type.parse('int', '123'),
+        ()=>123===Type.parse('i', '123'),
+        // 文字列から文字列へ
+        ()=>'A'===Type.parse('string', 'A'),
+        // 各型から文字列へ
+        //()=>'undefined'===Type.parse('string', undefined),
+        /*
+        ()=>!Type.isUndefined('undefined'),
+        ()=> Type.isNull(null),
+        ()=>!Type.isNull('null'),
+        ()=> Type.isBoolean(true),
+        ()=> Type.isBoolean(false),
+        ()=>!Type.isBoolean(undefined),
+        ()=>!Type.isBoolean(null),
+        ()=>!Type.isBoolean(1),
+        ()=>!Type.isBoolean(0),
+        ()=>!Type.isBoolean('true'),
+        ()=>!Type.isBoolean('false'),
+        ()=>!Type.isBoolean('1'),
+        ()=>!Type.isBoolean('0'),
+        ()=> Type.isBool(true),
+        ()=> Type.isBool(false),
+        ()=>!Type.isBool(1),
+        ()=>!Type.isBool(0),
+        ()=>!Type.isBool('true'),
+        ()=>!Type.isBool('false'),
+        ()=>!Type.isBool('1'),
+        ()=>!Type.isBool('0'),
+        ()=> Type.isBln(true),
+        ()=> Type.isBln(false),
+        ()=>!Type.isBln(1),
+        ()=>!Type.isBln(0),
+        ()=>!Type.isBln('true'),
+        ()=>!Type.isBln('false'),
+        ()=>!Type.isBln('1'),
+        ()=>!Type.isBln('0'),
+        ()=> Type.isB(true),
+        ()=> Type.isB(false),
+        ()=>!Type.isB(1),
+        ()=>!Type.isB(0),
+        ()=>!Type.isB('true'),
+        ()=>!Type.isB('false'),
+        ()=>!Type.isB('1'),
+        ()=>!Type.isB('0'),
+        ()=> Type.isInteger(0),
+        ()=> Type.isInteger(1),      // 正数
+        ()=> Type.isInteger(-1),     // 負数
+        ()=> Type.isInteger(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=> Type.isInteger(123_456),// 10進数（桁区切）
+        ()=> Type.isInteger(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=> Type.isInteger(0b1111), // 2進数
+        ()=> Type.isInteger(0o77),   // 8進数
+        ()=> Type.isInteger(0xff),   // 16進数
+        ()=>!Type.isInteger(undefined),
+        ()=>!Type.isInteger(null),
+        ()=>!Type.isInteger(12345678901234567890n), // BigInt
+        ()=>!Type.isInteger(0.1),    // float(浮動小数点数）
+        ()=>!Type.isInteger(2.3e-4), // float(浮動小数点数 2.3 * (0.1**4)）
+        ()=>!Type.isInteger('0'),
+        ()=> Type.isInt(0),
+        ()=> Type.isInt(1),      // 正数
+        ()=> Type.isInt(-1),     // 負数
+        ()=> Type.isInt(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=> Type.isInt(123_456),// 10進数（桁区切）
+        ()=> Type.isInt(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=> Type.isInt(0b1111), // 2進数
+        ()=> Type.isInt(0o77),   // 8進数
+        ()=> Type.isInt(0xff),   // 16進数
+        ()=>!Type.isInt(undefined),
+        ()=>!Type.isInt(null),
+        ()=>!Type.isInt(12345678901234567890n), // BigInt
+        ()=>!Type.isInt(0.1),    // float(浮動小数点数）
+        ()=>!Type.isInt(2.3e-4), // float(浮動小数点数 2.3 * (0.1**4)）
+        ()=>!Type.isInt('0'),
+        ()=> Type.isI(0),
+        ()=> Type.isI(1),      // 正数
+        ()=> Type.isI(-1),     // 負数
+        ()=> Type.isI(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=> Type.isI(123_456),// 10進数（桁区切）
+        ()=> Type.isI(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=> Type.isI(0b1111), // 2進数
+        ()=> Type.isI(0o77),   // 8進数
+        ()=> Type.isI(0xff),   // 16進数
+        ()=>!Type.isI(undefined),
+        ()=>!Type.isI(null),
+        ()=>!Type.isI(12345678901234567890n), // BigInt
+        ()=>!Type.isI(0.1),    // float(浮動小数点数）
+        ()=>!Type.isI(2.3e-4), // float(浮動小数点数 2.3 * (0.1**4)）
+        ()=>!Type.isI('0'),
+        ()=> Type.isBinary(0),
+        ()=> Type.isBinary(1),      // 正数
+        ()=> Type.isBinary(-1),     // 負数
+        ()=> Type.isBinary(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=> Type.isBinary(123_456),// 10進数（桁区切）
+        ()=> Type.isBinary(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=> Type.isBinary(0b1111), // 2進数
+        ()=> Type.isBinary(0o77),   // 8進数
+        ()=> Type.isBinary(0xff),   // 16進数
+        ()=>!Type.isBinary(undefined),
+        ()=>!Type.isBinary(null),
+        ()=>!Type.isBinary(12345678901234567890n), // BigInt
+        ()=>!Type.isBinary(0.1),    // float(浮動小数点数）
+        ()=>!Type.isBinary(2.3e-4), // float(浮動小数点数 2.3 * (0.1**4)）
+        ()=>!Type.isBinary('0'),
+        ()=> Type.isBin(0),
+        ()=> Type.isBin(1),      // 正数
+        ()=> Type.isBin(-1),     // 負数
+        ()=> Type.isBin(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=> Type.isBin(123_456),// 10進数（桁区切）
+        ()=> Type.isBin(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=> Type.isBin(0b1111), // 2進数
+        ()=> Type.isBin(0o77),   // 8進数
+        ()=> Type.isBin(0xff),   // 16進数
+        ()=>!Type.isBin(undefined),
+        ()=>!Type.isBin(null),
+        ()=>!Type.isBin(12345678901234567890n), // BigInt
+        ()=>!Type.isBin(0.1),    // float(浮動小数点数）
+        ()=>!Type.isBin(2.3e-4), // float(浮動小数点数 2.3 * (0.1**4)）
+        ()=>!Type.isBin('0'),
+        ()=> Type.isOctral(0),
+        ()=> Type.isOctral(1),      // 正数
+        ()=> Type.isOctral(-1),     // 負数
+        ()=> Type.isOctral(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=> Type.isOctral(123_456),// 10進数（桁区切）
+        ()=> Type.isOctral(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=> Type.isOctral(0b1111), // 2進数
+        ()=> Type.isOctral(0o77),   // 8進数
+        ()=> Type.isOctral(0xff),   // 16進数
+        ()=>!Type.isOctral(undefined),
+        ()=>!Type.isOctral(null),
+        ()=>!Type.isOctral(12345678901234567890n), // BigInt
+        ()=>!Type.isOctral(0.1),    // float(浮動小数点数）
+        ()=>!Type.isOctral(2.3e-4), // float(浮動小数点数 2.3 * (0.1**4)）
+        ()=>!Type.isOctral('0'),
+        ()=> Type.isOct(0),
+        ()=> Type.isOct(1),      // 正数
+        ()=> Type.isOct(-1),     // 負数
+        ()=> Type.isOct(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=> Type.isOct(123_456),// 10進数（桁区切）
+        ()=> Type.isOct(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=> Type.isOct(0b1111), // 2進数
+        ()=> Type.isOct(0o77),   // 8進数
+        ()=> Type.isOct(0xff),   // 16進数
+        ()=>!Type.isOct(undefined),
+        ()=>!Type.isOct(null),
+        ()=>!Type.isOct(12345678901234567890n), // BigInt
+        ()=>!Type.isOct(0.1),    // float(浮動小数点数）
+        ()=>!Type.isOct(2.3e-4), // float(浮動小数点数 2.3 * (0.1**4)）
+        ()=>!Type.isOct('0'),
+        ()=> Type.isHex(0),
+        ()=> Type.isHex(1),      // 正数
+        ()=> Type.isHex(-1),     // 負数
+        ()=> Type.isHex(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=> Type.isHex(123_456),// 10進数（桁区切）
+        ()=> Type.isHex(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=> Type.isHex(0b1111), // 2進数
+        ()=> Type.isHex(0o77),   // 8進数
+        ()=> Type.isHex(0xff),   // 16進数
+        ()=>!Type.isHex(undefined),
+        ()=>!Type.isHex(null),
+        ()=>!Type.isHex(12345678901234567890n), // BigInt
+        ()=>!Type.isHex(0.1),    // float(浮動小数点数）
+        ()=>!Type.isHex(2.3e-4), // float(浮動小数点数 2.3 * (0.1**4)）
+        ()=>!Type.isHex('0'),
+        ()=> Type.isBase32(0),
+        ()=> Type.isBase32(1),      // 正数
+        ()=> Type.isBase32(-1),     // 負数
+        ()=> Type.isBase32(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=> Type.isBase32(123_456),// 10進数（桁区切）
+        ()=> Type.isBase32(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=> Type.isBase32(0b1111), // 2進数
+        ()=> Type.isBase32(0o77),   // 8進数
+        ()=> Type.isBase32(0xff),   // 16進数
+        ()=>!Type.isBase32(undefined),
+        ()=>!Type.isBase32(null),
+        ()=>!Type.isBase32(12345678901234567890n), // BigInt
+        ()=>!Type.isBase32(0.1),    // float(浮動小数点数）
+        ()=>!Type.isBase32(2.3e-4), // float(浮動小数点数 2.3 * (0.1**4)）
+        ()=>!Type.isBase32('0'),
+        ()=> Type.isBase36(0),
+        ()=> Type.isBase36(1),      // 正数
+        ()=> Type.isBase36(-1),     // 負数
+        ()=> Type.isBase36(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=> Type.isBase36(123_456),// 10進数（桁区切）
+        ()=> Type.isBase36(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=> Type.isBase36(0b1111), // 2進数
+        ()=> Type.isBase36(0o77),   // 8進数
+        ()=> Type.isBase36(0xff),   // 16進数
+        ()=>!Type.isBase36(undefined),
+        ()=>!Type.isBase36(null),
+        ()=>!Type.isBase36(12345678901234567890n), // BigInt
+        ()=>!Type.isBase36(0.1),    // float(浮動小数点数）
+        ()=>!Type.isBase36(2.3e-4), // float(浮動小数点数 2.3 * (0.1**4)）
+        ()=>!Type.isBase36('0'),
+        ()=> Type.isFloat(0),
+        ()=>!Type.isFloat(1),      // 正数
+        ()=>!Type.isFloat(-1),     // 負数
+        ()=>!Type.isFloat(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isFloat(123_456),// 10進数（桁区切）
+        ()=>!Type.isFloat(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isFloat(0b1111), // 2進数
+        ()=>!Type.isFloat(0o77),   // 8進数
+        ()=>!Type.isFloat(0xff),   // 16進数
+        ()=>!Type.isFloat(undefined),
+        ()=>!Type.isFloat(null),
+        ()=>!Type.isFloat(12345678901234567890n), // BigInt
+        ()=> Type.isFloat(0.1),    // float(浮動小数点数）
+        ()=> Type.isFloat(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isFloat('0'),
+        ()=> Type.isFlt(0),
+        ()=>!Type.isFlt(1),      // 正数
+        ()=>!Type.isFlt(-1),     // 負数
+        ()=>!Type.isFlt(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isFlt(123_456),// 10進数（桁区切）
+        ()=>!Type.isFlt(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isFlt(0b1111), // 2進数
+        ()=>!Type.isFlt(0o77),   // 8進数
+        ()=>!Type.isFlt(0xff),   // 16進数
+        ()=>!Type.isFlt(undefined),
+        ()=>!Type.isFlt(null),
+        ()=>!Type.isFlt(12345678901234567890n), // BigInt
+        ()=> Type.isFlt(0.1),    // float(浮動小数点数）
+        ()=> Type.isFlt(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isFlt('0'),
+        ()=> Type.isF(0),
+        ()=>!Type.isF(1),      // 正数
+        ()=>!Type.isF(-1),     // 負数
+        ()=>!Type.isF(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isF(123_456),// 10進数（桁区切）
+        ()=>!Type.isF(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isF(0b1111), // 2進数
+        ()=>!Type.isF(0o77),   // 8進数
+        ()=>!Type.isF(0xff),   // 16進数
+        ()=>!Type.isF(undefined),
+        ()=>!Type.isF(null),
+        ()=>!Type.isF(12345678901234567890n), // BigInt
+        ()=> Type.isF(0.1),    // float(浮動小数点数）
+        ()=> Type.isF(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isF('0'),
+        ()=>!Type.isBigInt(0),
+        ()=>!Type.isBigInt(1),      // 正数
+        ()=>!Type.isBigInt(-1),     // 負数
+        ()=>!Type.isBigInt(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isBigInt(123_456),// 10進数（桁区切）
+        ()=>!Type.isBigInt(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isBigInt(0b1111), // 2進数
+        ()=>!Type.isBigInt(0o77),   // 8進数
+        ()=>!Type.isBigInt(0xff),   // 16進数
+        ()=>!Type.isBigInt(undefined),
+        ()=>!Type.isBigInt(null),
+        ()=> Type.isBigInt(12345678901234567890n), // BigInt
+        ()=>!Type.isBigInt(0.1),    // float(浮動小数点数）
+        ()=>!Type.isBigInt(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isBigInt('0'),
+        ()=>!Type.isBigint(0),
+        ()=>!Type.isBigint(1),      // 正数
+        ()=>!Type.isBigint(-1),     // 負数
+        ()=>!Type.isBigint(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isBigint(123_456),// 10進数（桁区切）
+        ()=>!Type.isBigint(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isBigint(0b1111), // 2進数
+        ()=>!Type.isBigint(0o77),   // 8進数
+        ()=>!Type.isBigint(0xff),   // 16進数
+        ()=>!Type.isBigint(undefined),
+        ()=>!Type.isBigint(null),
+        ()=> Type.isBigint(12345678901234567890n), // BigInt
+        ()=>!Type.isBigint(0.1),    // float(浮動小数点数）
+        ()=>!Type.isBigint(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isBigint('0'),
+        ()=>!Type.isBi(0),
+        ()=>!Type.isBi(1),      // 正数
+        ()=>!Type.isBi(-1),     // 負数
+        ()=>!Type.isBi(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isBi(123_456),// 10進数（桁区切）
+        ()=>!Type.isBi(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isBi(0b1111), // 2進数
+        ()=>!Type.isBi(0o77),   // 8進数
+        ()=>!Type.isBi(0xff),   // 16進数
+        ()=>!Type.isBi(undefined),
+        ()=>!Type.isBi(null),
+        ()=> Type.isBi(12345678901234567890n), // BigInt
+        ()=>!Type.isBi(0.1),    // float(浮動小数点数）
+        ()=>!Type.isBi(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isBi('0'),
+        ()=>!Type.isString(0),
+        ()=>!Type.isString(1),      // 正数
+        ()=>!Type.isString(-1),     // 負数
+        ()=>!Type.isString(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isString(123_456),// 10進数（桁区切）
+        ()=>!Type.isString(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isString(0b1111), // 2進数
+        ()=>!Type.isString(0o77),   // 8進数
+        ()=>!Type.isString(0xff),   // 16進数
+        ()=>!Type.isString(undefined),
+        ()=>!Type.isString(null),
+        ()=>!Type.isString(12345678901234567890n), // BigInt
+        ()=>!Type.isString(0.1),    // float(浮動小数点数）
+        ()=>!Type.isString(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=> Type.isString('0'),
+        ()=>!Type.isStr(0),
+        ()=>!Type.isStr(1),      // 正数
+        ()=>!Type.isStr(-1),     // 負数
+        ()=>!Type.isStr(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isStr(123_456),// 10進数（桁区切）
+        ()=>!Type.isStr(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isStr(0b1111), // 2進数
+        ()=>!Type.isStr(0o77),   // 8進数
+        ()=>!Type.isStr(0xff),   // 16進数
+        ()=>!Type.isStr(undefined),
+        ()=>!Type.isStr(null),
+        ()=>!Type.isStr(12345678901234567890n), // BigInt
+        ()=>!Type.isStr(0.1),    // float(浮動小数点数）
+        ()=>!Type.isStr(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=> Type.isStr('0'),
+        ()=>!Type.isS(0),
+        ()=>!Type.isS(1),      // 正数
+        ()=>!Type.isS(-1),     // 負数
+        ()=>!Type.isS(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isS(123_456),// 10進数（桁区切）
+        ()=>!Type.isS(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isS(0b1111), // 2進数
+        ()=>!Type.isS(0o77),   // 8進数
+        ()=>!Type.isS(0xff),   // 16進数
+        ()=>!Type.isS(undefined),
+        ()=>!Type.isS(null),
+        ()=>!Type.isS(12345678901234567890n), // BigInt
+        ()=>!Type.isS(0.1),    // float(浮動小数点数）
+        ()=>!Type.isS(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=> Type.isS('0'),
+        ()=>!Type.isBase64(0),
+        ()=>!Type.isBase64(1),      // 正数
+        ()=>!Type.isBase64(-1),     // 負数
+        ()=>!Type.isBase64(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isBase64(123_456),// 10進数（桁区切）
+        ()=>!Type.isBase64(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isBase64(0b1111), // 2進数
+        ()=>!Type.isBase64(0o77),   // 8進数
+        ()=>!Type.isBase64(0xff),   // 16進数
+        ()=>!Type.isBase64(undefined),
+        ()=>!Type.isBase64(null),
+        ()=>!Type.isBase64(12345678901234567890n), // BigInt
+        ()=>!Type.isBase64(0.1),    // float(浮動小数点数）
+        ()=>!Type.isBase64(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=> Type.isBase64('0'),
+        ()=>!Type.isSymbol(0),
+        ()=>!Type.isSymbol(1),      // 正数
+        ()=>!Type.isSymbol(-1),     // 負数
+        ()=>!Type.isSymbol(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isSymbol(123_456),// 10進数（桁区切）
+        ()=>!Type.isSymbol(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isSymbol(0b1111), // 2進数
+        ()=>!Type.isSymbol(0o77),   // 8進数
+        ()=>!Type.isSymbol(0xff),   // 16進数
+        ()=>!Type.isSymbol(undefined),
+        ()=>!Type.isSymbol(null),
+        ()=>!Type.isSymbol(12345678901234567890n), // BigInt
+        ()=>!Type.isSymbol(0.1),    // float(浮動小数点数）
+        ()=>!Type.isSymbol(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isSymbol('0'),
+        ()=> Type.isSymbol(Symbol('A')),
+        ()=>!Type.isSym(0),
+        ()=>!Type.isSym(1),      // 正数
+        ()=>!Type.isSym(-1),     // 負数
+        ()=>!Type.isSym(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isSym(123_456),// 10進数（桁区切）
+        ()=>!Type.isSym(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isSym(0b1111), // 2進数
+        ()=>!Type.isSym(0o77),   // 8進数
+        ()=>!Type.isSym(0xff),   // 16進数
+        ()=>!Type.isSym(undefined),
+        ()=>!Type.isSym(null),
+        ()=>!Type.isSym(12345678901234567890n), // BigInt
+        ()=>!Type.isSym(0.1),    // float(浮動小数点数）
+        ()=>!Type.isSym(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isSym('0'),
+        ()=> Type.isSym(Symbol('A')),
+        ()=>!Type.isFunction(0),
+        ()=>!Type.isFunction(1),      // 正数
+        ()=>!Type.isFunction(-1),     // 負数
+        ()=>!Type.isFunction(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isFunction(123_456),// 10進数（桁区切）
+        ()=>!Type.isFunction(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isFunction(0b1111), // 2進数
+        ()=>!Type.isFunction(0o77),   // 8進数
+        ()=>!Type.isFunction(0xff),   // 16進数
+        ()=>!Type.isFunction(undefined),
+        ()=>!Type.isFunction(null),
+        ()=>!Type.isFunction(12345678901234567890n), // BigInt
+        ()=>!Type.isFunction(0.1),    // float(浮動小数点数）
+        ()=>!Type.isFunction(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isFunction('0'),
+        ()=>!Type.isFunction(Symbol('A')),
+        ()=> Type.isFunction(()=>{}),
+        ()=>!Type.isFunc(0),
+        ()=>!Type.isFunc(1),      // 正数
+        ()=>!Type.isFunc(-1),     // 負数
+        ()=>!Type.isFunc(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isFunc(123_456),// 10進数（桁区切）
+        ()=>!Type.isFunc(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isFunc(0b1111), // 2進数
+        ()=>!Type.isFunc(0o77),   // 8進数
+        ()=>!Type.isFunc(0xff),   // 16進数
+        ()=>!Type.isFunc(undefined),
+        ()=>!Type.isFunc(null),
+        ()=>!Type.isFunc(12345678901234567890n), // BigInt
+        ()=>!Type.isFunc(0.1),    // float(浮動小数点数）
+        ()=>!Type.isFunc(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isFunc('0'),
+        ()=>!Type.isFunc(Symbol('A')),
+        ()=> Type.isFunc(()=>{}),
+        ()=>!Type.isFnc(0),
+        ()=>!Type.isFnc(1),      // 正数
+        ()=>!Type.isFnc(-1),     // 負数
+        ()=>!Type.isFnc(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isFnc(123_456),// 10進数（桁区切）
+        ()=>!Type.isFnc(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isFnc(0b1111), // 2進数
+        ()=>!Type.isFnc(0o77),   // 8進数
+        ()=>!Type.isFnc(0xff),   // 16進数
+        ()=>!Type.isFnc(undefined),
+        ()=>!Type.isFnc(null),
+        ()=>!Type.isFnc(12345678901234567890n), // BigInt
+        ()=>!Type.isFnc(0.1),    // float(浮動小数点数）
+        ()=>!Type.isFnc(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isFnc('0'),
+        ()=>!Type.isFnc(Symbol('A')),
+        ()=> Type.isFnc(()=>{}),
+        ()=>!Type.isFn(0),
+        ()=>!Type.isFn(1),      // 正数
+        ()=>!Type.isFn(-1),     // 負数
+        ()=>!Type.isFn(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isFn(123_456),// 10進数（桁区切）
+        ()=>!Type.isFn(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isFn(0b1111), // 2進数
+        ()=>!Type.isFn(0o77),   // 8進数
+        ()=>!Type.isFn(0xff),   // 16進数
+        ()=>!Type.isFn(undefined),
+        ()=>!Type.isFn(null),
+        ()=>!Type.isFn(12345678901234567890n), // BigInt
+        ()=>!Type.isFn(0.1),    // float(浮動小数点数）
+        ()=>!Type.isFn(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isFn('0'),
+        ()=>!Type.isFn(Symbol('A')),
+        ()=> Type.isFn(()=>{}),
+        ()=>!Type.isClass(0),
+        ()=>!Type.isClass(1),      // 正数
+        ()=>!Type.isClass(-1),     // 負数
+        ()=>!Type.isClass(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isClass(123_456),// 10進数（桁区切）
+        ()=>!Type.isClass(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isClass(0b1111), // 2進数
+        ()=>!Type.isClass(0o77),   // 8進数
+        ()=>!Type.isClass(0xff),   // 16進数
+        ()=>!Type.isClass(undefined),
+        ()=>!Type.isClass(null),
+        ()=>!Type.isClass(12345678901234567890n), // BigInt
+        ()=>!Type.isClass(0.1),    // float(浮動小数点数）
+        ()=>!Type.isClass(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isClass('0'),
+        ()=>!Type.isClass(Symbol('A')),
+        ()=>!Type.isClass(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=> Type.isClass(MyClass), // 関数とクラスの区別がつけられない！
+        ()=>!Type.isCls(0),
+        ()=>!Type.isCls(1),      // 正数
+        ()=>!Type.isCls(-1),     // 負数
+        ()=>!Type.isCls(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isCls(123_456),// 10進数（桁区切）
+        ()=>!Type.isCls(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isCls(0b1111), // 2進数
+        ()=>!Type.isCls(0o77),   // 8進数
+        ()=>!Type.isCls(0xff),   // 16進数
+        ()=>!Type.isCls(undefined),
+        ()=>!Type.isCls(null),
+        ()=>!Type.isCls(12345678901234567890n), // BigInt
+        ()=>!Type.isCls(0.1),    // float(浮動小数点数）
+        ()=>!Type.isCls(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isCls('0'),
+        ()=>!Type.isCls(Symbol('A')),
+        ()=>!Type.isCls(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=> Type.isCls(MyClass), // 関数とクラスの区別がつけられない！
+        ()=> Type.isInstance(()=>{}, Function),  // 関数とクラスの区別がつけられない！
+        ()=>!Type.isInstance(MyClass, MyClass), // 関数とクラスの区別がつけられない！
+        ()=> Type.isInstance(new MyClass(), MyClass), // 関数とクラスの区別がつけられない！
+        ()=> Type.isInstance(ins, MyClass), // 関数とクラスの区別がつけられない！
+
+        ()=>!Type.isDateTime(0),
+        ()=>!Type.isDateTime(1),      // 正数
+        ()=>!Type.isDateTime(-1),     // 負数
+        ()=>!Type.isDateTime(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isDateTime(123_456),// 10進数（桁区切）
+        ()=>!Type.isDateTime(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isDateTime(0b1111), // 2進数
+        ()=>!Type.isDateTime(0o77),   // 8進数
+        ()=>!Type.isDateTime(0xff),   // 16進数
+        ()=>!Type.isDateTime(undefined),
+        ()=>!Type.isDateTime(null),
+        ()=>!Type.isDateTime(12345678901234567890n), // BigInt
+        ()=>!Type.isDateTime(0.1),    // float(浮動小数点数）
+        ()=>!Type.isDateTime(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isDateTime('0'),
+        ()=>!Type.isDateTime(Symbol('A')),
+        ()=>!Type.isDateTime(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDateTime(MyClass), // 関数とクラスの区別がつけられない！
+        ()=> Type.isDateTime(new Date()), // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDatetime(0),
+        ()=>!Type.isDatetime(1),      // 正数
+        ()=>!Type.isDatetime(-1),     // 負数
+        ()=>!Type.isDatetime(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isDatetime(123_456),// 10進数（桁区切）
+        ()=>!Type.isDatetime(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isDatetime(0b1111), // 2進数
+        ()=>!Type.isDatetime(0o77),   // 8進数
+        ()=>!Type.isDatetime(0xff),   // 16進数
+        ()=>!Type.isDatetime(undefined),
+        ()=>!Type.isDatetime(null),
+        ()=>!Type.isDatetime(12345678901234567890n), // BigInt
+        ()=>!Type.isDatetime(0.1),    // float(浮動小数点数）
+        ()=>!Type.isDatetime(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isDatetime('0'),
+        ()=>!Type.isDatetime(Symbol('A')),
+        ()=>!Type.isDatetime(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDatetime(MyClass), // 関数とクラスの区別がつけられない！
+        ()=> Type.isDateTime(new Date()), // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDt(0),
+        ()=>!Type.isDt(1),      // 正数
+        ()=>!Type.isDt(-1),     // 負数
+        ()=>!Type.isDt(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isDt(123_456),// 10進数（桁区切）
+        ()=>!Type.isDt(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isDt(0b1111), // 2進数
+        ()=>!Type.isDt(0o77),   // 8進数
+        ()=>!Type.isDt(0xff),   // 16進数
+        ()=>!Type.isDt(undefined),
+        ()=>!Type.isDt(null),
+        ()=>!Type.isDt(12345678901234567890n), // BigInt
+        ()=>!Type.isDt(0.1),    // float(浮動小数点数）
+        ()=>!Type.isDt(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isDt('0'),
+        ()=>!Type.isDt(Symbol('A')),
+        ()=>!Type.isDt(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDt(MyClass), // 関数とクラスの区別がつけられない！
+        ()=> Type.isDt(new Date()), // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDate(0),
+        ()=>!Type.isDate(1),      // 正数
+        ()=>!Type.isDate(-1),     // 負数
+        ()=>!Type.isDate(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isDate(123_456),// 10進数（桁区切）
+        ()=>!Type.isDate(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isDate(0b1111), // 2進数
+        ()=>!Type.isDate(0o77),   // 8進数
+        ()=>!Type.isDate(0xff),   // 16進数
+        ()=>!Type.isDate(undefined),
+        ()=>!Type.isDate(null),
+        ()=>!Type.isDate(12345678901234567890n), // BigInt
+        ()=>!Type.isDate(0.1),    // float(浮動小数点数）
+        ()=>!Type.isDate(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isDate('0'),
+        ()=>!Type.isDate(Symbol('A')),
+        ()=>!Type.isDate(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDate(MyClass), // 関数とクラスの区別がつけられない！
+        ()=> Type.isDate(new Date()), // 関数とクラスの区別がつけられない！
+        ()=>!Type.isTime(0),
+        ()=>!Type.isTime(1),      // 正数
+        ()=>!Type.isTime(-1),     // 負数
+        ()=>!Type.isTime(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isTime(123_456),// 10進数（桁区切）
+        ()=>!Type.isTime(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isTime(0b1111), // 2進数
+        ()=>!Type.isTime(0o77),   // 8進数
+        ()=>!Type.isTime(0xff),   // 16進数
+        ()=>!Type.isTime(undefined),
+        ()=>!Type.isTime(null),
+        ()=>!Type.isTime(12345678901234567890n), // BigInt
+        ()=>!Type.isTime(0.1),    // float(浮動小数点数）
+        ()=>!Type.isTime(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isTime('0'),
+        ()=>!Type.isTime(Symbol('A')),
+        ()=>!Type.isTime(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=>!Type.isTime(MyClass), // 関数とクラスの区別がつけられない！
+        ()=> Type.isTime(new Date()), // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDuration(0),
+        ()=>!Type.isDuration(1),      // 正数
+        ()=>!Type.isDuration(-1),     // 負数
+        ()=>!Type.isDuration(0000012),// 10進数（ゼロ埋（旧8進数リテラルだがES6以降は0oに変更された））
+        ()=>!Type.isDuration(123_456),// 10進数（桁区切）
+        ()=>!Type.isDuration(2.3e4),  // 10進数（指数。2.3 * (10**4)）
+        ()=>!Type.isDuration(0b1111), // 2進数
+        ()=>!Type.isDuration(0o77),   // 8進数
+        ()=>!Type.isDuration(0xff),   // 16進数
+        ()=>!Type.isDuration(undefined),
+        ()=>!Type.isDuration(null),
+        ()=>!Type.isDuration(12345678901234567890n), // BigInt
+        ()=>!Type.isDuration(0.1),    // float(浮動小数点数）
+        ()=>!Type.isDuration(2.3e-4),  // 10進数（指数。2.3 * (0.1**4)）
+        ()=>!Type.isDuration('0'),
+        ()=>!Type.isDuration(Symbol('A')),
+        ()=>!Type.isDuration(()=>{}),  // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDuration(MyClass), // 関数とクラスの区別がつけられない！
+        ()=>!Type.isDuration(new Date()),
+        ()=>!Type.isDuration('P1Y2M3DT4H5M6S'),
+        ()=>!Type.isDuration('P1Y'),
+        ()=>!Type.isDuration('P2M'),
+        ()=>!Type.isDuration('P3D'),
+        ()=>!Type.isDuration('PT4H'),
+        ()=>!Type.isDuration('PT5M'),
+        ()=>!Type.isDuration('PT6S'),
+        ()=>!Type.isDuration('P1YT6S'),
+        // Color,Decimalは必要な外部ライブラリ導入してないためテスト省略
+        */
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+

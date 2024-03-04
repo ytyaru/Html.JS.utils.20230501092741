@@ -28,6 +28,13 @@ class TypeParser extends Id {
     }
     parse(str) { throw new Error(`未実装`) }
     stringify(val) { return val.toString() }
+    to(typeName, val) { throw new Error(`未実装`) }
+    /*
+    to(typeName, val) {
+        if (!this.is(val)) { throw new Error(`値の型が不一致です。実際値:${val}, 期待値:${this.names}`) }
+        const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
+    }
+    */
 }
 class FixTypeParser extends TypeParser {
     constructor(type) { super(String(type)); this._type=type;  }
@@ -37,6 +44,31 @@ class FixTypeParser extends TypeParser {
 }
 class UndefinedParser extends FixTypeParser { constructor(type=undefined) { super(type) } }
 class NullParser extends FixTypeParser { constructor(type=null) { super(type) } }
+class ArrayParser extends TypeParser {
+    constructor(names='array,ary'.split(',')) { super(names) }
+    is(v) { return Array.isArray(v) }
+    parse(str, delim=',', to='string') {
+        const parser = Type.parsers.get(to)
+        const strs = str.split(delim)
+        if (StringParser===parser.constructor) { return strs }
+        return strs.map(s=>parser.parse(s))
+    }
+    stringify(val, delim=',') { return val.join(delim) }
+    to(typeName, val) { // to('object', [['k1','v1'],['k2','v2']]) -> {k1:'v1', k2:'v2'}
+//        const parser = Type.parsers.get(typeName)
+        const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
+        if (ObjectParser===parser.constructor) {
+            //if (!parser.is(val)) { throw new Error(`to()の第一引数と第二引数が不一致です。第一に型名、第二に値を与え、一致させてください。例：to('array', [['k1','v1'],['k2','v2']]): ${typeName}, ${val}`) }
+            //if (!parser.is(val)) { throw new Error(`to()の第一引数と第二引数が不一致です。第一に型名、第二に値を与え、一致させてください。例：to('object', {k:'v'}): ${typeName}, ${val}`) }
+            //if (!this.is(val)) { throw new Error(`to()の第一引数と第二引数が不一致です。第一に型名、第二に値を与え、一致させてください。例：to('object', [['k1','v1'],['k2','v2']]): ${typeName}, ${val}`) }
+//            return Object.assign(...val.map(([k,v])=>({[k]:v})))
+            const obj = {};
+            for (const [k,v] of val) { obj[k] = v }
+            return obj
+
+        }
+    }
+}
 class ObjectParser extends TypeParser {
     constructor(names='object,obj'.split(',')) { super(names) }
     is(v) {
@@ -75,6 +107,19 @@ class ObjectParser extends TypeParser {
             default: return JSON.stringify(val)
         }
     }
+    to(typeName, val) { // to('array', {k1:'v1', k2:'v2'}) -> [['k1','v1'],['k2','v2']]
+        const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
+        if (ArrayParser===parser.constructor) {
+            //if (!parser.is(val)) { throw new Error(`to()の第一引数と第二引数が不一致です。第一に型名、第二に値を与え、一致させてください。例：to('array', [['k1','v1'],['k2','v2']]): ${typeName}, ${val}`) }
+            //if (!parser.is(val)) { throw new Error(`to()の第一引数と第二引数が不一致です。第一に型名、第二に値を与え、一致させてください。例：to('object', {k:'v'}): ${typeName}, ${val}`) }
+//            Array.from(Object.entries(val)).reduce((o,[k,v],i)=>o[k]=v, {})
+//            return Object.assign(...val.map(([k,v])=>({[k]:v})))
+//            const obj = {};
+//            for (const [k,v] of val) { obj[k] = v }
+//            return obj
+            return Object.assign(...val.map(([k,v])=>({[k]:v})))
+        }
+    }
 }
 class BooleanParser extends TypeParser {
     constructor(names='boolean,bool,bln,b'.split(',')) { super(names) }
@@ -88,7 +133,7 @@ class NumberParser extends TypeParser {
 class IntegerParser extends NumberParser {
     constructor(names='integer,int,i'.split(','), base=10) { super(names); this._base=base; }
     is(v)   { return super.is(v) && v % 1 === 0 }
-    parse(str) { return parserInt(str, this._base) }
+    parse(str) { return parseInt(str, this._base) }
     stringify(val) { return val.toString(this._base) }
 }
 class BinParser extends IntegerParser { constructor(names='binary,bin'.split(',')) { super(names, 2) } }
@@ -112,7 +157,7 @@ class Base64Parser extends StringParser {
 class FloatParser extends NumberParser {
     constructor(names='float,flt,f'.split(',')) { super(names); }
     is(v) { return super.is(v) && (v % 1 !== 0 || 0===v) }
-    parse(str) { return parserFloat(str) }
+    parse(str) { return parseFloat(str) }
 }
 class BigIntParser extends TypeParser {
     constructor(names='bigint,BigInt,bi'.split(',')) { super(names) }
@@ -261,14 +306,67 @@ class TypeParsers {
         if (0===parsers.length) { return null }
         if (1<parsers.length) { throw new Error(`論理エラー。typeName:${typeName}に一致するパーサが複数あります。`) }
     }
+    getFromValue(v) {
+        for (let type of 'undefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary'.split(',')) {
+            if (this.is(type, v)) { return this.get(type) }
+        }
+        return null
+    }
 }
 class TypeClass {
     constructor(parsers) { this._parsers=new TypeParsers(); }
     get parsers() { return this._parsers }
     is(typeName, value) { return this._parsers.get(typeName).is(value) }
-    parse(typeName, value) { return this._parsers.get(typeName).parse(value) }
-    stringify(typeName, value) { return this._parsers.get(typeName).stringify(value) }
-    to(to, value, from) { this._parses.get(to).to(value, from) }
+//    parse(typeName, value) { return this._parsers.get(typeName).parse(value) }
+//    stringify(typeName, value) { return this._parsers.get(typeName).stringify(value) }
+//    to(to, value, from) { this._parses.get(to).to(value, from) }
+
+    //parse(to, v) { return this.parsers.get(to).parse(v) }
+    parse(to, v) {
+        const parser = this.parsers.get(to)
+        return parser?.parse(v)
+    }
+    stringify(v, from) {
+        const parser = ((from) ? this.parsers.get(from) : this.parsers.getFromValue(v))
+        if (!parser) { throw new Error(`stringify()の第二引数で第一引数の型名を指定してください。（値の型が${'undefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary'.split(',')}のいずれかであれば型名を省略できます）`) }
+        return parser.stringify(v)
+    }
+    to(to, v, from) {
+        const toP = this.parsers.get(to)
+        const fromP = ((from) ? this.parsers.get(from) : this.parsers.getFromValue(v))
+        if (!toP) { throw new Error(`to()の第一引数に変換したい型名を入力してください: ${to}`) }
+        if (fromP) {
+            //if (toP instanceof StringParser) { return fromP.stringify(v) }
+            if (StringParser===toP.constructor) { return fromP.stringify(v) }
+            if (!fromP.is(v)) { throw new Error(`第二引数の値とその型名第三引数が不一致です。${v} : ${from}`) }
+            return fromP.to(toP, v)
+        } else { throw new Error(`to()の第三引数fromを指定してください。（値の型が${'undefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary'.split(',')}のいずれかであれば型名を省略できます）`) }
+        //if (!fromP) { throw new Error(`to()の第三引数で第二引数の型名を指定してください。（値の型が${'undefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary'.split(',')}のいずれかであれば型名を省略できます）`) }
+        /*
+        if (toP instanceof StringParser) { return toP.stringify(v, from) }
+        if (from) {
+            const fromP = this.parsers.get(from)
+        }
+        const parser = ((to) ? this.parsers.get(to) : this.parsers.getFromValue(v))
+        */
+    }
+
+    /*
+    getType(v) {
+        const type = this.getFromValue(v)
+        switch (v) {
+            case 
+        }
+    }
+    #getType(v) {
+        for (let type of 'undefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary'.split(',')) {
+            if (this.is(type, v)) { return this.parsers.get(type) }
+        }
+        ['int','float','num','','','','','','','','','','']
+        this.is(type, v)
+        if (Type.isInt(v)) { return 
+    }
+    */
     /*
     to(to, value, from) { return 
         const toP = this._parses.get(to)
@@ -314,13 +412,35 @@ for (let p of type.parsers.parsers) {
     console.log(names, isStrs(names))
     if (!isStrs(names)) { continue }
     console.log(type, type.prototype, )
-    for (let n of names) { console.log(n, `is${n.Pascal}`);type[`is${n.Pascal}`] = function(v, p1) { return p.is(v, p1) } }
+    //for (let n of names) { console.log(n, `is${n.Pascal}`);type[`is${n.Pascal}`] = function(v, p1) { return p.is(v, p1) } }
     //for (let n of names) { console.log(n, `is${n}`);type[`is${n}`] = function(v) { return p.is(v) } }
     //for (let n of names) { const name = (('bigint'===n) ? 'BigInt' : n.Pascal); console.log(n, `is${name}`);type[`is${name}`] = function(v) { return p.is(v) } }
     /*
     for (let n of names) {
         type[`is${n.Pascal}`] = function(v) { return p.is(v) }
         if ('bigint'===n) { type[`isBigInt`] = function(v) { return p.is(v) } }
+    }
+    */
+    for (let n of names) {
+        console.log(n, `is${n.Pascal}`)
+        type[`is${n.Pascal}`] = function(v, p1) { return p.is(v, p1) }
+    }
+    /*
+    type[`parse`] = function(to, v) {
+        const parser = this.parsers.get(to)
+        //const parser = ((to) ? this.parsers.get(to) : this.parsers.getFromValue(v))
+//        const parser = ((from) ? this.parsers.get(from) : this.parsers.getFromValue(v))
+//        if (!parser) { throw new Error(`parse()の第二引数で第一引数の型名を指定してください。（値の型が${'undefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary'.split(',')}のいずれかであれば型名を省略できます）`) }
+        return parser.parse(v)
+    }
+    type[`stringify`] = function(v, from) {
+        const parser = ((from) ? this.parsers.get(from) : this.parsers.getFromValue(v))
+        if (!parser) { throw new Error(`stringify()の第二引数で第一引数の型名を指定してください。（値の型が${'undefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary'.split(',')}のいずれかであれば型名を省略できます）`) }
+        return parser.stringify(v)
+    }
+    type[`to`] = function(to, v, from) {
+        const parser = ((to) ? this.parsers.get(to) : this.parsers.getFromValue(v))
+        
     }
     */
 }
