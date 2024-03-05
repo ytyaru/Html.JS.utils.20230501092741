@@ -26,9 +26,10 @@ class TypeParser extends Id {
         if (isStrs(this._names)) { return typeof val===this._names[0] }
         return false
     }
-    parse(str) { throw new Error(`未実装`) }
-    stringify(val) { return val.toString() }
-    to(typeName, val) { throw new Error(`未実装`) }
+    parse(str) { throw new Error(`未実装`) }          // 文字列型から自型へ
+    stringify(val) { return val.toString() }          // 自型から文字列型型へ
+    to(typeName, val) { throw new Error(`未実装`) }   // 自型からtypeName型へ
+    from(typeName, val) { throw new Error(`未実装`) } // typeName型から自型へ
     /*
     to(typeName, val) {
         if (!this.is(val)) { throw new Error(`値の型が不一致です。実際値:${val}, 期待値:${this.names}`) }
@@ -44,6 +45,7 @@ class FixTypeParser extends TypeParser {
 }
 class UndefinedParser extends FixTypeParser { constructor(type=undefined) { super(type) } }
 class NullParser extends FixTypeParser { constructor(type=null) { super(type) } }
+
 class ArrayParser extends TypeParser {
     constructor(names='array,ary'.split(',')) { super(names) }
     is(v) { return Array.isArray(v) }
@@ -62,10 +64,16 @@ class ArrayParser extends TypeParser {
             //if (!parser.is(val)) { throw new Error(`to()の第一引数と第二引数が不一致です。第一に型名、第二に値を与え、一致させてください。例：to('object', {k:'v'}): ${typeName}, ${val}`) }
             //if (!this.is(val)) { throw new Error(`to()の第一引数と第二引数が不一致です。第一に型名、第二に値を与え、一致させてください。例：to('object', [['k1','v1'],['k2','v2']]): ${typeName}, ${val}`) }
 //            return Object.assign(...val.map(([k,v])=>({[k]:v})))
-            const obj = {};
-            for (const [k,v] of val) { obj[k] = v }
-            return obj
-
+//            const obj = {};
+//            for (const [k,v] of val) { obj[k] = v }
+//            return obj
+            return Object.assign(...val.map(([k,v])=>({[k]:v})))
+        }
+    }
+    from(typeName, val) { // from('object', {k1:'v1', k2:'v2'}) -> [['k1','v1'],['k2','v2']]
+        const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
+        if (ObjectParser===parser.constructor) {
+            return Array.from(Object.entries()).reduce((o,[k,v],i)=>[k,v], [])
         }
     }
 }
@@ -117,13 +125,72 @@ class ObjectParser extends TypeParser {
 //            const obj = {};
 //            for (const [k,v] of val) { obj[k] = v }
 //            return obj
-            return Object.assign(...val.map(([k,v])=>({[k]:v})))
+            //return Object.assign(...val.map(([k,v])=>({[k]:v})))
+            return Array.from(Object.entries(val))
         }
+        else if (MapParser===parser.constructor) { return new Map(Object.entries(val)) }
+        else if (SetParser===parser.constructor) { return new Set(Object.entries(val)) }
+//        else if (WeakMapParser===parser.constructor) { return new WeakMap(Object.entries(val)) }
+//        else if (WeakSetParser===parser.constructor) { return new WeakSet(Object.entries(val)) }
+    }
+    from(typeName, val) {
+        const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
+        if (ArrayParser===parser.constructor) { return Object.assign(...val.map(([k,v])=>({[k]:v}))) }
+        else if (MapParser===parser.constructor) { return new Map(Array.from(val.entries())) }
+        else if (SetParser===parser.constructor) { return new Set(Array.from(val.entries())) }
+//        else if (WeakMapParser===parser.constructor) { return new WeakMap(Array.from(val.entries())) }
+//        else if (WeakSetParser===parser.constructor) { return new WeakSet(Array.from(val.entries())) }
     }
 }
+//Map, Set, WeakMap, WeakSet
+class MapParser extends TypeParser {
+    constructor(names='map') { super(names) }
+    is(v) { return v instanceof Map }
+    parse(str) { return new Map(Type.parsers.get('object').to('array', JSON.parse(str))) }
+    stringify(val) { return Type.parsers.get('array').to('object', Array.from(val.entries())) }
+    to(typeName, val) { // to('object', [['k1','v1'],['k2','v2']]) -> {k1:'v1', k2:'v2'}
+        const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
+        if (ObjectParser===parser.constructor) { return parser.from('array', Array.from(val.entries())) }
+        else if (ArrayParser===parser.constructor) { return Array.from(val.entries()) }
+        else if (SetParser===parser.constructor) { return Array.from(val.entries()) }
+//        else if (WeakMapParser===parser.constructor) { return new WeakMap()Array.from(val.entries()) }
+//        else if (WeakSetParser===parser.constructor) { return Array.from(val.entries()) }
+    }
+    from(typeName, val) { // from('object', {k1:'v1', k2:'v2'}) -> [['k1','v1'],['k2','v2']]
+        const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
+        if (ObjectParser===parser.constructor) { return parser.from('array', Array.from(val.entries())) }
+        else if (ArrayParser===parser.constructor) { return Array.from(val.entries()) }
+        else if (SetParser===parser.constructor) { return Array.from(val.entries()) }
+//        else if (WeakMapParser===parser.constructor) { return Array.from(val.entries()) }
+//        else if (WeakSetParser===parser.constructor) { return Array.from(val.entries()) }
+    }
+}
+class SetParser extends TypeParser {
+    constructor(names='set') { super(names) }
+    is(v) { return v instanceof Set }
+    parse(str) { return new Set(Type.parsers.get('object').to('array', JSON.parse(str))) }
+    stringify(val) { return Type.parsers.get('array').to('object', Array.from(val.entries())) }
+    to(typeName, val) { // to('object', [['k1','v1'],['k2','v2']]) -> {k1:'v1', k2:'v2'}
+        const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
+        if (ObjectParser===parser.constructor) { return parser.from('array', Array.from(val.entries())) }
+        else if (ArrayParser===parser.constructor) { return Array.from(val.entries()) }
+        else if (SetParser===parser.constructor) { return Array.from(val.entries()) }
+//        else if (WeakMapParser===parser.constructor) { return new WeakMap()Array.from(val.entries()) }
+//        else if (WeakSetParser===parser.constructor) { return Array.from(val.entries()) }
+    }
+    from(typeName, val) { // from('object', {k1:'v1', k2:'v2'}) -> [['k1','v1'],['k2','v2']]
+        const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
+        if (ObjectParser===parser.constructor) { return parser.from('array', Array.from(val.entries())) }
+        else if (ArrayParser===parser.constructor) { return Array.from(val.entries()) }
+        else if (SetParser===parser.constructor) { return Array.from(val.entries()) }
+//        else if (WeakMapParser===parser.constructor) { return Array.from(val.entries()) }
+//        else if (WeakSetParser===parser.constructor) { return Array.from(val.entries()) }
+    }
+}
+
 class BooleanParser extends TypeParser {
     constructor(names='boolean,bool,bln,b'.split(',')) { super(names) }
-    parse(str) { return 'true,t,1'.split(',').some(v=>v===str) }
+    parse(str) { return 'true,t,1'.split(',').some(v=>v===str.toLowerCase()) }
 }
 class NumberParser extends TypeParser {
     constructor(names='number,num'.split(',')) { super(names) }
@@ -323,7 +390,10 @@ class TypeClass {
 
     //parse(to, v) { return this.parsers.get(to).parse(v) }
     parse(to, v) {
+//        console.log(this, this.parsers)
         const parser = this.parsers.get(to)
+        console.log(parser)
+        if (!Type.isStr(v)) { throw new TypeError(`parse()の第二引数の型は文字列型にしてください。: ${(typeof v)} ${v}`) }
         return parser?.parse(v)
     }
     stringify(v, from) {
@@ -385,6 +455,8 @@ class TypeClass {
 const type = new TypeClass()
 type.parsers.add(new UndefinedParser())
 type.parsers.add(new NullParser())
+type.parsers.add(new ObjectParser())
+type.parsers.add(new ArrayParser())
 type.parsers.add(new BooleanParser())
 type.parsers.add(new IntegerParser())
 type.parsers.add(new BinParser())
@@ -409,9 +481,9 @@ type.parsers.add(new ColorParser())
 type.parsers.add(new DecimalParser())
 for (let p of type.parsers.parsers) {
     const names = ((Array.isArray(p.names)) ? p.names : ((isStr(p.names)) ? [p.names] : null))
-    console.log(names, isStrs(names))
+    //console.log(names, isStrs(names))
     if (!isStrs(names)) { continue }
-    console.log(type, type.prototype, )
+    //console.log(type, type.prototype, )
     //for (let n of names) { console.log(n, `is${n.Pascal}`);type[`is${n.Pascal}`] = function(v, p1) { return p.is(v, p1) } }
     //for (let n of names) { console.log(n, `is${n}`);type[`is${n}`] = function(v) { return p.is(v) } }
     //for (let n of names) { const name = (('bigint'===n) ? 'BigInt' : n.Pascal); console.log(n, `is${name}`);type[`is${name}`] = function(v) { return p.is(v) } }
@@ -422,7 +494,7 @@ for (let p of type.parsers.parsers) {
     }
     */
     for (let n of names) {
-        console.log(n, `is${n.Pascal}`)
+        //console.log(n, `is${n.Pascal}`)
         type[`is${n.Pascal}`] = function(v, p1) { return p.is(v, p1) }
     }
     /*

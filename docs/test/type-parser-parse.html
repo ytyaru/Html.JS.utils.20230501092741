@@ -21,6 +21,14 @@ window.addEventListener('DOMContentLoaded', (event) => {
     console.log('ins.constructor.name:', ins.constructor.name)
     */
     console.log(Type.parse('array', '2,4,6'))
+    console.log(Array.isArray(Type.parse('array', '2,4,6')))
+    console.log(Type.parse('array', '2,4,6').toString())
+    console.log([2, 4, 6].toString())
+    console.log(Type.parse('i', '2.9'))
+    console.log(Type.parse('i', '3px'))
+    console.log(test.assertError(TypeError, `parse()の第二引数の型は文字列型にしてください。: undefined`, Type.parse, ['undefined', undefined]))
+    console.log(Type.parse('num', ''))
+    console.log(Type.parse('num', '3px')) // NaN。parseIntは3を返す。統一性がない。
     /*
     class MyClass { }
 //    window.MyClass = MyClass
@@ -32,7 +40,12 @@ window.addEventListener('DOMContentLoaded', (event) => {
     */
     
     test.run([
-        ()=>Type.hasOwnProperty(`parse`),
+//        ()=>Type.hasOwnProperty(`parse`),
+//        ()=>Type.hasOwnProperty(`stringify`),
+//        ()=>Type.hasOwnProperty(`to`),
+//        ()=>Type.hasOwnProperty(`is`),
+//        ()=>Type.hasOwnProperty(`parsers`),
+        ()=>'parse,stringify,to,is,parsers'.split(',').every(p=>p in Type),
         // 文字列から各型へ
         ()=>undefined===Type.parse('undefined', 'undefined'),
         ()=>undefined===Type.parse('undefined', 'A'),
@@ -56,13 +69,57 @@ window.addEventListener('DOMContentLoaded', (event) => {
         ()=>false===Type.parse('b', 'false'),
         ()=>true===Type.parse('b', '1'),
         ()=>false===Type.parse('b', '0'),
+        ()=>false===Type.parse('b', 'AAA'),
+        ()=>false===Type.parse('b', ''),
+        ()=>true===Type.parse('b', 'TRUE'),
+        ()=>true===Type.parse('b', 'True'),
         //()=>[2,4,6]===Type.parse('array', '2,4,6'),
-        ()=>{const actual=Type.parse('array', '2,4,6'); return (Array.isArray(actual) && '[2, 4, 6]'===actual);},
+        ()=>{const actual=Type.parse('array', '2,4,6'); return (Array.isArray(actual) && '2,4,6'===actual.toString());},
         ()=>123===Type.parse('integer', '123'),
         ()=>123===Type.parse('int', '123'),
         ()=>123===Type.parse('i', '123'),
+        ()=>isNaN(Type.parse('i', '')),
+        ()=>isNaN(Type.parse('i', 'A')),
+        ()=>0===Type.parse('i', '0'),
+        ()=>-1===Type.parse('i', '-1'),
+        ()=>2===Type.parse('i', '2.9'),
+        ()=>3===Type.parse('i', '3px'),
+        ()=>2.3===Type.parse('float', '2.3'),
+        ()=>2.3===Type.parse('flt', '2.3'),
+        ()=>2.3===Type.parse('f', '2.3'),
+        ()=>isNaN(Type.parse('f', 'A')),
+        ()=>isNaN(Type.parse('f', '')),
+        ()=>0===Type.parse('f', '0'),
+        ()=>1===Type.parse('f', '1'),
+        ()=>-4.5===Type.parse('f', '-4.5'),
+        ()=>9.6===Type.parse('f', '9.6px'),
+        ()=>123===Type.parse('number', '123'),
+        ()=>123===Type.parse('num', '123'),
+        ()=>123===Type.parse('num', '123'),
+        //()=>isNaN(Type.parse('num', '')),
+        ()=>0===Type.parse('num', ''), // parseInt('')はNaNを返す。統一性がない
+        ()=>isNaN(Type.parse('num', 'A')),
+        ()=>0===Type.parse('num', '0'),
+        ()=>-1===Type.parse('num', '-1'),
+        ()=>2.9===Type.parse('num', '2.9'),
+        ()=>isNaN(Type.parse('num', '3px')), // parseIntは3を返す。統一性がない。
+//        ()=>3===Type.parse('num', '3px'), // parseIntは3を返す。統一性がない。
+        ()=>15===Type.parse('binary', '1111'),
+        ()=>0===Type.parse('bin', '0000'),
+        ()=>isNaN(Type.parse('bin', '')),
+        ()=>isNaN(Type.parse('bin', 'A')),
+        ()=>2===Type.parse('bin', '10'),
+        ()=>-1===Type.parse('bin', '-000'),
+        ()=>2===Type.parse('bin', '2.9'),
+        ()=>3===Type.parse('bin', '3px'),
+
         // 文字列から文字列へ
         ()=>'A'===Type.parse('string', 'A'),
+
+        // 異常系
+        ()=>test.assertError(TypeError, `parse()の第二引数の型は文字列型にしてください。: undefined undefined`, ()=>Type.parse('undefined', undefined))
+        /*
+        */
         // 各型から文字列へ
         //()=>'undefined'===Type.parse('string', undefined),
         /*
