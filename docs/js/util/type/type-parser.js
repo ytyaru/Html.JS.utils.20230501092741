@@ -269,8 +269,9 @@ class InstanceParser extends TypeParser {
     }
     */
     parse(str, params) {
+        console.log(str, params)
         const cls = this._clsP.parse(str)
-        return ((Array.isArray(params)) ? new cls() : new cls(params)) 
+        return ((Array.isArray(params)) ? new cls(...params) : new cls()) 
     }
 }
 // 特殊クラス
@@ -279,7 +280,8 @@ class DateTimeParser extends TypeParser { // day.js/date-fns  Temporalが実装�
     constructor(names='datetime,DateTime,dt'.split(',')) { super(names); this._regex = /\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/; }
     is(v) { return v && v.getMonth && typeof v.getMonth === 'function' && Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v) } // https://stackoverflow.com/questions/643782/how-to-check-whether-an-object-is-a-date
     parse(str) {
-        if (this._regex.match(str)) { return new Date(str) }
+        //if (this._regex.match(str)) { return new Date(str) }
+        if (str.match(this._regex)) { return new Date(str) }
         throw new Error(`引数エラー。引数の文字列 ${str} は日付に変換できませんでした。書式 ${this._regex} に従ってください。`)
     }
     stringify(val, s1='-', s2='T', s3=':') {
@@ -300,7 +302,8 @@ class DateTimeParser extends TypeParser { // day.js/date-fns  Temporalが実装�
 class DateParser extends DateTimeParser { // day.js/date-fns  Temporalが実装されるまでの間どうするか。文字列として扱うか
     constructor(names='date') { super(names); this._regex = /\d{4,}-\d{2}-\d{2}/; }
     parse(str) {
-        if (this._regex.match(str)) { return new Date(`${str}T00:00:00`) }
+        //if (this._regex.match(str)) { return new Date(`${str}T00:00:00`) }
+        if (str.match(this._regex)) { return new Date(`${str}T00:00:00`) }
         throw new Error(`引数エラー。引数の文字列 ${str} は日付に変換できませんでした。書式 ${this._regex} に従ってください。`)
     }
     stringify(val, _='-') {
@@ -312,7 +315,8 @@ class DateParser extends DateTimeParser { // day.js/date-fns  Temporalが実装�
 class TimeParser extends DateTimeParser { // day.js/date-fns  Temporalが実装されるまでの間どうするか。文字列として扱うか
     constructor(names='time') { super(names); this._regex = /\d{2}:\d{2}:\d{2}/; }
     parse(str) {
-        if (this._regex.match(str)) { return new Date(`2000-01-01T${str}`) }
+        //if (this._regex.match(str)) { return new Date(`2000-01-01T${str}`) }
+        if (str.match(this._regex)) { return new Date(`2000-01-01T${str}`) }
         throw new Error(`引数エラー。引数の文字列 ${str} は日付に変換できませんでした。書式 ${this._regex} に従ってください。`)
     }
     stringify(val, _=':') {
@@ -323,13 +327,32 @@ class TimeParser extends DateTimeParser { // day.js/date-fns  Temporalが実装�
 }
 class DurationParser extends TypeParser { // day.js/date-fns  Temporalが実装されるまでの間どうするか。文字列として扱うか
     constructor(names='duration,dur'.split(',')) { super(names); this._regex = /P(\d{1,}Y)?(\d{1,}M)?(\d{1,}D)?(T)?(\d{1,}H)?(\d{1,}M)?(\d{1,}S)?/; }
+    is(v) {
+        if (Type.isStr(v)) { return str.match(this._regex) }
+        if (Type.isObj(v)) { return 'y,m,d,H,M,S'.split(',').some(k=>v.hasOwnProperty(k) && Type.isInt(v[k])) }
+        return false
+    }
     parse(str) {
-        const m = this._regex.match(str)
+        const m = str.match(this._regex)
+        console.log(m)
         if (m) { return this.values(m) }
 //        if (m) { return {y:m[1], m:m[2], d:m[3], H:m[4], M:m[5], S:m[6]} }
         throw new Error(`引数エラー。引数の文字列 ${str} は期間に変換できませんでした。書式 ${this._regex} に従ってください。`)
     }
-    values(m) { return 'y,m,d,H,M,S'.split(',').reduce((o,k,i)=>o[k]=m[i+1], {}) }
+    //values(m) { return 'y,m,d,T,H,M,S'.split(',').reduce((o,k,i)=>{o[k]=parseInt(m[i+1]);return o;}, {str:m[0]}) }
+    values(m) { const obj='y,m,d,T,H,M,S'.split(',').reduce((o,k,i)=>{o[k]=parseInt(m[i+1]);return o;}, {str:m[0]}); delete obj.T; return obj; }
+    /*
+    //values(m) { return 'y,m,d,H,M,S'.split(',').reduce((o,k,i)=>o[k]=m[i+1], {}) }
+    //values(m) { console.log(m, m[1]);return 'y,m,d,H,M,S'.split(',').reduce((o,k,i)=>o[k]=parseInt(m[i+1]), {}) }
+    values(m) {
+        console.log(m, m[1]);
+        return 'y,m,d,H,M,S'
+                .split(',')
+                .reduce((o,k,i)=>{console.log(o,k,i);o[k]=parseInt(m[i+1]);return o;},
+                //.reduce((o,k,i)=>o[k]=1,
+                ({}))
+    }
+    */
     stringify(v) {
         const T = (('H,M,S'.split(',').some(k=>v.hasOwnProperty(k))) ? 'T' : '')
         const ymd = 'y,m,d'.split(',').map(k=>((v.hasOwnProperty(k)) ? v[k]+k.toUpperCase() : null))
@@ -389,12 +412,12 @@ class TypeClass {
 //    to(to, value, from) { this._parses.get(to).to(value, from) }
 
     //parse(to, v) { return this.parsers.get(to).parse(v) }
-    parse(to, v) {
+    parse(to, v, params) {
 //        console.log(this, this.parsers)
         const parser = this.parsers.get(to)
         console.log(parser)
         if (!Type.isStr(v)) { throw new TypeError(`parse()の第二引数の型は文字列型にしてください。: ${(typeof v)} ${v}`) }
-        return parser?.parse(v)
+        return parser?.parse(v, params)
     }
     stringify(v, from) {
         const parser = ((from) ? this.parsers.get(from) : this.parsers.getFromValue(v))
