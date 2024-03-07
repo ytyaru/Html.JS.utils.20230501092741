@@ -142,6 +142,28 @@ class ObjectParser extends TypeParser {
 //        else if (WeakSetParser===parser.constructor) { return new WeakSet(Array.from(val.entries())) }
     }
 }
+// class Dsv,Csv,Tsv,Ssv,Scsv,Clsv,  Ltsv, Json,Yaml,Toml,Xml
+class JsonParser extends TypeParser {
+    constructor(names='json') { super(names) }
+    is(v) {
+        //if (Type.isObj(v)) { return true }
+        //if (Type.isAry(v)) { return true }
+        if (Type.isStr(v)) {
+            const s = v.trim()
+            if (s.startsWith('{'), s.endsWith('}')) { return true }
+            if (s.startsWith('['), s.endsWith(']')) { return true }
+        }
+        return false
+    }
+    parse(str) { return JSON.parse(str) }
+    stringify(val) { return JSON.stringify(val) }
+}
+class YamlParser extends TypeParser {
+    constructor(names='yaml') { super(names) }
+    is(v) { if (Type.isStr(v)) { try { jsyaml.load(str); return true; } catch(e) { return false } } }
+    parse(str) { return jsyaml.load(str) }
+    stringify(val) { return jsyaml.dump(val) }
+}
 //Map, Set, WeakMap, WeakSet
 class MapParser extends TypeParser {
     constructor(names='map') { super(names) }
@@ -215,11 +237,41 @@ class StringParser extends TypeParser {
     is(v) { return StringParser.is(v) }
     parse(str) { return ((str.hasOwnProperty('toString')) ? str.toString() : String(str)) }
     stringify(val) { return this.parse(val) }
+    to(typeName, val) {
+        const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
+        if (Base64Parser===parser.constructor) { return new TextDecoder().decode(new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt()))) }
+    }
+    from(typeName, val) {
+        const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
+        if (Base64Parser===parser.constructor) { return btoa(String.fromCharCode.apply(null, new TextEncoder().encode(str))) }
+    }
+//    parse(str) { return btoa(String.fromCharCode.apply(null, new TextEncoder().encode(str))) }
+//    stringify(val) { return new TextDecoder().decode(new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt()))) }
 }
 class Base64Parser extends StringParser {
     constructor(names='base64') { super(names, 36) }
-    parse(str) { return btoa(String.fromCharCode.apply(null, new TextEncoder().encode(str))) }
-    stringify(val) { return new TextDecoder().decode(new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt()))) }
+//    parse(str) { return btoa(String.fromCharCode.apply(null, new TextEncoder().encode(str))) }
+//    stringify(val) { return new TextDecoder().decode(new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt()))) }
+    parse(str) { return Uint8Array.from(Array.prototype.map.call(atob(str), x=>x.charCodeAt(0))) } // str -> Uint8Array
+    stringify(val) { return btoa(String.fromCharCode(...val)) } // Uint8Array -> str
+    dataUrl(val, mime, isBase64) {
+        const m = ((mime) ? mime : '')
+        const b = ((isBase64) ? ';base64' : '')
+        const base64 = ((Type.isStr(val)) ? val : ((val instanceof Uint8Array) ? this.stringify(val) : ''))
+        return `data:${m}${b},${base64}`
+    }
+    to(typeName, val) {
+        const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
+        //if (Base64Parser===parser.constructor && Type.isStr(val)) {
+        if (StringParser===parser.constructor && Type.isStr(val)) {
+            return new TextDecoder().decode(new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt())))
+        }
+        if (StringParser===parser.constructor && val instanceof Uint8Array) { return btoa(String.fromCharCode.apply(null, new TextEncoder().encode(str))) }
+        if (['st',''].some(n=>n===typeName))
+    }
+    from(typeName, val) {
+
+    }
 }
 class FloatParser extends NumberParser {
     constructor(names='float,flt,f'.split(',')) { super(names); }
@@ -276,6 +328,16 @@ class InstanceParser extends TypeParser {
 }
 // 特殊クラス
 //class BlobParser extends TypeParser { constructor(names='blob') { super(names) } } // Base64で代用する
+class BlobParser extends Base64Parser {
+    constructor(names='blob') { super(names) }
+    is(v) { return v instanceof Blob }
+    parse(str) {
+
+    }
+    stringify(val) {
+
+    }
+}
 class DateTimeParser extends TypeParser { // day.js/date-fns  Temporalが実装されるまでの間どうするか。文字列として扱うか
     constructor(names='datetime,DateTime,dt'.split(',')) { super(names); this._regex = /\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/; }
     is(v) { return v && v.getMonth && typeof v.getMonth === 'function' && Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v) } // https://stackoverflow.com/questions/643782/how-to-check-whether-an-object-is-a-date
