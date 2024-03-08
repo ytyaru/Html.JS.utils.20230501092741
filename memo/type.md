@@ -77,3 +77,24 @@ const parser = parsers.get(value)
 ObjectParser.parse(value, 'json')      // 文字列 value を json として解釈し、object型へ変換する
 ObjectParser.stringify(value, 'json')  // object value を json 文字列へ変換する
 
+# バイナリ
+
+　TSV等のテキスト形式でバイナリを保存しつつ、バイナリに復元もしたい。
+
+* バイナリ
+    * ArrayBuffer
+    * TypedArray(Uint8Array等)
+    * DataView
+* テキスト
+    * UTF16（JS）
+    * UTF8（ファイル）
+    * ASCII（ファイル）
+
+```
+const dataView = base64.parse(base64Str)
+const base64Str = base64.stringify(dataView)
+const dataUrl = base64.dataUrl(dataView, mimeType)
+const blob = blob.parse(dataUrl)
+const dataUrl = blob.stringiy(dataView, mimeType)
+```
+

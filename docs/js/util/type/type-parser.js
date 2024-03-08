@@ -249,28 +249,53 @@ class StringParser extends TypeParser {
 //    stringify(val) { return new TextDecoder().decode(new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt()))) }
 }
 class Base64Parser extends StringParser {
-    constructor(names='base64') { super(names, 36) }
-//    parse(str) { return btoa(String.fromCharCode.apply(null, new TextEncoder().encode(str))) }
-//    stringify(val) { return new TextDecoder().decode(new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt()))) }
-    parse(str) { return Uint8Array.from(Array.prototype.map.call(atob(str), x=>x.charCodeAt(0))) } // str -> Uint8Array
-    stringify(val) { return btoa(String.fromCharCode(...val)) } // Uint8Array -> str
+    constructor(names='base64') { super(names) }
+    parse(str) { return btoa(String.fromCharCode.apply(null, new TextEncoder().encode(str))) } // string->base64
+    stringify(val) { return new TextDecoder().decode(new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt()))) } // base64->string
+//    parse(str) { return Uint8Array.from(Array.prototype.map.call(atob(str), x=>x.charCodeAt(0))) } // str -> Uint8Array
+//    stringify(val) { return btoa(String.fromCharCode(...val)) } // Uint8Array -> str
     dataUrl(val, mime, isBase64) {
         const m = ((mime) ? mime : '')
         const b = ((isBase64) ? ';base64' : '')
         const base64 = ((Type.isStr(val)) ? val : ((val instanceof Uint8Array) ? this.stringify(val) : ''))
         return `data:${m}${b},${base64}`
     }
-    to(typeName, val) {
+    /*
+    to(typeName, val) { // base64->binary(utf8,ascii)->string(utf16)
         const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
         //if (Base64Parser===parser.constructor && Type.isStr(val)) {
         if (StringParser===parser.constructor && Type.isStr(val)) {
             return new TextDecoder().decode(new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt())))
         }
         if (StringParser===parser.constructor && val instanceof Uint8Array) { return btoa(String.fromCharCode.apply(null, new TextEncoder().encode(str))) }
-        if (['st',''].some(n=>n===typeName))
     }
     from(typeName, val) {
 
+    }
+    */
+}
+//class DataUrlParser extends Base64Parser {
+class DataUrlParser extends Base64Parser {
+    constructor(names='dataurl,DataUrl') { super(names); this._regex = /data:(.+/.+)?(;base64)?,([a-zA-Z0-9\+/=]+)/; }
+    parse(str) { // str:base64  return Blob
+        const m = str.match(this._regex)
+        if (!m) { throw new Error(`書式エラー。引数値はDataUrl形式ではありません。次の書式に一致させてください。:${this._regex}\n\n${str}`) }
+        const mimeType = m[1]
+        const isBase64 = m[2]
+        const data = m[3]
+        // 平文（text/plain & UrlEncoding）「data:,Hello%2C%20World!」
+        // Base64 「data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==」
+//        if (!mimeType && !isBase64) { return encodeURIComponent(data) }
+//        return new Blob(new Uint8Array(), mimeType)
+        return new Blob(((!mimeType && !isBase64) ? encodeURIComponent(data) : new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt()))) , {type:mimeType})
+    }
+    async stringify(val) { // val:Blob  return DataUrlStr
+        if (!(val instanceof Blob)) { throw new TypeError(`引数の型はBlobであるべきです。`) }
+        const mimeType = val.type || 'text/plain'
+        const buf = await val.arrayBuffer()
+        const data = super.stringify(buf)
+        return `data:${mimeType};base64,${data}`
+//        const data = ((mimeType) ? super.stringify(buf) : encodeURIComponent(data))
     }
 }
 class FloatParser extends NumberParser {
@@ -326,6 +351,22 @@ class InstanceParser extends TypeParser {
         return ((Array.isArray(params)) ? new cls(...params) : new cls()) 
     }
 }
+class U8Parser extends TypeParser {
+    constructor(names='typedarray,TypedArray,u8a') { super(names) }
+    is(v) { return v instanceof Uint8Array }
+    parse(str) {
+
+    }
+    stringify(val) {
+
+    }
+    to(typeName, val) {
+
+    }
+    from(typeName, val) {
+
+    }
+}
 // 特殊クラス
 //class BlobParser extends TypeParser { constructor(names='blob') { super(names) } } // Base64で代用する
 class BlobParser extends Base64Parser {
@@ -337,6 +378,14 @@ class BlobParser extends Base64Parser {
     stringify(val) {
 
     }
+    to(typeName, val) {
+
+    }
+    from(typeName, val) {
+
+    }
+
+
 }
 class DateTimeParser extends TypeParser { // day.js/date-fns  Temporalが実装されるまでの間どうするか。文字列として扱うか
     constructor(names='datetime,DateTime,dt'.split(',')) { super(names); this._regex = /\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/; }
