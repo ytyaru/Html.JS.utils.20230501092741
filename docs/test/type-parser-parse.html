@@ -44,6 +44,11 @@ window.addEventListener('DOMContentLoaded', (event) => {
     console.log(Type.stringify('QQ==', 'base64')) // QQ==
     console.log(Type.parse('base64', 'あ')) // 44GC
     console.log(Type.stringify('44GC', 'base64')) // あ
+    console.log(btoa(new Uint8Array([0xff])))
+    console.log(atob('hello'))
+    console.log(Type.parse('dataurl', 'data:,hello')) // 44GC
+//    console.log(Type.parse('dataurl', 'data:,QQ==')) // 44GC
+    console.log(Type.stringify('dataurl', new Blob(new Uint8Array([0xff])))) // 44GC
 //    console.log(Type.to('base64', new Uint8Array([0xff]), 'Uint8Array')) // 
 //    console.log(Type.parse('base64', new Uint8Array([0xFF]))) // QQ==
     console.log(Type.parse('duration', 'P1Y2M3DT4H5M6S'))

@@ -276,9 +276,18 @@ class Base64Parser extends StringParser {
 }
 //class DataUrlParser extends Base64Parser {
 class DataUrlParser extends Base64Parser {
-    constructor(names='dataurl,DataUrl') { super(names); this._regex = /data:(.+/.+)?(;base64)?,([a-zA-Z0-9\+/=]+)/; }
+//    constructor(names='dataurl,DataUrl') { super(names); this._regex = /data:(.+/.+)?(;base64)?,([a-zA-Z0-9\+/=]+)/; }
+    //constructor(names='dataurl,DataUrl') { super(names); this._regex = /data:(*/*)?(;base64)?,([a-zA-Z0-9\+/=]+)/; }
+//    constructor(names='dataurl,DataUrl') { super(names); this._regex = /data:(*)?(;base64)?,([a-zA-Z0-9\+/=]+)/; }
+//    constructor(names='dataurl,DataUrl') { super(names); this._regex = /data:(?<mime>[\w/-\.]+])(;)?(<encoding>\w+),(?<data>.*)/; }
+    //constructor(names='dataurl,DataUrl') { super(names); this._regex = /data:(?<mime>[\w/\-\.]+);(?<encoding>\w+),(?<data>.*)/; }
+//    constructor(names='dataurl,DataUrl') { super(names); this._regex = /data:(?<mime>[\w/\-\.]+)(;base64)?,(?<data>.*)/; }
+    //constructor(names='dataurl,DataUrl'.split(',')) { super(names); this._regex = /data:(?<mime>[\w/\-\.]+)(?<encoding>;\w+),(?<data>.*)/; }
+    constructor(names='dataurl,DataUrl'.split(',')) { super(names); this._regex = /data:(?<mime>[\w/\-\.]+)?(?<encoding>;\w+)?,(?<data>.*)/; }
+    is(v) { return v.match(this._regex) }
+//var regex = new Regex(@"data:(?<mime>[\w/\-\.]+);(?<encoding>\w+),(?<data>.*)", RegexOptions.Compiled);
     parse(str) { // str:base64  return Blob
-        const m = str.match(this._regex)
+        const m = this.is(str)
         if (!m) { throw new Error(`書式エラー。引数値はDataUrl形式ではありません。次の書式に一致させてください。:${this._regex}\n\n${str}`) }
         const mimeType = m[1]
         const isBase64 = m[2]
@@ -287,7 +296,15 @@ class DataUrlParser extends Base64Parser {
         // Base64 「data:text/plain;base64,SGVsbG8sIFdvcmxkIQ==」
 //        if (!mimeType && !isBase64) { return encodeURIComponent(data) }
 //        return new Blob(new Uint8Array(), mimeType)
-        return new Blob(((!mimeType && !isBase64) ? encodeURIComponent(data) : new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt()))) , {type:mimeType})
+        console.log(mimeType, isBase64, data)
+        console.log((!mimeType && !isBase64))
+        console.log(encodeURIComponent(data))
+        console.log(btoa(data))
+//        console.log(atob(data))
+        console.log(btoa(String.fromCharCode.apply(null, new TextEncoder().encode(data))))
+
+        console.log(new Uint8Array(Array.prototype.map.call(atob(data), c=>c.charCodeAt())))
+        return new Blob(((!mimeType && !isBase64) ? encodeURIComponent(data) : new Uint8Array(Array.prototype.map.call(atob(data), c=>c.charCodeAt()))) , {type:mimeType})
     }
     async stringify(val) { // val:Blob  return DataUrlStr
         if (!(val instanceof Blob)) { throw new TypeError(`引数の型はBlobであるべきです。`) }
@@ -599,6 +616,8 @@ type.parsers.add(new HexParser())
 type.parsers.add(new Base32Parser())
 type.parsers.add(new Base36Parser())
 type.parsers.add(new Base64Parser())
+type.parsers.add(new DataUrlParser ())
+type.parsers.add(new BlobParser())
 type.parsers.add(new FloatParser())
 type.parsers.add(new NumberParser())
 type.parsers.add(new BigIntParser())
