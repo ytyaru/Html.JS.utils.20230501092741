@@ -404,24 +404,6 @@ class InstanceParser extends TypeParser {
         return ((Array.isArray(params)) ? new cls(...params) : new cls()) 
     }
 }
-class U8Parser extends TypeParser {
-    constructor(names='typedarray,TypedArray,u8a') { super(names) }
-    is(v) { return v instanceof Uint8Array }
-    parse(str) {
-
-    }
-    stringify(val) {
-
-    }
-    to(typeName, val) {
-
-    }
-    from(typeName, val) {
-
-    }
-}
-// 特殊クラス
-//class BlobParser extends TypeParser { constructor(names='blob') { super(names) } } // Base64で代用する
 class DateTimeParser extends TypeParser { // day.js/date-fns  Temporalが実装されるまでの間どうするか。文字列として扱うか
     constructor(names='datetime,DateTime,dt'.split(',')) { super(names); this._regex = /\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/; }
     is(v) { return v && v.getMonth && typeof v.getMonth === 'function' && Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v) } // https://stackoverflow.com/questions/643782/how-to-check-whether-an-object-is-a-date
@@ -515,18 +497,6 @@ class DecimalParser extends TypeParser {
     constructor(names='decimal,dec'.split(',')) { super(names) }
     parse(str) { return new Decimal(str) }
 }
-/*
-class UndefinedParser extends TypeParser {
-    constructor(names='undefined') { super(names) }
-    parse(str) { return undefined }
-    stringify(val) { return 'undefined' }
-}
-class NullParser extends TypeParser {
-    constructor(names='null') { super(names) }
-    parse(str) { return null }
-    stringify(val) { return 'null' }
-}
-*/
 class TypeParsers {
     constructor() {this._parsers=[];}
     get parsers() { return this._parsers }
