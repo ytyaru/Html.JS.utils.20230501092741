@@ -7,7 +7,7 @@
 <script src="../js/util/string/case.js"></script>
 <script src="../js/util/type/type-parser.js"></script>
 <script>
-window.addEventListener('DOMContentLoaded', (event) => {
+window.addEventListener('DOMContentLoaded', async(event) => {
     const test = new Test()
     class MyClass { }
     window.MyClass = MyClass
@@ -44,13 +44,27 @@ window.addEventListener('DOMContentLoaded', (event) => {
     console.log(Type.stringify('QQ==', 'base64')) // QQ==
     console.log(Type.parse('base64', 'あ')) // 44GC
     console.log(Type.stringify('44GC', 'base64')) // あ
-    console.log(btoa(new Uint8Array([0xff])))
-    console.log(atob('hello'))
-    console.log(Type.parse('dataurl', 'data:,hello')) // 44GC
+    console.log(btoa('hello')) // aGVsbG8=
+    console.log(atob('aGVsbG8=')) // hello
+    console.log(btoa(new Uint8Array([0x68, 0x65, 0x6c, 0x6f]))) // 68,65,6c,6c,6f
+//    console.log(atob(new Uint8Array([0x68, 0x65, 0x6c, 0x6f]))) // 68,65,6c,6c,6f
+    console.log(btoa(new Uint8Array([0xff]))) // 68,65,6c,6c,6f
+    console.log(atob(btoa('hello')))
+
+    console.log(await Type.parseAsync('dataurl', 'data:,hello')) // 44GC
 //    console.log(Type.parse('dataurl', 'data:,QQ==')) // 44GC
-    console.log(Type.stringify('dataurl', new Blob(new Uint8Array([0xff])))) // 44GC
+    //console.log(await Type.stringifyAsync('dataurl', new Blob(new Uint8Array([0xff])))) // 44GC
+    console.log(await Type.stringifyAsync(new Blob(new Uint8Array([0xff])), 'dataurl')) // 44GC
 //    console.log(Type.to('base64', new Uint8Array([0xff]), 'Uint8Array')) // 
 //    console.log(Type.parse('base64', new Uint8Array([0xFF]))) // QQ==
+    console.log(await Type.parseAsync('dataurl', 'data:,A'))
+    console.log(await Type.parseAsync('blob', 'data:,A'))
+    console.log(await (await Type.parseAsync('blob', 'data:,A')).arrayBuffer())
+    console.log(await Type.stringifyAsync(new Blob(new Uint8Array([65])), 'dataurl'))
+    console.log(await Type.stringifyAsync(new Blob(new Uint8Array([65])), 'blob'))
+//        ()=>'QQ=='===await Type.parseAsync('dataurl', 'data:,A'),
+//        ()=>'QQ=='===await Type.parseAsync('blob', 'A'),
+
     console.log(Type.parse('duration', 'P1Y2M3DT4H5M6S'))
 
     /*
@@ -154,6 +168,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
         ()=>35===Type.parse('base36', 'Z'),
         ()=>36===Type.parse('base36', '10'),
         ()=>'QQ=='===Type.parse('base64', 'A'),
+//        ()=>'QQ=='===await Type.parseAsync('dataurl', 'data:,A'),
+//        ()=>'QQ=='===await Type.parseAsync('blob', 'A'),
         //()=>1234567890n===Type.parse('bigint', '1234567890n'),
         ()=>1234567890n===Type.parse('bigint', '1234567890'),
         ()=>Type.isSym(Type.parse('symbol', 'my-sym')),

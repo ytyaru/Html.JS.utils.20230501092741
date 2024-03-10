@@ -286,6 +286,7 @@ class DataUrlParser extends Base64Parser {
     constructor(names='dataurl,DataUrl'.split(',')) { super(names); this._regex = /data:(?<mime>[\w/\-\.]+)?(?<encoding>;\w+)?,(?<data>.*)/; }
     is(v) { return v.match(this._regex) }
 //var regex = new Regex(@"data:(?<mime>[\w/\-\.]+);(?<encoding>\w+),(?<data>.*)", RegexOptions.Compiled);
+    /*
     parse(str) { // str:base64  return Blob
         const m = this.is(str)
         if (!m) { throw new Error(`書式エラー。引数値はDataUrl形式ではありません。次の書式に一致させてください。:${this._regex}\n\n${str}`) }
@@ -314,6 +315,41 @@ class DataUrlParser extends Base64Parser {
         return `data:${mimeType};base64,${data}`
 //        const data = ((mimeType) ? super.stringify(buf) : encodeURIComponent(data))
     }
+    */
+    async parseAsync(dataUrl) { return await (await fetch(dataUrl)).blob() }
+    async stringifyAsync(blob) { return await new Promise((resolve, reject) => {
+        const fr = new FileReader()
+        const subscribe = () => {
+            fr.addEventListener('abort', onAbort)
+            fr.addEventListener('error', onError)
+            fr.addEventListener('load', onLoad)
+        }
+        const unsubscribe = () => {
+            fr.removeEventListener('abort', onAbort)
+            fr.removeEventListener('error', onError)
+            fr.removeEventListener('load', onLoad)
+        }
+        const onAbort = () => {
+            unsubscribe()
+            reject(new Error('abort'))
+        }
+        const onError = (event) => {
+            unsubscribe()
+            reject(event.target.error)
+        }
+        const onLoad = (event) => {
+            unsubscribe()
+            resolve(event.target.result)
+        }
+        subscribe()
+        fr.readAsDataURL(blob)
+    })}
+}
+class BlobParser extends DataUrlParser {
+    constructor(names='blob') { super(names) }
+    is(v) { return v instanceof Blob }
+    async parseAsync(dataUrl) { return await super.parseAsync(dataUrl) }
+    async stringifyAsync(blob) { return await super.stringifyAsync(blob) }
 }
 class FloatParser extends NumberParser {
     constructor(names='float,flt,f'.split(',')) { super(names); }
@@ -386,24 +422,6 @@ class U8Parser extends TypeParser {
 }
 // 特殊クラス
 //class BlobParser extends TypeParser { constructor(names='blob') { super(names) } } // Base64で代用する
-class BlobParser extends Base64Parser {
-    constructor(names='blob') { super(names) }
-    is(v) { return v instanceof Blob }
-    parse(str) {
-
-    }
-    stringify(val) {
-
-    }
-    to(typeName, val) {
-
-    }
-    from(typeName, val) {
-
-    }
-
-
-}
 class DateTimeParser extends TypeParser { // day.js/date-fns  Temporalが実装されるまでの間どうするか。文字列として扱うか
     constructor(names='datetime,DateTime,dt'.split(',')) { super(names); this._regex = /\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/; }
     is(v) { return v && v.getMonth && typeof v.getMonth === 'function' && Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v) } // https://stackoverflow.com/questions/643782/how-to-check-whether-an-object-is-a-date
@@ -570,6 +588,17 @@ class TypeClass {
         }
         const parser = ((to) ? this.parsers.get(to) : this.parsers.getFromValue(v))
         */
+    }
+    async parseAsync(to, v, params) {
+        const parser = this.parsers.get(to)
+        console.log(parser)
+        //if (!Type.isStr(v)) { throw new TypeError(`parse()の第二引数の型は文字列型にしてください。: ${(typeof v)} ${v}`) }
+        return await parser?.parseAsync(v, params)
+    }
+    async stringifyAsync(v, from) {
+        const parser = ((from) ? this.parsers.get(from) : this.parsers.getFromValue(v))
+        if (!parser) { throw new Error(`stringify()の第二引数で第一引数の型名を指定してください。（値の型が${'undefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary'.split(',')}のいずれかであれば型名を省略できます）`) }
+        return await parser.stringifyAsync(v)
     }
 
     /*
