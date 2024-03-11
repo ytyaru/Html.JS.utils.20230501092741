@@ -222,6 +222,10 @@ window.addEventListener('DOMContentLoaded', async(event) => {
             return true
         },
         ()=>Type.isDuration(Type.parse('duration', 'P1Y2M3DT4H5M6S')),
+
+        // async系
+        async()=>{const blob=await Type.parseAsync('dataurl', 'data:,A'); const buf=await blob.arrayBuffer(); return (blob instanceof Blob && 1===blob.size && 'text/plain'===blob.type && 1===buf.length && 65===buf[0]); },
+        async()=>{const blob=await Type.parseAsync('blob', 'data:,A'); const buf=await blob.arrayBuffer(); return (blob instanceof Blob && 1===blob.size && 'text/plain'===blob.type && 1===buf.length && 65===buf[0]); },
         // Color,Decimalは必要な外部ライブラリ導入してないためテスト省略
 
         // 文字列から文字列へ

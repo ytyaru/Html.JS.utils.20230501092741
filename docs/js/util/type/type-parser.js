@@ -5,6 +5,7 @@ class Id {
     constructor(names) { this._names = names }
     get names() { return this._names }
     match(names) {
+//        console.log(names, this._names)
              if (isStr (names) && isStr (this._names)) { return this._names===names }
         else if (isStr (names) && isStrs(this._names)) { return this._names.some(t=>t===names) }
         else if (isStrs(names) && isStr (this._names)) { return names.some(t=>t===this._names) }
@@ -38,10 +39,10 @@ class TypeParser extends Id {
     */
 }
 class FixTypeParser extends TypeParser {
-    constructor(type) { super(String(type)); this._type=type;  }
+    constructor(type) { super(String(type)); this._type=type; }
     is(val) { console.log(val, this._type);return val===this._type }
     parse(str) { return this._type }
-    stringify(val) { return String(type) }
+    stringify(val) { return String(this._type) }
 }
 class UndefinedParser extends FixTypeParser { constructor(type=undefined) { super(type) } }
 class NullParser extends FixTypeParser { constructor(type=null) { super(type) } }
@@ -213,6 +214,7 @@ class SetParser extends TypeParser {
 class BooleanParser extends TypeParser {
     constructor(names='boolean,bool,bln,b'.split(',')) { super(names) }
     parse(str) { return 'true,t,1'.split(',').some(v=>v===str.toLowerCase()) }
+    stringify(val) { return ((Type.isInt(val)) ? (1===val) : ('true,t'.split(',').some(v=>v===String(val).toLowerCase()))).toString() }
 }
 class NumberParser extends TypeParser {
     constructor(names='number,num'.split(',')) { super(names) }
@@ -538,6 +540,7 @@ class TypeClass {
     stringify(v, from) {
         const parser = ((from) ? this.parsers.get(from) : this.parsers.getFromValue(v))
         if (!parser) { throw new Error(`stringify()の第二引数で第一引数の型名を指定してください。（値の型が${'undefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary'.split(',')}のいずれかであれば型名を省略できます）`) }
+        console.log(parser, parser.stringify(v))
         return parser.stringify(v)
     }
     to(to, v, from) {

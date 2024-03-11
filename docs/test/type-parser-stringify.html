@@ -1,0 +1,213 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<!--
+<script src="../js/util/type.js"></script>
+-->
+<script src="../js/util/string/case.js"></script>
+<script src="../js/util/type/type-parser.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(event) => {
+    const test = new Test()
+    class MyClass { }
+    window.MyClass = MyClass
+    class Human { constructor(n,a) {this.name=n; this.age=a;} }
+    window.Human = Human
+    console.log(Type.stringify(undefined, 'undefined'))
+    console.log(Type.stringify(-2.3e4, 'number'))
+    test.run([
+        ()=>'parse,stringify,to,is,parsers'.split(',').every(p=>p in Type),
+        // 文字列から各型へ
+        ()=>'undefined'===Type.stringify(undefined, 'undefined'),
+        ()=>'undefined'===Type.stringify(null, 'undefined'),
+        ()=>'undefined'===Type.stringify('', 'undefined'),
+        ()=>'undefined'===Type.stringify(1, 'undefined'),
+        ()=>'null'===Type.stringify(null, 'null'),
+        ()=>'null'===Type.stringify(undefined, 'null'),
+        ()=>'null'===Type.stringify('', 'null'),
+        ()=>'null'===Type.stringify(1, 'null'),
+        ()=>'true'===Type.stringify(true, 'boolean'),
+        ()=>'true'===Type.stringify(1, 'boolean'),
+        ()=>'true'===Type.stringify('true', 'boolean'),
+        ()=>'true'===Type.stringify('True', 'boolean'),
+        ()=>'true'===Type.stringify('TRUE', 'boolean'),
+        ()=>'true'===Type.stringify('t', 'boolean'),
+        ()=>'true'===Type.stringify('T', 'boolean'),
+        ()=>'false'===Type.stringify(false, 'boolean'),
+        ()=>'false'===Type.stringify(0, 'boolean'),
+        ()=>'false'===Type.stringify('false', 'boolean'),
+        ()=>'false'===Type.stringify('False', 'boolean'),
+        ()=>'false'===Type.stringify('FALSE', 'boolean'),
+        ()=>'false'===Type.stringify('f', 'boolean'),
+        ()=>'false'===Type.stringify('F', 'boolean'),
+        ()=>'false'===Type.stringify('', 'boolean'),
+        ()=>'false'===Type.stringify(undefined, 'boolean'),
+        ()=>'false'===Type.stringify(null, 'boolean'),
+        ()=>'false'===Type.stringify('A', 'boolean'),
+        ()=>'0'===Type.stringify(0, 'number'),
+        ()=>'1'===Type.stringify(1, 'number'),
+        ()=>'-1'===Type.stringify(-1, 'number'),
+        ()=>'-1.2'===Type.stringify(-1.2, 'number'),
+        //()=>'-2.3e4'===Type.stringify(-2.3e4, 'number'),
+        ()=>'-23000'===Type.stringify(-2.3e4, 'number'), // 指数表記にならない
+        ()=>'255'===Type.stringify(0xff, 'number'), // 16進数表記にならない
+        ()=>'0'===Type.stringify(0, 'integer'),
+        ()=>'1'===Type.stringify(1, 'integer'),
+        ()=>'-1'===Type.stringify(-1, 'integer'),
+        ()=>'-1.2'===Type.stringify(-1.2, 'integer'), // 型エラーにならない…
+        ()=>'-23000'===Type.stringify(-2.3e4, 'integer'),
+        ()=>'255'===Type.stringify(0xff, 'integer'), // 16進数表記にならない
+        /*
+        ()=>undefined===Type.stringify('undefined', 'A'),
+        ()=>undefined===Type.stringify('undefined', ''),
+        ()=>null===Type.stringify('null', 'null'),
+        ()=>null===Type.stringify('null', 'A'),
+        ()=>null===Type.stringify('null', ''),
+        ()=>true===Type.stringify('boolean', 'true'),
+        ()=>false===Type.stringify('boolean', 'false'),
+        ()=>true===Type.stringify('boolean', '1'),
+        ()=>false===Type.stringify('boolean', '0'),
+        ()=>true===Type.stringify('bool', 'true'),
+        ()=>false===Type.stringify('bool', 'false'),
+        ()=>true===Type.stringify('bool', '1'),
+        ()=>false===Type.stringify('bool', '0'),
+        ()=>true===Type.stringify('bln', 'true'),
+        ()=>false===Type.stringify('bln', 'false'),
+        ()=>true===Type.stringify('bln', '1'),
+        ()=>false===Type.stringify('bln', '0'),
+        ()=>true===Type.stringify('b', 'true'),
+        ()=>false===Type.stringify('b', 'false'),
+        ()=>true===Type.stringify('b', '1'),
+        ()=>false===Type.stringify('b', '0'),
+        ()=>false===Type.stringify('b', 'AAA'),
+        ()=>false===Type.stringify('b', ''),
+        ()=>true===Type.stringify('b', 'TRUE'),
+        ()=>true===Type.stringify('b', 'True'),
+        //()=>[2,4,6]===Type.stringify('array', '2,4,6'),
+        ()=>{const actual=Type.stringify('array', '2,4,6'); return (Array.isArray(actual) && '2,4,6'===actual.toString());},
+        ()=>123===Type.stringify('integer', '123'),
+        ()=>123===Type.stringify('int', '123'),
+        ()=>123===Type.stringify('i', '123'),
+        ()=>isNaN(Type.stringify('i', '')),
+        ()=>isNaN(Type.stringify('i', 'A')),
+        ()=>0===Type.stringify('i', '0'),
+        ()=>-1===Type.stringify('i', '-1'),
+        ()=>2===Type.stringify('i', '2.9'),
+        ()=>3===Type.stringify('i', '3px'),
+        ()=>2.3===Type.stringify('float', '2.3'),
+        ()=>2.3===Type.stringify('flt', '2.3'),
+        ()=>2.3===Type.stringify('f', '2.3'),
+        ()=>isNaN(Type.stringify('f', 'A')),
+        ()=>isNaN(Type.stringify('f', '')),
+        ()=>0===Type.stringify('f', '0'),
+        ()=>1===Type.stringify('f', '1'),
+        ()=>-4.5===Type.stringify('f', '-4.5'),
+        ()=>9.6===Type.stringify('f', '9.6px'),
+        ()=>123===Type.stringify('number', '123'),
+        ()=>123===Type.stringify('num', '123'),
+        ()=>123===Type.stringify('num', '123'),
+        //()=>isNaN(Type.stringify('num', '')),
+        ()=>0===Type.stringify('num', ''), // parseInt('')はNaNを返す。統一性がない
+        ()=>isNaN(Type.stringify('num', 'A')),
+        ()=>0===Type.stringify('num', '0'),
+        ()=>-1===Type.stringify('num', '-1'),
+        ()=>2.9===Type.stringify('num', '2.9'),
+        ()=>isNaN(Type.stringify('num', '3px')), // parseIntは3を返す。統一性がない。
+//        ()=>3===Type.stringify('num', '3px'), // parseIntは3を返す。統一性がない。
+        ()=>15===Type.stringify('binary', '1111'),
+        ()=>0===Type.stringify('bin', '0000'),
+        ()=>isNaN(Type.stringify('bin', '')),
+        ()=>isNaN(Type.stringify('bin', 'A')),
+        ()=>2===Type.stringify('bin', '10'),
+        ()=>-0===Type.stringify('bin', '-000'), // -0になる。期待値は「非2進数」だがそんな定数はない。JSは+0,0,-0を区別するっぽい。
+        ()=>isNaN(Type.stringify('bin', '2.9')), // 10進数のときは2になるのに…
+        ()=>isNaN(Type.stringify('bin', '3px')), // 10進数のときは3になるのに…
+        ()=>4===Type.stringify('bin', '0100'),
+        ()=>0===Type.stringify('bin', '0b11'),   // リテラルのときは3になるのにparseInt(v, 2)のときは0。NaNでもない。これはひどい
+        ()=>3===0b11,                        // リテラルのときは3になるのに
+        ()=>8===Type.stringify('octral', '10'),
+        ()=>8===Type.stringify('oct', '10'),
+        ()=>8===Type.stringify('oct', '010'),
+        ()=>0===Type.stringify('oct', '0o10'),   // リテラルのときは3になるのにparseInt(v, 8)のときは0。NaNでもない。これはひどい
+        ()=>8===0o10,                        // リテラルのときは8になるのに
+        ()=>255===Type.stringify('hex', 'ff'),
+        ()=>255===Type.stringify('hex', 'FF'),
+        ()=>255===Type.stringify('hex', '0xff'),
+        ()=>31===Type.stringify('base32', 'v'),
+        ()=>31===Type.stringify('base32', 'V'),
+        ()=>32===Type.stringify('base32', '10'),
+        ()=>35===Type.stringify('base36', 'z'),
+        ()=>35===Type.stringify('base36', 'Z'),
+        ()=>36===Type.stringify('base36', '10'),
+        ()=>'QQ=='===Type.stringify('base64', 'A'),
+//        ()=>'QQ=='===await Type.parseAsync('dataurl', 'data:,A'),
+//        ()=>'QQ=='===await Type.parseAsync('blob', 'A'),
+        //()=>1234567890n===Type.stringify('bigint', '1234567890n'),
+        ()=>1234567890n===Type.stringify('bigint', '1234567890'),
+        ()=>Type.isSym(Type.stringify('symbol', 'my-sym')),
+        ()=>Type.isSym(Type.stringify('sym', 'my-sym')),
+        ()=>Type.isFn(Type.stringify('fn', 'return 1')),
+        ()=>Type.isFn(Type.stringify('fn', 'return a+b', 'a,b'.split(','))),
+        ()=>3===Type.stringify('fn', 'return a+b', 'a,b'.split(','))(1,2),
+        ()=>MyClass===Type.stringify('class', 'MyClass'),
+        ()=>MyClass===Type.stringify('cls', 'MyClass'),
+        ()=>{const i=Type.stringify('instance', 'Human', ['A',1]);console.log(i);return (i instanceof Human && 'A'===i.name && 1===i.age);},
+        ()=>{const i=Type.stringify('ins', 'Human', ['A',1]);console.log(i);return (i instanceof Human && 'A'===i.name && 1===i.age);},
+//        ()=>MyClass===Type.stringify('instance', new Human('A',1), Human),
+//        ()=>MyClass===Type.stringify('ins', 'Human'),
+        ()=>Type.isDate(Type.stringify('datetime', '2000-01-01T00:00:00')),
+        ()=>{
+            const dt = Type.stringify('datetime', '2000-02-03T04:05:06')
+            if (!(dt instanceof Date)) { return false }
+            if (2000!==dt.getFullYear()) { return false }
+            if (2!==dt.getMonth()+1) { return false }
+            if (3!==dt.getDate()) { return false }
+            if (4!==dt.getHours()) { return false }
+            if (5!==dt.getMinutes()) { return false }
+            if (6!==dt.getSeconds()) { return false }
+            return true
+        },
+        ()=>Type.isDate(Type.stringify('DateTime', '2000-01-01T00:00:00')),
+        ()=>Type.isDate(Type.stringify('dt', '2000-01-01T00:00:00')),
+        ()=>Type.isDate(Type.stringify('date', '2000-01-01')),
+        ()=>{
+            const dt = Type.stringify('date', '2000-02-03')
+            if (!(dt instanceof Date)) { return false }
+            if (2000!==dt.getFullYear()) { return false }
+            if (2!==dt.getMonth()+1) { return false }
+            if (3!==dt.getDate()) { return false }
+            if (0!==dt.getHours()) { return false }
+            if (0!==dt.getMinutes()) { return false }
+            if (0!==dt.getSeconds()) { return false }
+            return true
+        },
+        ()=>Type.isDate(Type.stringify('time', '00:00:00')),
+        ()=>{
+            const dt = Type.stringify('time', '12:34:56')
+            if (!(dt instanceof Date)) { return false }
+            if (2000!==dt.getFullYear()) { return false }
+            if (1!==dt.getMonth()+1) { return false }
+            if (1!==dt.getDate()) { return false }
+            if (12!==dt.getHours()) { return false }
+            if (34!==dt.getMinutes()) { return false }
+            if (56!==dt.getSeconds()) { return false }
+            return true
+        },
+        ()=>Type.isDuration(Type.stringify('duration', 'P1Y2M3DT4H5M6S')),
+        // Color,Decimalは必要な外部ライブラリ導入してないためテスト省略
+
+        // 文字列から文字列へ
+        ()=>'A'===Type.stringify('string', 'A'),
+
+        // 異常系
+        ()=>test.assertError(TypeError, `parse()の第二引数の型は文字列型にしてください。: undefined undefined`, ()=>Type.stringify('undefined', undefined))
+        */
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
