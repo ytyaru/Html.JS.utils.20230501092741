@@ -15,6 +15,10 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     window.Human = Human
     console.log(Type.stringify(undefined, 'undefined'))
     console.log(Type.stringify(-2.3e4, 'number'))
+    console.log(Type.stringify([1,2,3], 'array'))
+    console.log(Type.stringify([{k:0},{k:'あ'}], 'array'))
+    console.log(Type.stringify({k:'あ'}, 'object'))
+    console.log(Type.stringify({k:'あ\nい\tう'}, 'object'))
     test.run([
         ()=>'parse,stringify,to,is,parsers'.split(',').every(p=>p in Type),
         // 文字列から各型へ
@@ -57,6 +61,16 @@ window.addEventListener('DOMContentLoaded', async(event) => {
         ()=>'-1.2'===Type.stringify(-1.2, 'integer'), // 型エラーにならない…
         ()=>'-23000'===Type.stringify(-2.3e4, 'integer'),
         ()=>'255'===Type.stringify(0xff, 'integer'), // 16進数表記にならない
+        ()=>'1,2,3'===Type.stringify([1,2,3], 'array'),
+        ()=>'1.2,3.4,5.6'===Type.stringify([1.2, 3.4, 5.6], 'array'),
+        ()=>'a,B,c'===Type.stringify(['a','B','c'], 'array'),
+        ()=>'3,B,あ'===Type.stringify([3,'B','あ'], 'array'),
+//        ()=>'{k:0},{k:"あ"}'===Type.stringify([{k:0},{k:'あ'}], 'array'), // [object Object],[object Object]
+        ()=>'{"k":"あ"}'===Type.stringify({k:'あ'}, 'object'),
+        ()=>'{"k":1}'===Type.stringify({k:1}, 'object'),
+        ()=>'{"k":true}'===Type.stringify({k:true}, 'object'),
+        ()=>'{"k":"あ\\nい\\tう"}'===Type.stringify({k:'あ\nい\tう'}, 'object'),
+        ()=>'{"k":"あ\\nい\\tう"}'===Type.stringify({k:'あ\nい\tう'}, 'json'),
         /*
         ()=>undefined===Type.stringify('undefined', 'A'),
         ()=>undefined===Type.stringify('undefined', ''),
