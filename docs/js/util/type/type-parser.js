@@ -166,11 +166,13 @@ class YamlParser extends TypeParser {
     stringify(val) { return jsyaml.dump(val) }
 }
 //Map, Set, WeakMap, WeakSet
-class MapParser extends TypeParser {
+//class MapParser extends TypeParser {
+class MapParser extends ObjectParser {
     constructor(names='map') { super(names) }
     is(v) { return v instanceof Map }
     parse(str) { return new Map(Type.parsers.get('object').to('array', JSON.parse(str))) }
-    stringify(val) { return Type.parsers.get('array').to('object', Array.from(val.entries())) }
+    //stringify(val) { return Type.parsers.get('array').to('object', Array.from(val.entries())) }
+    stringify(val) { return super.stringify(val) }
     to(typeName, val) { // to('object', [['k1','v1'],['k2','v2']]) -> {k1:'v1', k2:'v2'}
         const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
         if (ObjectParser===parser.constructor) { return parser.from('array', Array.from(val.entries())) }
@@ -612,6 +614,8 @@ type.parsers.add(new ObjectParser())
 type.parsers.add(new JsonParser())
 type.parsers.add(new YamlParser())
 type.parsers.add(new ArrayParser())
+type.parsers.add(new MapParser())
+type.parsers.add(new SetParser())
 type.parsers.add(new BooleanParser())
 type.parsers.add(new IntegerParser())
 type.parsers.add(new BinParser())
