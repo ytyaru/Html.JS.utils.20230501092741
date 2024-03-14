@@ -50,7 +50,7 @@ class NullParser extends FixTypeParser { constructor(type=null) { super(type) } 
 class ArrayParser extends TypeParser {
     constructor(names='array,ary'.split(',')) { super(names) }
     is(v) { return Array.isArray(v) }
-    parse(str, delim=',', to='string') {
+    parse(str, to='string', delim=',') {
         const parser = Type.parsers.get(to)
         const strs = str.split(delim)
         if (StringParser===parser.constructor) { return strs }
@@ -146,16 +146,7 @@ class ObjectParser extends TypeParser {
 // class Dsv,Csv,Tsv,Ssv,Scsv,Clsv,  Ltsv, Json,Yaml,Toml,Xml
 class JsonParser extends TypeParser {
     constructor(names='json') { super(names) }
-    is(v) {
-        //if (Type.isObj(v)) { return true }
-        //if (Type.isAry(v)) { return true }
-        if (Type.isStr(v)) {
-            const s = v.trim()
-            if (s.startsWith('{'), s.endsWith('}')) { return true }
-            if (s.startsWith('['), s.endsWith(']')) { return true }
-        }
-        return false
-    }
+    is(v) { try { JSON.parse(v); return true; } catch(e) { console.warn(e); return false; } }
     parse(str) { return JSON.parse(str) }
     stringify(val) { return JSON.stringify(val) }
 }
@@ -170,22 +161,27 @@ class YamlParser extends TypeParser {
 class MapParser extends ObjectParser {
     constructor(names='map') { super(names) }
     is(v) { return v instanceof Map }
-    parse(str) { return new Map(Type.parsers.get('object').to('array', JSON.parse(str))) }
+    //parse(str) { return new Map(Type.parsers.get('object').to('array', JSON.parse(str))) }
     //stringify(val) { return Type.parsers.get('array').to('object', Array.from(val.entries())) }
-    stringify(val) { return super.stringify(val) }
+    //stringify(val) { return super.stringify(val) }
+    parse(str) { return new Map(Type.parsers.get('object').parse(str).entries()) }
+    stringify(val) {
+        if (!this.is(val)) { throw new TypeError(`引数の型はMapのみ有効です。`) }
+        return JSON.stringify(Object.fromEntries(val))
+    }
     to(typeName, val) { // to('object', [['k1','v1'],['k2','v2']]) -> {k1:'v1', k2:'v2'}
         const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
-        if (ObjectParser===parser.constructor) { return parser.from('array', Array.from(val.entries())) }
+        if (ObjectParser===parser.constructor) { return Object.fromEntries(val) }
         else if (ArrayParser===parser.constructor) { return Array.from(val.entries()) }
-        else if (SetParser===parser.constructor) { return Array.from(val.entries()) }
-//        else if (WeakMapParser===parser.constructor) { return new WeakMap()Array.from(val.entries()) }
-//        else if (WeakSetParser===parser.constructor) { return Array.from(val.entries()) }
     }
     from(typeName, val) { // from('object', {k1:'v1', k2:'v2'}) -> [['k1','v1'],['k2','v2']]
         const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
-        if (ObjectParser===parser.constructor) { return parser.from('array', Array.from(val.entries())) }
-        else if (ArrayParser===parser.constructor) { return Array.from(val.entries()) }
-        else if (SetParser===parser.constructor) { return Array.from(val.entries()) }
+        if (ObjectParser===parser.constructor) { return new Map(val.entries()) }
+        else if (ArrayParser===parser.constructor) { return new Map(val) }
+//        else if (SetParser===parser.constructor) { return Array.from(val.entries()) }
+//        if (ObjectParser===parser.constructor) { return parser.from('array', Array.from(val.entries())) }
+//        else if (ArrayParser===parser.constructor) { return Array.from(val.entries()) }
+//        else if (SetParser===parser.constructor) { return Array.from(val.entries()) }
 //        else if (WeakMapParser===parser.constructor) { return Array.from(val.entries()) }
 //        else if (WeakSetParser===parser.constructor) { return Array.from(val.entries()) }
     }
@@ -193,8 +189,13 @@ class MapParser extends ObjectParser {
 class SetParser extends TypeParser {
     constructor(names='set') { super(names) }
     is(v) { return v instanceof Set }
-    parse(str) { return new Set(Type.parsers.get('object').to('array', JSON.parse(str))) }
-    stringify(val) { return Type.parsers.get('array').to('object', Array.from(val.entries())) }
+    parse(str) { return new Set(JSON.parse(str)) }
+    stringify(val) {
+        if (!this.is(val)) { throw new TypeError(`引数の型はSetのみ有効です。`) }
+        return JSON.stringify(Array.from(val))
+    }
+//    parse(str) { return new Set(Type.parsers.get('object').to('array', JSON.parse(str))) }
+//    stringify(val) { return Type.parsers.get('array').to('object', Array.from(val.entries())) }
     to(typeName, val) { // to('object', [['k1','v1'],['k2','v2']]) -> {k1:'v1', k2:'v2'}
         const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
         if (ObjectParser===parser.constructor) { return parser.from('array', Array.from(val.entries())) }
@@ -460,7 +461,7 @@ class TimeParser extends DateTimeParser { // day.js/date-fns  Temporalが実装�
 class DurationParser extends TypeParser { // day.js/date-fns  Temporalが実装されるまでの間どうするか。文字列として扱うか
     constructor(names='duration,dur'.split(',')) { super(names); this._regex = /P(\d{1,}Y)?(\d{1,}M)?(\d{1,}D)?(T)?(\d{1,}H)?(\d{1,}M)?(\d{1,}S)?/; }
     is(v) {
-        if (Type.isStr(v)) { return str.match(this._regex) }
+        if (Type.isStr(v)) { return v.match(this._regex) }
         if (Type.isObj(v)) { return 'y,m,d,H,M,S'.split(',').some(k=>v.hasOwnProperty(k) && Type.isInt(v[k])) }
         return false
     }
@@ -532,12 +533,12 @@ class TypeClass {
 //    to(to, value, from) { this._parses.get(to).to(value, from) }
 
     //parse(to, v) { return this.parsers.get(to).parse(v) }
-    parse(to, v, params) {
+    parse(to, v, ...params) {
 //        console.log(this, this.parsers)
         const parser = this.parsers.get(to)
         console.log(parser)
         if (!Type.isStr(v)) { throw new TypeError(`parse()の第二引数の型は文字列型にしてください。: ${(typeof v)} ${v}`) }
-        return parser?.parse(v, params)
+        return parser?.parse(v, ...params)
     }
     stringify(v, from) {
         const parser = ((from) ? this.parsers.get(from) : this.parsers.getFromValue(v))

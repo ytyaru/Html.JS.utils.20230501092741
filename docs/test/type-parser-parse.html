@@ -66,7 +66,9 @@ window.addEventListener('DOMContentLoaded', async(event) => {
 //        ()=>'QQ=='===await Type.parseAsync('blob', 'A'),
 
     console.log(Type.parse('duration', 'P1Y2M3DT4H5M6S'))
-
+    console.log(Type.parse('object', '{k:"v"}'))
+    console.log(Type.parse('array', '[1,2,3]'))
+    console.log(Type.parse('array', '1,2,3'))
     /*
     class MyClass { }
 //    window.MyClass = MyClass
@@ -222,6 +224,59 @@ window.addEventListener('DOMContentLoaded', async(event) => {
             return true
         },
         ()=>Type.isDuration(Type.parse('duration', 'P1Y2M3DT4H5M6S')),
+
+        // container系
+        ()=>{
+            const actual = Type.parse('object', '{k:"v"}')
+            if (!Type.isObj(actual)) { return false }
+            if (!actual.hasOwnProperty('k')) { return false }
+            if ('v'!==actual.k) { return false }
+            return true
+        },
+        ()=>{
+            const actual = Type.parse('array', '1,2,3')
+            console.log(actual)
+            if (!Type.isAry(actual)) { return false }
+            if (3!==actual.length) { return false }
+            if ('1'!==actual[0]) { return false }
+            if ('2'!==actual[1]) { return false }
+            if ('3'!==actual[2]) { return false }
+            return true
+        },
+        ()=>{
+            const actual = Type.parse('array', '1,2,3', 'int')
+            console.log(actual)
+            if (!Type.isAry(actual)) { return false }
+            if (3!==actual.length) { return false }
+            if (1!==actual[0]) { return false }
+            if (2!==actual[1]) { return false }
+            if (3!==actual[2]) { return false }
+            return true
+        },
+        ()=>{
+            const actual = Type.parse('array', '1;2;3', 'int', ';')
+            console.log(actual)
+            if (!Type.isAry(actual)) { return false }
+            if (3!==actual.length) { return false }
+            if (1!==actual[0]) { return false }
+            if (2!==actual[1]) { return false }
+            if (3!==actual[2]) { return false }
+            return true
+        },
+        ()=>{
+            const actual = Type.parse('array', 'a;b;c', 'str', ';')
+            console.log(actual)
+            if (!Type.isAry(actual)) { return false }
+            if (3!==actual.length) { return false }
+            if ('a'!==actual[0]) { return false }
+            if ('b'!==actual[1]) { return false }
+            if ('c'!==actual[2]) { return false }
+            return true
+        },
+
+
+
+
 
         // async系
         async()=>{const blob=await Type.parseAsync('dataurl', 'data:,A'); const buf=await blob.arrayBuffer(); return (blob instanceof Blob && 1===blob.size && 'text/plain'===blob.type && 1===buf.length && 65===buf[0]); },

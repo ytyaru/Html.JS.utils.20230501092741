@@ -86,6 +86,7 @@ window.addEventListener('DOMContentLoaded', async(event) => {
         ()=>'k: あ\n'===Type.stringify({k:'あ'}, 'yaml'),
         ()=>'k: あ\\nい\\tう\n'===Type.stringify({"k":"あ\\nい\\tう"}, 'yaml'),
         ()=>'{"k":"あ"}'===Type.stringify(new Map([['k','あ']]), 'map'),
+        ()=>'1,2,3'===Type.stringify(new Set([1,2,3]), 'set'),
         /*
         ()=>undefined===Type.stringify('undefined', 'A'),
         ()=>undefined===Type.stringify('undefined', ''),
