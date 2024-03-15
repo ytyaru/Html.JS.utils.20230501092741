@@ -50,13 +50,27 @@ class NullParser extends FixTypeParser { constructor(type=null) { super(type) } 
 class ArrayParser extends TypeParser {
     constructor(names='array,ary'.split(',')) { super(names) }
     is(v) { return Array.isArray(v) }
+//    parse(str, to='string', delim=',') {
+//        const parser = Type.parsers.get(to)
+//        const strs = str.split(delim)
+//        if (StringParser===parser.constructor) { return strs }
+//        return strs.map(s=>parser.parse(s))
+//    }
+//    stringify(val, delim=',') { return val.join(delim) }
+//    parse(str) { return JSON.parse(str) }
     parse(str, to='string', delim=',') {
+        const s = str.trim()
+        if (s.startsWith('[') && s.endsWith(']')) { return JSON.parse(str) }
+        return this.#parseNoSquareBrackets(str, to, delim)
+    }
+    #parseNoSquareBrackets(str, to='string', delim=',') {
         const parser = Type.parsers.get(to)
         const strs = str.split(delim)
         if (StringParser===parser.constructor) { return strs }
         return strs.map(s=>parser.parse(s))
     }
-    stringify(val, delim=',') { return val.join(delim) }
+    stringify(val) { return JSON.stringify(val) }
+//    #stringifyNoSquareBrackets(val, delim=',') { return return val.join(delim) }
     to(typeName, val) { // to('object', [['k1','v1'],['k2','v2']]) -> {k1:'v1', k2:'v2'}
 //        const parser = Type.parsers.get(typeName)
         const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))

@@ -273,6 +273,16 @@ window.addEventListener('DOMContentLoaded', async(event) => {
             if ('c'!==actual[2]) { return false }
             return true
         },
+        ()=>{
+            const actual = Type.parse('array', '[1,2,"3"]')
+            console.log(actual)
+            if (!Type.isAry(actual)) { return false }
+            if (3!==actual.length) { return false }
+            if (1!==actual[0]) { return false }
+            if (2!==actual[1]) { return false }
+            if ('3'!==actual[2]) { return false }
+            return true
+        },
 
 
 

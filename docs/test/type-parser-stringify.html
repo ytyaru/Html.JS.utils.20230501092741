@@ -31,6 +31,7 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     console.log('k: あ\\nい\\tう\\n'===Type.stringify({"k":"あ\\nい\\tう"}, 'yaml'))
     console.log('k: あ\\nい\\tう\n'===Type.stringify({"k":"あ\\nい\\tう"}, 'yaml'))
     console.log(Type.stringify(new Map([['k','あ']]), 'map'))
+    console.log(Type.stringify(new Set([1,2,3]), 'set'))
     test.run([
         ()=>'parse,stringify,to,is,parsers'.split(',').every(p=>p in Type),
         // 文字列から各型へ
@@ -73,10 +74,16 @@ window.addEventListener('DOMContentLoaded', async(event) => {
         ()=>'-1.2'===Type.stringify(-1.2, 'integer'), // 型エラーにならない…
         ()=>'-23000'===Type.stringify(-2.3e4, 'integer'),
         ()=>'255'===Type.stringify(0xff, 'integer'), // 16進数表記にならない
-        ()=>'1,2,3'===Type.stringify([1,2,3], 'array'),
-        ()=>'1.2,3.4,5.6'===Type.stringify([1.2, 3.4, 5.6], 'array'),
-        ()=>'a,B,c'===Type.stringify(['a','B','c'], 'array'),
-        ()=>'3,B,あ'===Type.stringify([3,'B','あ'], 'array'),
+        ()=>'0'===Type.stringify(0b0, 'bin'),
+        ()=>'0'===Type.stringify(0o0, 'oct'),
+        ()=>'0'===Type.stringify(0x0, 'hex'),
+        ()=>'11'===Type.stringify(0b11, 'bin'),
+        ()=>'10'===Type.stringify(0o10, 'oct'),
+        ()=>'ff'===Type.stringify(0xff, 'hex'),
+        ()=>'[1,2,3]'===Type.stringify([1,2,3], 'array'),
+        ()=>'[1.2,3.4,5.6]'===Type.stringify([1.2, 3.4, 5.6], 'array'),
+        ()=>'["a","B","c"]'===Type.stringify(['a','B','c'], 'array'),
+        ()=>'[3,"B","あ"]'===Type.stringify([3,'B','あ'], 'array'),
 //        ()=>'{k:0},{k:"あ"}'===Type.stringify([{k:0},{k:'あ'}], 'array'), // [object Object],[object Object]
         ()=>'{"k":"あ"}'===Type.stringify({k:'あ'}, 'object'),
         ()=>'{"k":1}'===Type.stringify({k:1}, 'object'),
@@ -86,7 +93,7 @@ window.addEventListener('DOMContentLoaded', async(event) => {
         ()=>'k: あ\n'===Type.stringify({k:'あ'}, 'yaml'),
         ()=>'k: あ\\nい\\tう\n'===Type.stringify({"k":"あ\\nい\\tう"}, 'yaml'),
         ()=>'{"k":"あ"}'===Type.stringify(new Map([['k','あ']]), 'map'),
-        ()=>'1,2,3'===Type.stringify(new Set([1,2,3]), 'set'),
+        ()=>'[1,2,3]'===Type.stringify(new Set([1,2,3]), 'set'),
         /*
         ()=>undefined===Type.stringify('undefined', 'A'),
         ()=>undefined===Type.stringify('undefined', ''),
