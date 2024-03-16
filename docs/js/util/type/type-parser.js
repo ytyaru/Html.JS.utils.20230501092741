@@ -178,7 +178,8 @@ class MapParser extends ObjectParser {
     //parse(str) { return new Map(Type.parsers.get('object').to('array', JSON.parse(str))) }
     //stringify(val) { return Type.parsers.get('array').to('object', Array.from(val.entries())) }
     //stringify(val) { return super.stringify(val) }
-    parse(str) { return new Map(Type.parsers.get('object').parse(str).entries()) }
+    //parse(str) { return new Map(Type.parsers.get('object').parse(str).entries()) }
+    parse(str) { return new Map(Object.entries(Type.parsers.get('object').parse(str))) }
     stringify(val) {
         if (!this.is(val)) { throw new TypeError(`引数の型はMapのみ有効です。`) }
         return JSON.stringify(Object.fromEntries(val))
@@ -270,6 +271,7 @@ class StringParser extends TypeParser {
 class Base64Parser extends StringParser {
     constructor(names='base64') { super(names) }
     parse(str) { return btoa(String.fromCharCode.apply(null, new TextEncoder().encode(str))) } // string->base64
+    //stringify(val) { return new TextDecoder().decode(new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt()))) } // base64->string
     stringify(val) { return new TextDecoder().decode(new Uint8Array(Array.prototype.map.call(atob(val), c=>c.charCodeAt()))) } // base64->string
 //    parse(str) { return Uint8Array.from(Array.prototype.map.call(atob(str), x=>x.charCodeAt(0))) } // str -> Uint8Array
 //    stringify(val) { return btoa(String.fromCharCode(...val)) } // Uint8Array -> str
@@ -293,6 +295,15 @@ class Base64Parser extends StringParser {
     }
     */
 }
+class FloatParser extends NumberParser {
+    constructor(names='float,flt,f'.split(',')) { super(names); }
+    is(v) { return super.is(v) && (v % 1 !== 0 || 0===v) }
+    parse(str) { return parseFloat(str) }
+}
+class BigIntParser extends TypeParser {
+    constructor(names='bigint,BigInt,bi'.split(',')) { super(names) }
+    parse(str) { return BigInt(str) }
+}
 //class DataUrlParser extends Base64Parser {
 class DataUrlParser extends Base64Parser {
 //    constructor(names='dataurl,DataUrl') { super(names); this._regex = /data:(.+/.+)?(;base64)?,([a-zA-Z0-9\+/=]+)/; }
@@ -303,7 +314,8 @@ class DataUrlParser extends Base64Parser {
 //    constructor(names='dataurl,DataUrl') { super(names); this._regex = /data:(?<mime>[\w/\-\.]+)(;base64)?,(?<data>.*)/; }
     //constructor(names='dataurl,DataUrl'.split(',')) { super(names); this._regex = /data:(?<mime>[\w/\-\.]+)(?<encoding>;\w+),(?<data>.*)/; }
     constructor(names='dataurl,DataUrl'.split(',')) { super(names); this._regex = /data:(?<mime>[\w/\-\.]+)?(?<encoding>;\w+)?,(?<data>.*)/; }
-    is(v) { return v.match(this._regex) }
+    //is(v) { if (!Type.isStr(v)) {return false} return v.match(this._regex) }
+    is(v) { return ((Type.isStr(v)) ? v.match(this._regex) : false) }
 //var regex = new Regex(@"data:(?<mime>[\w/\-\.]+);(?<encoding>\w+),(?<data>.*)", RegexOptions.Compiled);
     /*
     parse(str) { // str:base64  return Blob
@@ -370,15 +382,6 @@ class BlobParser extends DataUrlParser {
     async parseAsync(dataUrl) { return await super.parseAsync(dataUrl) }
     async stringifyAsync(blob) { return await super.stringifyAsync(blob) }
 }
-class FloatParser extends NumberParser {
-    constructor(names='float,flt,f'.split(',')) { super(names); }
-    is(v) { return super.is(v) && (v % 1 !== 0 || 0===v) }
-    parse(str) { return parseFloat(str) }
-}
-class BigIntParser extends TypeParser {
-    constructor(names='bigint,BigInt,bi'.split(',')) { super(names) }
-    parse(str) { return BigInt(str) }
-}
 class SymbolParser extends TypeParser {
     constructor(names='symbol,sym'.split(',')) { super(names) }
     parse(str) { return Symbol(str) }
@@ -422,6 +425,7 @@ class InstanceParser extends TypeParser {
         const cls = this._clsP.parse(str)
         return ((Array.isArray(params)) ? new cls(...params) : new cls()) 
     }
+    stringify(val) { return `[object ${val.constructor.name}]` }
 }
 class DateTimeParser extends TypeParser { // day.js/date-fns  Temporalが実装されるまでの間どうするか。文字列として扱うか
     constructor(names='datetime,DateTime,dt'.split(',')) { super(names); this._regex = /\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/; }
@@ -432,11 +436,13 @@ class DateTimeParser extends TypeParser { // day.js/date-fns  Temporalが実装�
         throw new Error(`引数エラー。引数の文字列 ${str} は日付に変換できませんでした。書式 ${this._regex} に従ってください。`)
     }
     stringify(val, s1='-', s2='T', s3=':') {
+        console.log(val)
         if (!this.is(val)) { throw new Error(`引数型エラー。引数の型はDate型であるべきです。: ${typeof val} : ${val}`) }
-        const [y,m,d,H,M,S] = this.getYmdHmsStr()
+        console.log(val)
+        const [y,m,d,H,M,S] = this.getYmdHmsStr(val)
         return `${y}${s1}${m}${s1}${d}${s2}${H}${s3}${M}${s3}${S}`
     }
-    getYmdHms() { return [
+    getYmdHms(val) { console.log(val);return [
         val.getFullYear(),
         val.getMonth() + 1,
         val.getDate(),
@@ -444,7 +450,7 @@ class DateTimeParser extends TypeParser { // day.js/date-fns  Temporalが実装�
         val.getMinutes(),
         val.getSeconds(),
     ]}
-    getYmdHmsStr() { return this.getYmdHms().map((v,i)=>(0===i) ? v.toString() : v.toString().padStart(2)) }
+    getYmdHmsStr(val) { console.log(val);return this.getYmdHms(val).map((v,i)=>(0===i) ? v.toString() : v.toString().padStart(2,'0')) }
 }
 class DateParser extends DateTimeParser { // day.js/date-fns  Temporalが実装されるまでの間どうするか。文字列として扱うか
     constructor(names='date') { super(names); this._regex = /\d{4,}-\d{2}-\d{2}/; }
@@ -455,7 +461,7 @@ class DateParser extends DateTimeParser { // day.js/date-fns  Temporalが実装�
     }
     stringify(val, _='-') {
         if (!this.is(val)) { throw new Error(`引数型エラー。引数の型はDate型であるべきです。: ${typeof val} : ${val}`) }
-        const [y,m,d,H,M,S] = this.getYmdHmsStr()
+        const [y,m,d,H,M,S] = super.getYmdHmsStr(val)
         return `${y}${_}${m}${_}${d}`
     }
 }
@@ -468,7 +474,7 @@ class TimeParser extends DateTimeParser { // day.js/date-fns  Temporalが実装�
     }
     stringify(val, _=':') {
         if (!this.is(val)) { throw new Error(`引数型エラー。引数の型はDate型であるべきです。: ${typeof val} : ${val}`) }
-        const [y,m,d,H,M,S] = this.getYmdHmsStr()
+        const [y,m,d,H,M,S] = super.getYmdHmsStr(val)
         return `${H}${_}${M}${_}${S}`
     }
 }
@@ -476,6 +482,7 @@ class DurationParser extends TypeParser { // day.js/date-fns  Temporalが実装�
     constructor(names='duration,dur'.split(',')) { super(names); this._regex = /P(\d{1,}Y)?(\d{1,}M)?(\d{1,}D)?(T)?(\d{1,}H)?(\d{1,}M)?(\d{1,}S)?/; }
     is(v) {
         if (Type.isStr(v)) { return v.match(this._regex) }
+        //if (Type.isStr(v)) { return this._regex.match(v) }
         if (Type.isObj(v)) { return 'y,m,d,H,M,S'.split(',').some(k=>v.hasOwnProperty(k) && Type.isInt(v[k])) }
         return false
     }
@@ -502,18 +509,20 @@ class DurationParser extends TypeParser { // day.js/date-fns  Temporalが実装�
     */
     stringify(v) {
         const T = (('H,M,S'.split(',').some(k=>v.hasOwnProperty(k))) ? 'T' : '')
-        const ymd = 'y,m,d'.split(',').map(k=>((v.hasOwnProperty(k)) ? v[k]+k.toUpperCase() : null))
-        const hms = 'H,M,S'.split(',').map(k=>((v.hasOwnProperty(k)) ? v[k]+k.toUpperCase() : null))
+        const ymd = 'y,m,d'.split(',').map(k=>((v.hasOwnProperty(k)) ? v[k]+k.toUpperCase() : '')).join('')
+        const hms = 'H,M,S'.split(',').map(k=>((v.hasOwnProperty(k)) ? v[k]+k.toUpperCase() : '')).join('')
         return `P${ymd}${T}${hms}`
     }
 }
 class ColorParser extends TypeParser {
     constructor(names='color,clr'.split(',')) { super(names) }
+    is(val) { return val.hasOwnProperty('_rgb') }
     parse(str) { return chroma(str) }
     stringify(val) { return val.hex() }
 }
 class DecimalParser extends TypeParser {
     constructor(names='decimal,dec'.split(',')) { super(names) }
+    is(v) { return Decimal.isDecimal(v) }
     parse(str) { return new Decimal(str) }
 }
 class TypeParsers {
@@ -532,8 +541,10 @@ class TypeParsers {
         if (1<parsers.length) { throw new Error(`論理エラー。typeName:${typeName}に一致するパーサが複数あります。`) }
     }
     getFromValue(v) {
-        for (let type of 'undefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary'.split(',')) {
-            if (this.is(type, v)) { return this.get(type) }
+        for (let type of 'undefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary,blob,DataUrl,color'.split(',')) {
+            const parser = this.get(type)
+            if (parser.is(v)) { return parser }
+//            if (this.is(type, v)) { return this.get(type) }
         }
         return null
     }
@@ -556,7 +567,9 @@ class TypeClass {
     }
     stringify(v, from) {
         const parser = ((from) ? this.parsers.get(from) : this.parsers.getFromValue(v))
-        if (!parser) { throw new Error(`stringify()の第二引数で第一引数の型名を指定してください。（値の型が${'undefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary'.split(',')}のいずれかであれば型名を省略できます）`) }
+        if (!parser) { throw new Error(`stringify()の第二引数で第一引数の型名を指定してください。（値の型が${'undefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary,blob,DataUrl,color'.split(',')}のいずれかであれば型名を省略できます）`) }
+        console.log(v)
+        console.log(parser)
         console.log(parser, parser.stringify(v))
         return parser.stringify(v)
     }

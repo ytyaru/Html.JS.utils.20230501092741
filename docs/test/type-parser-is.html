@@ -6,6 +6,10 @@
 -->
 <script src="../js/util/string/case.js"></script>
 <script src="../js/util/type/type-parser.js"></script>
+<script src="../lib/js-yaml/4.1.0/min.js"></script>
+<script src="../lib/chroma/2.4.2/min.js"></script>
+<script src="../lib/decimal.js/9.0.0/min.js"></script>
+<script src="../lib/big.js/2.3.0/min.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', (event) => {
     const test = new Test()
@@ -642,15 +646,24 @@ window.addEventListener('DOMContentLoaded', (event) => {
         ()=>!Type.isDuration(()=>{}),  // 関数とクラスの区別がつけられない！
         ()=>!Type.isDuration(MyClass), // 関数とクラスの区別がつけられない！
         ()=>!Type.isDuration(new Date()),
-        ()=>!Type.isDuration('P1Y2M3DT4H5M6S'),
-        ()=>!Type.isDuration('P1Y'),
-        ()=>!Type.isDuration('P2M'),
-        ()=>!Type.isDuration('P3D'),
-        ()=>!Type.isDuration('PT4H'),
-        ()=>!Type.isDuration('PT5M'),
-        ()=>!Type.isDuration('PT6S'),
-        ()=>!Type.isDuration('P1YT6S'),
-        // Color,Decimalは必要な外部ライブラリ導入してないためテスト省略
+        ()=> Type.isDuration('P1Y2M3DT4H5M6S'),
+        ()=> Type.isDuration('P1Y'),
+        ()=> Type.isDuration('P2M'),
+        ()=> Type.isDuration('P3D'),
+        ()=> Type.isDuration('PT4H'),
+        ()=> Type.isDuration('PT5M'),
+        ()=> Type.isDuration('PT6S'),
+        ()=> Type.isDuration('P1YT6S'),
+        ()=>!Type.isDuration('X'),
+        ()=> Type.isColor(chroma('red')),
+        ()=>!Type.isColor({}),
+        ()=> Type.isDecimal(new Decimal(1.234)),
+        ()=>!Type.isDecimal({}),
+        ()=> Type.isMap(new Map()),
+        ()=>!Type.isMap(new Set()),
+        ()=> Type.isSet(new Set()),
+        ()=>!Type.isSet(new Map()),
+
     ])
 })
 </script>

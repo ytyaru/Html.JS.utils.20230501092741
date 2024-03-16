@@ -6,6 +6,10 @@
 -->
 <script src="../js/util/string/case.js"></script>
 <script src="../js/util/type/type-parser.js"></script>
+<script src="../lib/js-yaml/4.1.0/min.js"></script>
+<script src="../lib/chroma/2.4.2/min.js"></script>
+<script src="../lib/decimal.js/9.0.0/min.js"></script>
+<script src="../lib/big.js/2.3.0/min.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', async(event) => {
     const test = new Test()
@@ -69,6 +73,10 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     console.log(Type.parse('object', '{k:"v"}'))
     console.log(Type.parse('array', '[1,2,3]'))
     console.log(Type.parse('array', '1,2,3'))
+    console.log(Type.parse('set', '[1,2,"3"]'))
+    console.log(Type.parse('color', '#ff0000'))
+    console.log(Type.parse('decimal', '1.234'))
+    console.log(Type.parse('decimal', '1.234').constructor.name)
     /*
     class MyClass { }
 //    window.MyClass = MyClass
@@ -224,7 +232,17 @@ window.addEventListener('DOMContentLoaded', async(event) => {
             return true
         },
         ()=>Type.isDuration(Type.parse('duration', 'P1Y2M3DT4H5M6S')),
-
+        ()=>{
+            const d = Type.parse('duration', 'P1Y2M3DT4H5M6S')
+            if (!Type.isDuration(d)) { return false }
+            if (1!==d.y) { return false }
+            if (2!==d.m) { return false }
+            if (3!==d.d) { return false }
+            if (4!==d.H) { return false }
+            if (5!==d.M) { return false }
+            if (6!==d.S) { return false }
+            return true
+        },
         // container系
         ()=>{
             const actual = Type.parse('object', '{k:"v"}')
@@ -281,6 +299,31 @@ window.addEventListener('DOMContentLoaded', async(event) => {
             if (1!==actual[0]) { return false }
             if (2!==actual[1]) { return false }
             if ('3'!==actual[2]) { return false }
+            return true
+        },
+        ()=>{
+            const actual = Type.parse('set', '[1,2,"3"]')
+            console.log(actual)
+            if (!Type.isSet(actual)) { return false }
+            if (!(actual instanceof Set)) { return false }
+            if (3!==actual.size) { return false }
+            if (!actual.has(1)) { return false }
+            if (!actual.has(2)) { return false }
+            if (!actual.has('3')) { return false }
+            return true
+        },
+        ()=>{
+            const actual = Type.parse('map', '{k:"v"}')
+            if (!Type.isMap(actual)) { return false }
+            if (!(actual instanceof Map)) { return false }
+            if (!actual.has('k')) { return false }
+            if ('v'!==actual.get('k')) { return false }
+            return true
+        },
+        ()=>{
+            const actual = Type.parse('color', '#ff0000')
+            if (!Type.isColor(actual)) { return false }
+            if ('#ff0000'!==actual.hex()) { return false }
             return true
         },
 
