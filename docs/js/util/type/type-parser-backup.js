@@ -2,27 +2,10 @@
 function isStr (v) { return typeof v === 'string' || v instanceof String }
 function isStrs(v) { return Array.isArray(v) && v.every(x=>isStr(x)) }
 class Id {
-    //constructor(names) { this._names = ((isStrs(names)) ? names : (isStr(names) ? names.split(',') : throw new TypeError(`引数namesは文字列の配列またはカンマ区切りの文字列のみ有効です。:${typeof names}: ${names}`))) }
-    constructor(names) {
-        this._names = ((isStrs(names)) ? names : (isStr(names) ? names.split(',') : null))
-        if (this._names) { return }
-        throw new TypeError(`引数namesは文字列の配列またはカンマ区切りの文字列のみ有効です。:${typeof names}: ${names}`)
-    }
+    constructor(names) { this._names = names }
     get names() { return this._names }
     match(names) {
-             if (isStr (names)) { return this._names.some(t=>t===names) }
-        else if (isStrs(names)) {
-            for (let typ of names) {
-                for (let t of this._names) {
-                    if (t===typ) { return true }
-                }
-            }
-            return false
-        }
-        throw new Error(`引数namesは文字列または文字列の配列であるべきです。:${typeof names}: ${names}`)
-    }
-    /*
-    match(names) {
+//        console.log(names, this._names)
              if (isStr (names) && isStr (this._names)) { return this._names===names }
         else if (isStr (names) && isStrs(this._names)) { return this._names.some(t=>t===names) }
         else if (isStrs(names) && isStr (this._names)) { return names.some(t=>t===this._names) }
@@ -36,18 +19,14 @@ class Id {
         }
         throw new Error(`引数namesは文字列または文字列の配列であるべきです。:${typeof names}: ${names}`)
     }
-    */
 }
 class TypeParser extends Id {
     constructor(names) { super(names) }
-    is(val) { return typeof val===this._names[0] }
-    /*
     is(val) {
         if (isStr (this._names)) { return typeof val===this._names }
         if (isStrs(this._names)) { return typeof val===this._names[0] }
         return false
     }
-    */
     parse(str) { throw new Error(`未実装`) }          // 文字列型から自型へ
     stringify(val) { return val.toString() }          // 自型から文字列型型へ
     to(typeName, val) { throw new Error(`未実装`) }   // 自型からtypeName型へ
@@ -61,7 +40,7 @@ class TypeParser extends Id {
 }
 class FixTypeParser extends TypeParser {
     constructor(type) { super(String(type)); this._type=type; }
-    is(val) { return val===this._type }
+    is(val) { console.log(val, this._type);return val===this._type }
     parse(str) { return this._type }
     stringify(val) { return String(this._type) }
 }
@@ -69,8 +48,16 @@ class UndefinedParser extends FixTypeParser { constructor(type=undefined) { supe
 class NullParser extends FixTypeParser { constructor(type=null) { super(type) } }
 
 class ArrayParser extends TypeParser {
-    constructor(names='array,ary') { super(names) }
+    constructor(names='array,ary'.split(',')) { super(names) }
     is(v) { return Array.isArray(v) }
+//    parse(str, to='string', delim=',') {
+//        const parser = Type.parsers.get(to)
+//        const strs = str.split(delim)
+//        if (StringParser===parser.constructor) { return strs }
+//        return strs.map(s=>parser.parse(s))
+//    }
+//    stringify(val, delim=',') { return val.join(delim) }
+//    parse(str) { return JSON.parse(str) }
     parse(str, to='string', delim=',') {
         const s = str.trim()
         if (s.startsWith('[') && s.endsWith(']')) { return JSON.parse(str) }
@@ -83,9 +70,20 @@ class ArrayParser extends TypeParser {
         return strs.map(s=>parser.parse(s))
     }
     stringify(val) { return JSON.stringify(val) }
+//    #stringifyNoSquareBrackets(val, delim=',') { return return val.join(delim) }
     to(typeName, val) { // to('object', [['k1','v1'],['k2','v2']]) -> {k1:'v1', k2:'v2'}
+//        const parser = Type.parsers.get(typeName)
         const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
-        if (ObjectParser===parser.constructor) { return Object.assign(...val.map(([k,v])=>({[k]:v}))) }
+        if (ObjectParser===parser.constructor) {
+            //if (!parser.is(val)) { throw new Error(`to()の第一引数と第二引数が不一致です。第一に型名、第二に値を与え、一致させてください。例：to('array', [['k1','v1'],['k2','v2']]): ${typeName}, ${val}`) }
+            //if (!parser.is(val)) { throw new Error(`to()の第一引数と第二引数が不一致です。第一に型名、第二に値を与え、一致させてください。例：to('object', {k:'v'}): ${typeName}, ${val}`) }
+            //if (!this.is(val)) { throw new Error(`to()の第一引数と第二引数が不一致です。第一に型名、第二に値を与え、一致させてください。例：to('object', [['k1','v1'],['k2','v2']]): ${typeName}, ${val}`) }
+//            return Object.assign(...val.map(([k,v])=>({[k]:v})))
+//            const obj = {};
+//            for (const [k,v] of val) { obj[k] = v }
+//            return obj
+            return Object.assign(...val.map(([k,v])=>({[k]:v})))
+        }
     }
     from(typeName, val) { // from('object', {k1:'v1', k2:'v2'}) -> [['k1','v1'],['k2','v2']]
         const parser = ((Type.isStr(typeName)) ? Type.parsers.get(typeName) : ((typeName instanceof TypeParser) ? typeName : null))
@@ -95,7 +93,7 @@ class ArrayParser extends TypeParser {
     }
 }
 class ObjectParser extends TypeParser {
-    constructor(names='object,obj') { super(names) }
+    constructor(names='object,obj'.split(',')) { super(names) }
     is(v) {
         if (!ObjectParser.isObjectLike(v) || ObjectParser.getTag(v) != '[object Object]') { return false }
         if (Object.getPrototypeOf(v) === null) { return true }
@@ -232,17 +230,17 @@ class SetParser extends TypeParser {
 }
 
 class BooleanParser extends TypeParser {
-    constructor(names='boolean,bool,bln,b') { super(names) }
+    constructor(names='boolean,bool,bln,b'.split(',')) { super(names) }
     parse(str) { return 'true,t,1'.split(',').some(v=>v===str.toLowerCase()) }
     stringify(val) { return ((Type.isInt(val)) ? (1===val) : ('true,t'.split(',').some(v=>v===String(val).toLowerCase()))).toString() }
 }
 class NumberParser extends TypeParser {
-    constructor(names='number,num') { super(names) }
+    constructor(names='number,num'.split(',')) { super(names) }
     is(v) { return ('number'===typeof v && !isNaN(v)) || (ObjectParser.isObjectLike(v) && ObjectParser.getTag(v)=='[object Number]') } // https://github.com/lodash/lodash/blob/master/isNumber.js
     parse(str) { return Number(str) }
 }
 class IntegerParser extends NumberParser {
-    constructor(names='integer,int,i', base=10) { super(names); this._base=base; }
+    constructor(names='integer,int,i'.split(','), base=10) { super(names); this._base=base; }
     is(v)   { return super.is(v) && v % 1 === 0 }
     parse(str) { return parseInt(str, this._base) }
     stringify(val) { return val.toString(this._base) }
@@ -253,7 +251,7 @@ class HexParser extends IntegerParser { constructor(names='hex') { super(names, 
 class Base32Parser extends IntegerParser { constructor(names='base32') { super(names, 32) } }
 class Base36Parser extends IntegerParser { constructor(names='base36') { super(names, 36) } }
 class StringParser extends TypeParser {
-    constructor(names='string,str,s') { super(names) }
+    constructor(names='string,str,s'.split(',')) { super(names) }
     static is (v) { return typeof v === 'string' || v instanceof String }
     static iss(v) { return Array.isArray(v) && v.every(x=>isStr(x)) }
     is(v) { return StringParser.is(v) }
@@ -298,12 +296,12 @@ class Base64Parser extends StringParser {
     */
 }
 class FloatParser extends NumberParser {
-    constructor(names='float,flt,f') { super(names); }
+    constructor(names='float,flt,f'.split(',')) { super(names); }
     is(v) { return super.is(v) && (v % 1 !== 0 || 0===v) }
     parse(str) { return parseFloat(str) }
 }
 class BigIntParser extends TypeParser {
-    constructor(names='bigint,BigInt,bi') { super(names) }
+    constructor(names='bigint,BigInt,bi'.split(',')) { super(names) }
     parse(str) { return BigInt(str) }
 }
 //class DataUrlParser extends Base64Parser {
@@ -315,7 +313,7 @@ class DataUrlParser extends Base64Parser {
     //constructor(names='dataurl,DataUrl') { super(names); this._regex = /data:(?<mime>[\w/\-\.]+);(?<encoding>\w+),(?<data>.*)/; }
 //    constructor(names='dataurl,DataUrl') { super(names); this._regex = /data:(?<mime>[\w/\-\.]+)(;base64)?,(?<data>.*)/; }
     //constructor(names='dataurl,DataUrl'.split(',')) { super(names); this._regex = /data:(?<mime>[\w/\-\.]+)(?<encoding>;\w+),(?<data>.*)/; }
-    constructor(names='dataurl,DataUrl') { super(names); this._regex = /data:(?<mime>[\w/\-\.]+)?(?<encoding>;\w+)?,(?<data>.*)/; }
+    constructor(names='dataurl,DataUrl'.split(',')) { super(names); this._regex = /data:(?<mime>[\w/\-\.]+)?(?<encoding>;\w+)?,(?<data>.*)/; }
     //is(v) { if (!Type.isStr(v)) {return false} return v.match(this._regex) }
     is(v) { return ((Type.isStr(v)) ? v.match(this._regex) : false) }
 //var regex = new Regex(@"data:(?<mime>[\w/\-\.]+);(?<encoding>\w+),(?<data>.*)", RegexOptions.Compiled);
@@ -385,22 +383,43 @@ class BlobParser extends DataUrlParser {
     async stringifyAsync(blob) { return await super.stringifyAsync(blob) }
 }
 class SymbolParser extends TypeParser {
-    constructor(names='symbol,sym') { super(names) }
+    constructor(names='symbol,sym'.split(',')) { super(names) }
     parse(str) { return Symbol(str) }
 }
 class FunctionParser extends TypeParser {
-    constructor(names='function,func,fnc,fn') { super(names) }
+    constructor(names='function,func,fnc,fn'.split(',')) { super(names) }
     parse(str, params) { return ((isStrs(params)) ? new Function(...params, str) : new Function(str)) }
 }
 class ClassParser extends TypeParser {
-    constructor(names='class,cls') { super(names) }
+    constructor(names='class,cls'.split(',')) { super(names) }
+    //is(val) { console.log(super.is(val), typeof val, val); return (super.is(val) && val.new.target) }
+    //is(val) { console.log(val, typeof val, super.is(val)); return super.is(val) }
     is(val) { return 'function'===typeof val && val.toString().match(/^class /) }
     parse(str) { return Function(`return (${str})`)() }
+    //parse(str) { return this.#getClass(str) }
+    //#getClass(className) { return Function(`return (${className})`)() }
+    //#getClass(name) { return Function('return (' + classname + ')')() }
     getClass(className) { return Function(`return (${className})`)() }
 }
 class InstanceParser extends TypeParser {
-    constructor(names='instance,ins') { super(names); this._clsP=new ClassParser(); }
+    constructor(names='instance,ins'.split(',')) { super(names); this._clsP=new ClassParser(); }
     is(v, cls) { console.log(v, cls); return (v instanceof cls) }
+    //is(v) { return v instanceof cls }
+    /*
+    is(v) {
+        console.log(v)
+        if (undefined===v || null===v) { return false }
+        console.log(`v.hasOwnProperty('constructor'):`, v.hasOwnProperty('constructor'), v.constructor.name)
+//        console.log(`v.prototype.hasOwnProperty('constructor'):`, v.prototype.hasOwnProperty('constructor'), v.constructor.name)
+        //if (!v.hasOwnProperty('constructor')) { return false }
+//        if (!v.prototype.hasOwnProperty('constructor')) { return false }
+        if (!Type.isStr(v.constructor.name)) { return false }
+//        if (!v.hasOwnProperty('new')) { return false }
+//        if (!v.new.target) { return false }
+        //return v instanceof this._clsP.getClass(v.constructor.name)
+        return v instanceof v.constructor
+    }
+    */
     parse(str, params) {
         console.log(str, params)
         const cls = this._clsP.parse(str)
@@ -409,7 +428,7 @@ class InstanceParser extends TypeParser {
     stringify(val) { return `[object ${val.constructor.name}]` }
 }
 class DateTimeParser extends TypeParser { // day.js/date-fns  Temporalが実装されるまでの間どうするか。文字列として扱うか
-    constructor(names='datetime,DateTime,dt') { super(names); this._regex = /\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/; }
+    constructor(names='datetime,DateTime,dt'.split(',')) { super(names); this._regex = /\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/; }
     is(v) { return v && v.getMonth && typeof v.getMonth === 'function' && Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v) } // https://stackoverflow.com/questions/643782/how-to-check-whether-an-object-is-a-date
     parse(str) {
         //if (this._regex.match(str)) { return new Date(str) }
@@ -460,7 +479,7 @@ class TimeParser extends DateTimeParser { // day.js/date-fns  Temporalが実装�
     }
 }
 class DurationParser extends TypeParser { // day.js/date-fns  Temporalが実装されるまでの間どうするか。文字列として扱うか
-    constructor(names='duration,dur') { super(names); this._regex = /P(\d{1,}Y)?(\d{1,}M)?(\d{1,}D)?(T)?(\d{1,}H)?(\d{1,}M)?(\d{1,}S)?/; }
+    constructor(names='duration,dur'.split(',')) { super(names); this._regex = /P(\d{1,}Y)?(\d{1,}M)?(\d{1,}D)?(T)?(\d{1,}H)?(\d{1,}M)?(\d{1,}S)?/; }
     is(v) {
         if (Type.isStr(v)) { return v.match(this._regex) }
         //if (Type.isStr(v)) { return this._regex.match(v) }
@@ -496,13 +515,13 @@ class DurationParser extends TypeParser { // day.js/date-fns  Temporalが実装�
     }
 }
 class ColorParser extends TypeParser {
-    constructor(names='color,clr') { super(names) }
+    constructor(names='color,clr'.split(',')) { super(names) }
     is(val) { return val.hasOwnProperty('_rgb') }
     parse(str) { return chroma(str) }
     stringify(val) { return val.hex() }
 }
 class DecimalParser extends TypeParser {
-    constructor(names='decimal,dec') { super(names) }
+    constructor(names='decimal,dec'.split(',')) { super(names) }
     is(v) { return Decimal.isDecimal(v) }
     parse(str) { return new Decimal(str) }
 }
@@ -663,21 +682,9 @@ for (let p of type.parsers.parsers) {
         if ('bigint'===n) { type[`isBigInt`] = function(v) { return p.is(v) } }
     }
     */
-    // 単数形
     for (let n of names) {
         //console.log(n, `is${n.Pascal}`)
         type[`is${n.Pascal}`] = function(v, p1) { return p.is(v, p1) }
-    }
-    // 複数形
-    for (let n of 'undefined,null,string,boolean,number,integer,float,dt,date,time,dur,color,decimal,BigInt,DataUrl,blob,array,object,map,set'.split(',')) {
-        const p = type.parsers.get(n)
-        for (let N of p.names) {
-            type[`is${N.Pascal}s`] = function(v, p1) {
-                if (!Array.isArray(v)) { return false }
-                for (let i of v) { if (!p.is(i)) { return false } }
-                return true
-            }
-        }
     }
     /*
     type[`parse`] = function(to, v) {
