@@ -2,7 +2,6 @@
 function isStr (v) { return typeof v === 'string' || v instanceof String }
 function isStrs(v) { return Array.isArray(v) && v.every(x=>isStr(x)) }
 class Id {
-    //constructor(names) { this._names = ((isStrs(names)) ? names : (isStr(names) ? names.split(',') : throw new TypeError(`引数namesは文字列の配列またはカンマ区切りの文字列のみ有効です。:${typeof names}: ${names}`))) }
     constructor(names) {
         this._names = ((isStrs(names)) ? names : (isStr(names) ? names.split(',') : null))
         if (this._names) { return }
@@ -21,33 +20,10 @@ class Id {
         }
         throw new Error(`引数namesは文字列または文字列の配列であるべきです。:${typeof names}: ${names}`)
     }
-    /*
-    match(names) {
-             if (isStr (names) && isStr (this._names)) { return this._names===names }
-        else if (isStr (names) && isStrs(this._names)) { return this._names.some(t=>t===names) }
-        else if (isStrs(names) && isStr (this._names)) { return names.some(t=>t===this._names) }
-        else if (isStrs(names) && isStrs(this._names)) {
-            for (let typ of names) {
-                for (let t of this._names) {
-                    if (t===typ) { return true }
-                }
-            }
-            return false
-        }
-        throw new Error(`引数namesは文字列または文字列の配列であるべきです。:${typeof names}: ${names}`)
-    }
-    */
 }
 class TypeParser extends Id {
     constructor(names) { super(names) }
     is(val) { return typeof val===this._names[0] }
-    /*
-    is(val) {
-        if (isStr (this._names)) { return typeof val===this._names }
-        if (isStrs(this._names)) { return typeof val===this._names[0] }
-        return false
-    }
-    */
     parse(str) { throw new Error(`未実装`) }          // 文字列型から自型へ
     stringify(val) { return val.toString() }          // 自型から文字列型型へ
     to(typeName, val) { throw new Error(`未実装`) }   // 自型からtypeName型へ

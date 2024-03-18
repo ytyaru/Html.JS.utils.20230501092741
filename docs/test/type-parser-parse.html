@@ -86,7 +86,7 @@ window.addEventListener('DOMContentLoaded', async(event) => {
     console.log(Type.to('class', 'MyClass') instanceof MyClass)
     console.log(Type.to('class', 'MyClass') instanceof window.MyClass)
     */
-    
+   
     test.run([
 //        ()=>Type.hasOwnProperty(`parse`),
 //        ()=>Type.hasOwnProperty(`stringify`),
@@ -335,7 +335,20 @@ window.addEventListener('DOMContentLoaded', async(event) => {
         async()=>{const blob=await Type.parseAsync('dataurl', 'data:,A'); const buf=await blob.arrayBuffer(); return (blob instanceof Blob && 1===blob.size && 'text/plain'===blob.type && 1===buf.length && 65===buf[0]); },
         async()=>{const blob=await Type.parseAsync('blob', 'data:,A'); const buf=await blob.arrayBuffer(); return (blob instanceof Blob && 1===blob.size && 'text/plain'===blob.type && 1===buf.length && 65===buf[0]); },
         // Color,Decimalは必要な外部ライブラリ導入してないためテスト省略
-
+        async()=>{
+            const blob = await Type.parseAsync('blob', 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAINJREFUOE+tU9ESgCAI0///aDsIOBoQ2dmTN9mYNObIv1XgE3EElBgKhRjufSFdVkRsbLVK2CGrGHOOCPzpbi7IAQpUg8zwhQJe7NM5c1BEIIWDgx0y1Z4RYCUM0brV+Tf7s7PY54CIRFAheN9DIHXxMpAQZR9PaZpPXVDbmW7ruu0dF8r9KgudnrY9AAAAAElFTkSuQmCC')
+            const buf = await blob.arrayBuffer();
+            console.log(blob)
+            console.log(buf)
+            console.log(buf.toString())
+            const ui8 = new Uint8Array(buf)
+            console.log(ui8)
+            console.log(ui8.reduce((s,b,i)=>s+b.toString(16), ''))
+//            console.log(ui8.reduce((s,b,i)=>s+b.toString(10), ''))
+            console.log(ui8.toString(10))
+            console.log(blob.type, blob.size)
+            return (blob instanceof Blob && 'image/png'===blob.type && 201===blob.size)
+        },
         // 文字列から文字列へ
         ()=>'A'===Type.parse('string', 'A'),
 

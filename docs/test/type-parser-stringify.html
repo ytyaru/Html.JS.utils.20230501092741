@@ -141,9 +141,15 @@ return 1
             return true
         },
         async()=>{
-            const dataUrl = await Type.stringifyAsync(new Blob([65], 'text/plain'), 'DataUrl')
+            const dataUrl = await Type.stringifyAsync(new Blob([65], {type:'text/plain'}), 'DataUrl')
             console.log(dataUrl)
             if ('data:text/plain;base64,MjU1'!==dataUrl) { return false }
+            return true
+        },
+        async()=>{
+            const dataUrl = await Type.stringifyAsync(new Blob([137,80,78,71,13,10,26,10,0,0,0,13,73,72,68,82,0,0,0,16,0,0,0,16,8,6,0,0,0,31,243,255,97,0,0,0,1,115,82,71,66,0,174,206,28,233,0,0,0,131,73,68,65,84,56,79,173,83,209,18,128,32,8,211,255,255,104,59,8,56,26,16,217,217,147,55,217,152,52,230,200,191,85,224,19,113,4,148,24,10,133,24,238,125,33,93,86,68,108,108,181,74,216,33,171,24,115,142,8,252,233,110,46,200,1,10,84,131,204,240,133,2,94,236,211,57,115,80,68,32,133,131,131,29,50,213,158,17,96,37,12,209,186,213,249,55,251,179,179,216,231,128,136,68,80,33,120,223,67,32,117,241,50,144,16,101,31,79,105,154,79,93,80,219,153,110,235,186,237,29,23,202,253,42,11,157,158,182,61,0,0,0,0,73,69,78,68,174,66,96,130], {type:'image/png'}), 'DataUrl')
+            console.log(dataUrl)
+            if ('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAINJREFUOE+tU9ESgCAI0///aDsIOBoQ2dmTN9mYNObIv1XgE3EElBgKhRjufSFdVkRsbLVK2CGrGHOOCPzpbi7IAQpUg8zwhQJe7NM5c1BEIIWDgx0y1Z4RYCUM0brV+Tf7s7PY54CIRFAheN9DIHXxMpAQZR9PaZpPXVDbmW7ruu0dF8r9KgudnrY9AAAAAElFTkSuQmCC'!==dataUrl) { return false }
             return true
         },
         // 異常系
