@@ -1,0 +1,126 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<!--
+<script src="../js/util/type.js"></script>
+-->
+<script src="../js/util/string/case.js"></script>
+<script src="../js/util/type/type-parser.js"></script>
+<script src="../lib/js-yaml/4.1.0/min.js"></script>
+<script src="../lib/chroma/2.4.2/min.js"></script>
+<script src="../lib/decimal.js/9.0.0/min.js"></script>
+<script src="../lib/big.js/2.3.0/min.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(event) => {
+    const test = new Test()
+    class MyClass { }
+    window.MyClass = MyClass
+    class Human { constructor(n,a) {this.name=n; this.age=a;} }
+    window.Human = Human
+    test.run([
+        ()=>{
+            const obj = Type.to('object', [['k',1],['l',2]], 'array')
+            if (!Type.isObj(obj)) { return false }
+            if (!('k,l'.split(',').some(p=>obj.hasOwnProperty(p)))) { return false }
+            if (!(1===obj.k && 2===obj.l)) { return false }
+            return true
+        },
+        ()=>{
+            const map = Type.to('map', [['k',1],['l',2]], 'array')
+            if (!Type.isMap(map)) { return false }
+            if (!('k,l'.split(',').some(p=>map.has(p)))) { return false }
+            if (!(1===map.get('k') && 2===map.get('l'))) { return false }
+            return true
+        },
+        ()=>{
+            const set = Type.to('set', [1, 2, 1], 'array')
+            if (!Type.isSet(set)) { return false }
+            if (2!==set.size) { return false }
+            if (!([1,2].some(p=>set.has(p)))) { return false }
+            return true
+        },
+        ()=>test.assertError(Error, `to()の第一引数に変換したい型名を入力してください: X\n有効値は次の通りです。:undefined,null,object,obj,json,yaml,array,ary,map,set,boolean,bool,bln,b,integer,int,i,binary,bin,octral,oct,hex,base32,base36,base64,dataurl,DataUrl,blob,float,flt,f,number,num,bigint,BigInt,bi,string,str,s,symbol,sym,function,func,fnc,fn,class,cls,instance,ins,datetime,DateTime,dt,date,time,duration,dur,color,clr,decimal,dec`, ()=>Type.to('X', [1,2], 'array')),
+        ()=>test.assertError(Error, `型名 integer,int,i に未対応のため変換できません。`, ()=>Type.to('int', [1,2], 'array')),
+        ()=>{
+            const ary = Type.to('array', {k:1,l:2}, 'object')
+            if (!Type.isArys(ary)) { return false }
+            if (2!==ary.length) { return false }
+            if (2!==ary[0].length) { return false }
+            if (2!==ary[1].length) { return false }
+            if ('k'!==ary[0][0]) { return false }
+            if (1!==ary[0][1]) { return false }
+            if ('l'!==ary[1][0]) { return false }
+            if (2!==ary[1][1]) { return false }
+            return true
+        },
+        ()=>{
+            const map = Type.to('map', {k:1,l:2}, 'object')
+            if (!Type.isMap(map)) { return false }
+            if (!('k,l'.split(',').some(p=>map.has(p)))) { return false }
+            if (!(1===map.get('k') && 2===map.get('l'))) { return false }
+            return true
+        },
+        ()=>{
+            const set = Type.to('set', {k:1,l:2}, 'object')
+            console.log(set)
+            if (!Type.isSet(set)) { return false }
+            if (2!==set.size) { return false }
+            if (!([1,2].some(p=>set.has(p)))) { return false }
+            return true
+        },
+        ()=>test.assertError(Error, `型名 integer,int,i に未対応のため変換できません。`, ()=>Type.to('int', {k:1}, 'object')),
+
+        ()=>{
+            const ary = Type.to('array', new Map([['k',1],['l',2]]), 'map')
+            if (!Type.isArys(ary)) { return false }
+            if (2!==ary.length) { return false }
+            if (2!==ary[0].length) { return false }
+            if (2!==ary[1].length) { return false }
+            if ('k'!==ary[0][0]) { return false }
+            if (1!==ary[0][1]) { return false }
+            if ('l'!==ary[1][0]) { return false }
+            if (2!==ary[1][1]) { return false }
+            return true
+        },
+        ()=>{
+            const obj = Type.to('object', new Map([['k',1],['l',2]]), 'map')
+            if (!Type.isObj(obj)) { return false }
+            if (!('k,l'.split(',').some(p=>obj.hasOwnProperty(p)))) { return false }
+            if (!(1===obj.k && 2===obj.l)) { return false }
+            return true
+        },
+        ()=>{
+            const set = Type.to('set', new Map([['k',1],['l',2]]), 'map')
+            console.log(set)
+            if (!Type.isSet(set)) { return false }
+            console.log(set)
+            if (2!==set.size) { return false }
+            console.log(set)
+            if (!([1,2].some(p=>set.has(p)))) { return false }
+            console.log(set)
+            return true
+        },
+        ()=>test.assertError(Error, `型名 integer,int,i に未対応のため変換できません。`, ()=>Type.to('int', new Map([['k',1],['l',2]]), 'map')),
+
+        ()=>{
+            const ary = Type.to('array', new Set([1,2]), 'set')
+            if (!Type.isAry(ary)) { return false }
+            if (2!==ary.length) { return false }
+            if (1!==ary[0]) { return false }
+            if (2!==ary[1]) { return false }
+            return true
+        },
+        ()=>test.assertError(Error, `型名 integer,int,i に未対応のため変換できません。`, ()=>Type.to('int',new Set([1,2]), 'set')),
+
+
+        // 異常系
+        ()=>test.assertError(Error, `stringify()の第二引数で第一引数の型名を指定してください。（値の型がundefined,null,bool,int,float,bigint,num,dt,sym,fn,str,obj,ary,blob,DataUrl,colorのいずれかであれば型名を省略できます）`, ()=>Type.stringify(new MyClass()))
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
