@@ -937,6 +937,22 @@ window.addEventListener('DOMContentLoaded', (event) => {
         ()=>!Type.isSets([1,2]),
         ()=>!Type.isSets([new Set(['k',1]),2]),
         ()=>!Type.isSets([1,new Set(['k',2])]),
+        ()=> Type.isElement(document.createElement('p')),
+        ()=> Type.isElm(document.createElement('p')),
+        ()=> Type.isEl(document.createElement('p')),
+        ()=> Type.isE(document.createElement('p')),
+        ()=>!Type.isElement({}),
+        ()=>!Type.isElm({}),
+        ()=>!Type.isEl({}),
+        ()=>!Type.isE({}),
+        ()=> Type.isElements([document.createElement('p')]),
+        ()=> Type.isElms([document.createElement('p')]),
+        ()=> Type.isEls([document.createElement('p')]),
+        ()=> Type.isEs([document.createElement('p')]),
+        ()=>!Type.isElements([{}]),
+        ()=>!Type.isElms([{}]),
+        ()=>!Type.isEls([{}]),
+        ()=>!Type.isEs([{}]),
     ])
 })
 </script>

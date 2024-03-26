@@ -37,7 +37,6 @@ class FixTypeParser extends TypeParser {
 }
 class UndefinedParser extends FixTypeParser { constructor(type=undefined) { super(type) } }
 class NullParser extends FixTypeParser { constructor(type=null) { super(type) } }
-
 class ArrayParser extends TypeParser {
     constructor(names='array,ary') { super(names) }
     is(v) { return Array.isArray(v) }
@@ -390,6 +389,16 @@ class DecimalParser extends TypeParser {
     is(v) { return Decimal.isDecimal(v) }
     parse(str) { return new Decimal(str) }
 }
+class ElementParser extends TypeParser {
+    constructor(names='element,elm,el,e') { super(names) }
+    is(v) {
+        try { return v instanceof HTMLElement; }
+        catch(e) { return (typeof v==='object') &&
+                    (v.nodeType===1) && (typeof v.style === 'object') &&
+                    (typeof v.ownerDocument==='object');
+        }
+    }
+}
 class TypeParsers {
     constructor() {this._parsers=[];}
     get parsers() { return this._parsers }
@@ -484,6 +493,7 @@ type.parsers.add(new TimeParser())
 type.parsers.add(new DurationParser())
 type.parsers.add(new ColorParser())
 type.parsers.add(new DecimalParser())
+type.parsers.add(new ElementParser())
 for (let p of type.parsers.parsers) {
     const names = ((Array.isArray(p.names)) ? p.names : ((isStr(p.names)) ? [p.names] : null))
     if (!isStrs(names)) { continue }
@@ -492,7 +502,7 @@ for (let p of type.parsers.parsers) {
         type[`is${n.Pascal}`] = function(v, p1) { return p.is(v, p1) }
     }
     // 複数形
-    for (let n of 'undefined,null,string,boolean,number,integer,float,dt,date,time,dur,color,decimal,BigInt,DataUrl,blob,array,object,map,set'.split(',')) {
+    for (let n of 'undefined,null,string,boolean,number,integer,float,dt,date,time,dur,color,decimal,BigInt,DataUrl,blob,element,array,object,map,set'.split(',')) {
         const p = type.parsers.get(n)
         for (let N of p.names) {
             type[`is${N.Pascal}s`] = function(v, p1) {
