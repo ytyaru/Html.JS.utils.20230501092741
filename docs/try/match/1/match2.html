@@ -1,0 +1,42 @@
+<script>
+/*
+const Status = {
+    start: {msg:'開始'},
+    middle: {msg:'最初'},
+    end: {msg:'完了'},
+}
+*/
+class Status {
+    NONE = '_'
+    constructor(type) {
+        this._type = {[this.NONE]:()=>{throw new Error(`マッチせず！`)},...type}
+        this._value = this.NONE
+    }
+    get type() { return this._type }
+    get keys() { return [...Object.keys(this._type)] }
+    get value( ) { return this._value }
+    set value(v) { this._value = ([...Object.keys(this._type)].includes(v)) ? v : this.NONE; }
+    match(map) {
+        if (!this.value) {
+            if (map[this.NONE]) return map._(this.type[this.value])
+            throw new Error(`式の中にdefaultパターンがありません。キー名が ${this.NONE} の要素を追加してください。`)
+        }
+        if (![...Object.keys(this._type)].every(k=>map[k])) { throw new Error(`網羅不足です。式の中に状態識別子${this.keys}のすべてを含めてください。`) }
+        return map[this.value](this._type[this.value])
+    }
+}
+const status = new Status({
+    start: {msg:'開始'},
+    middle: {msg:'中間'},
+    end: {msg:'完了'},
+})
+status.value = status.keys[Math.floor(Math.random() * status.keys.length)]
+console.log(`テスト値：${status.value}`)
+const res = status.match({
+    start: (v)=>`1. ${v.msg}`,
+    middle: (v)=>`2. ${v.msg}`,
+    end: (v)=>`3. ${v.msg}`,
+    _: (v)=>`不正値！`
+})
+console.log('結果値：', res)
+</script>

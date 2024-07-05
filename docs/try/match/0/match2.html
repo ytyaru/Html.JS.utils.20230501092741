@@ -1,0 +1,28 @@
+<script>
+const Status = {
+    start: {msg:'開始'},
+    middle: {msg:'最初'},
+    end: {msg:'完了'},
+}
+//function match2(status, type, map) {
+function match2(key, type, map) {
+    if (!key) {
+        if (map['_']) return map._(type[key])
+        throw new Error(`式の中にdefaultパターンがありません。キー名が _ の要素を追加してください。`)
+    }
+    if (!type[key]) { throw new Error(`未定義の状態識別子です。`) }
+    if (!map[key]) { throw new Error(`網羅不足です。式の中に状態識別子${key}が存在しません。`) }
+    if (![...Object.keys(type)].every(k=>map[k])) { throw new Error(`網羅不足です。式の中に状態識別子${[...Object.keys(type)]}のすべてを含めてください。`) }
+    return map[key](type[key])
+}
+const keys = [...Object.keys(Status)]
+const status = keys[Math.floor(Math.random() * keys.length)]
+console.log(`テスト値：${status}`)
+const res = match2(status, Status, {
+    start: (v)=>`1. ${v.msg}`,
+    middle: (v)=>`2. ${v.msg}`,
+    end: (v)=>`3. ${v.msg}`,
+    _: (v)=>`不正値！`
+})
+console.log(res)
+</script>
