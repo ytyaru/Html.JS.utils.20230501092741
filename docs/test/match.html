@@ -1,0 +1,124 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/syntax-sugar/match.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    test.run([
+        // 値＆値
+        // 0
+        ()=>undefined===match(),
+        // 1
+        ()=>'A'===match('A'),
+        ()=>123===match(123),
+        ()=>null===match(null),
+        ()=>{const V=[1,2,3]; return V===match(V);},
+        ()=>{const V={k:'v'}; return V===match(V);},
+        // 2
+        ()=>test.assertError(Error, `match式の引数は奇数個にしてください：条件式1, 結果式1, 条件式2, 結果式2, ..., 最後は結果式のみ。`, ()=>match(true,'A')),
+        // 3
+        ()=>'A'===match(true,'A','X'),
+        ()=>'X'===match(false,'A','X'),
+        // 4
+        ()=>test.assertError(Error, `match式の引数は奇数個にしてください：条件式1, 結果式1, 条件式2, 結果式2, ..., 最後は結果式のみ。`, ()=>match(true,'A',false,'B')),
+        // 5
+        ()=>'A'===match(true,'A',true,'B','X'),
+        ()=>'A'===match(true,'A',false,'B','X'),
+        ()=>'B'===match(false,'A',true,'B','X'),
+        ()=>'X'===match(false,'A',false,'B','X'),
+        // 6
+        ()=>test.assertError(Error, `match式の引数は奇数個にしてください：条件式1, 結果式1, 条件式2, 結果式2, ..., 最後は結果式のみ。`, ()=>match(true,'A',false,'B',true,'C')),
+        // 7
+        ()=>'A'===match(true,'A',true,'B',true,'C','X'),
+        ()=>'A'===match(true,'A',true,'B',false,'C','X'),
+        ()=>'A'===match(true,'A',false,'B',true,'C','X'),
+        ()=>'B'===match(false,'A',true,'B',true,'C','X'),
+        ()=>'B'===match(false,'A',true,'B',false,'C','X'),
+        ()=>'C'===match(false,'A',false,'B',true,'C','X'),
+        ()=>'X'===match(false,'A',false,'B',false,'C','X'),
+        // 式＆式
+        // 1
+        ()=>'A'===match(()=>'A'),
+        ()=>123===match(()=>123),
+        ()=>null===match(()=>null),
+        ()=>{const V=[1,2,3]; return V===match(()=>V);},
+        ()=>{const V={k:'v'}; return V===match(()=>V);},
+        // 2
+        ()=>test.assertError(Error, `match式の引数は奇数個にしてください：条件式1, 結果式1, 条件式2, 結果式2, ..., 最後は結果式のみ。`, ()=>match(()=>true,()=>'A')),
+        // 3
+        ()=>'A'===match(()=>true,()=>'A',()=>'X'),
+        ()=>'X'===match(()=>false,()=>'A',()=>'X'),
+        // 4
+        ()=>test.assertError(Error, `match式の引数は奇数個にしてください：条件式1, 結果式1, 条件式2, 結果式2, ..., 最後は結果式のみ。`, ()=>match(()=>true,()=>'A',()=>false,()=>'B')),
+        // 5
+        ()=>'A'===match(()=>true,()=>'A',()=>true,()=>'B',()=>'X'),
+        ()=>'A'===match(()=>true,()=>'A',()=>false,()=>'B',()=>'X'),
+        ()=>'B'===match(()=>false,()=>'A',()=>true,()=>'B',()=>'X'),
+        ()=>'X'===match(()=>false,()=>'A',()=>false,()=>'B',()=>'X'),
+        // 6
+        ()=>test.assertError(Error, `match式の引数は奇数個にしてください：条件式1, 結果式1, 条件式2, 結果式2, ..., 最後は結果式のみ。`, ()=>match(()=>true,()=>'A',()=>false,()=>'B',()=>true,()=>'C')),
+        // 7
+        ()=>'A'===match(()=>true,()=>'A',()=>true,()=>'B',()=>true,()=>'C',()=>'X'),
+        ()=>'A'===match(()=>true,()=>'A',()=>true,()=>'B',()=>false,()=>'C',()=>'X'),
+        ()=>'A'===match(()=>true,()=>'A',()=>false,()=>'B',()=>true,()=>'C',()=>'X'),
+        ()=>'B'===match(()=>false,()=>'A',()=>true,()=>'B',()=>true,()=>'C',()=>'X'),
+        ()=>'B'===match(()=>false,()=>'A',()=>true,()=>'B',()=>false,()=>'C',()=>'X'),
+        ()=>'C'===match(()=>false,()=>'A',()=>false,()=>'B',()=>true,()=>'C',()=>'X'),
+        ()=>'X'===match(()=>false,()=>'A',()=>false,()=>'B',()=>false,()=>'C',()=>'X'),
+        // 値＆式
+        // 2
+        ()=>test.assertError(Error, `match式の引数は奇数個にしてください：条件式1, 結果式1, 条件式2, 結果式2, ..., 最後は結果式のみ。`, ()=>match(true,()=>'A')),
+        // 3
+        ()=>'A'===match(true,()=>'A','X'),
+        ()=>'X'===match(false,()=>'A','X'),
+        // 4
+        ()=>test.assertError(Error, `match式の引数は奇数個にしてください：条件式1, 結果式1, 条件式2, 結果式2, ..., 最後は結果式のみ。`, ()=>match(true,()=>'A',false,()=>'B')),
+        // 5
+        ()=>'A'===match(true,()=>'A',true,()=>'B','X'),
+        ()=>'A'===match(true,()=>'A',false,()=>'B','X'),
+        ()=>'B'===match(false,()=>'A',true,()=>'B','X'),
+        ()=>'X'===match(false,()=>'A',false,()=>'B','X'),
+        // 6
+        ()=>test.assertError(Error, `match式の引数は奇数個にしてください：条件式1, 結果式1, 条件式2, 結果式2, ..., 最後は結果式のみ。`, ()=>match(true,()=>'A',false,()=>'B',true,()=>'C')),
+        // 7
+        ()=>'A'===match(true,()=>'A',true,()=>'B',true,()=>'C','X'),
+        ()=>'A'===match(true,()=>'A',true,()=>'B',false,()=>'C','X'),
+        ()=>'A'===match(true,()=>'A',false,()=>'B',true,()=>'C','X'),
+        ()=>'B'===match(false,()=>'A',true,()=>'B',true,()=>'C','X'),
+        ()=>'B'===match(false,()=>'A',true,()=>'B',false,()=>'C','X'),
+        ()=>'C'===match(false,()=>'A',false,()=>'B',true,()=>'C','X'),
+        ()=>'X'===match(false,()=>'A',false,()=>'B',false,()=>'C','X'),
+        // 式＆値
+        // 2
+        ()=>test.assertError(Error, `match式の引数は奇数個にしてください：条件式1, 結果式1, 条件式2, 結果式2, ..., 最後は結果式のみ。`, ()=>match(()=>true,'A')),
+        // 3
+        ()=>'A'===match(()=>true,'A',()=>'X'),
+        ()=>'X'===match(()=>false,'A',()=>'X'),
+        // 4
+        ()=>test.assertError(Error, `match式の引数は奇数個にしてください：条件式1, 結果式1, 条件式2, 結果式2, ..., 最後は結果式のみ。`, ()=>match(()=>true,'A',()=>false,'B')),
+        // 5
+        ()=>'A'===match(()=>true,'A',()=>true,'B',()=>'X'),
+        ()=>'A'===match(()=>true,'A',()=>false,'B',()=>'X'),
+        ()=>'B'===match(()=>false,'A',()=>true,'B',()=>'X'),
+        ()=>'X'===match(()=>false,'A',()=>false,'B',()=>'X'),
+        // 6
+        ()=>test.assertError(Error, `match式の引数は奇数個にしてください：条件式1, 結果式1, 条件式2, 結果式2, ..., 最後は結果式のみ。`, ()=>match(()=>true,'A',()=>false,'B',()=>true,'C')),
+        // 7
+        ()=>'A'===match(()=>true,'A',()=>true,'B',()=>true,'C',()=>'X'),
+        ()=>'A'===match(()=>true,'A',()=>true,'B',()=>false,'C',()=>'X'),
+        ()=>'A'===match(()=>true,'A',()=>false,'B',()=>true,'C',()=>'X'),
+        ()=>'B'===match(()=>false,'A',()=>true,'B',()=>true,'C',()=>'X'),
+        ()=>'B'===match(()=>false,'A',()=>true,'B',()=>false,'C',()=>'X'),
+        ()=>'C'===match(()=>false,'A',()=>false,'B',()=>true,'C',()=>'X'),
+        ()=>'X'===match(()=>false,'A',()=>false,'B',()=>false,'C',()=>'X'),
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
