@@ -1,0 +1,92 @@
+<script>
+class Status {
+    NONE = '_'
+    constructor(options, onSet=null) {
+        this._options = {[this.NONE]:()=>undefined,...options}
+        this._value = this.NONE
+        this._onSet = (this.#isFn(onSet)) ? onSet : null
+        console.log(this._onSet)
+    }
+    get options() { return this._options }
+    get keys() { return [...Object.keys(this._options)] }
+    get value( ) { return this._value }
+    set value(v) { this._value = ([...Object.keys(this._options)].includes(v)) ? v : this.NONE; this.#runOnSet(v); }
+    get onSet( ) { return this._onSet }
+    set onSet(v) { if (this.#isFn(v)) { this._onSet = v } }
+    #runOnSet(v) {
+        if (this.#isFn(this._onSet)) {
+            const o = this.options[this.value]
+            this._onSet(this.value, this.#isFn(o) ? o() : o, v)
+        }
+    }
+    #isFn(v) { return 'function'===typeof v }
+    match(map) {
+        if (!this.value) {
+            if (map[this.NONE]) return map._(this.options[this.value])
+            throw new Error(`式の中にdefaultパターンがありません。キー名が ${this.NONE} の要素を追加してください。`)
+        }
+        if (![...Object.keys(this._options)].every(k=>map[k])) { throw new Error(`網羅不足です。式の中に状態識別子${this.keys}のすべてを含めてください。`) }
+        //return map[this.value](this._options[this.value])
+        const o = this.options[this.value]
+        //console.log(o, this.#isFn(o), this.#isFn(o) ? o() : o)
+        //console.log(o, this.#isFn(o), (this.#isFn(o) ? o() : o))
+        //console.log(o, this.#isFn(o), (this.#isFn(o) ? (o()) : o))
+        console.log(o, this.#isFn(o), ((this.#isFn(o)) ? (o()) : o))
+        return map[this.value](this.#isFn(o) ? o() : o)
+    }
+}
+
+// 正常系
+const status = new Status({
+    start: {msg:'開始'},
+    middle: {msg:'中間'},
+    end: {msg:'完了'},
+}, (v, opt, rawV)=>console.log(`値が代入された：`, v, opt, rawV))
+status.value = status.keys[Math.floor(Math.random() * status.keys.length)]
+console.log(`テスト値：${status.value}`)
+const res = status.match({
+    start: (v)=>`1. ${v.msg}`,
+    middle: (v)=>`2. ${v.msg}`,
+    end: (v)=>`3. ${v.msg}`,
+    _: (v)=>`不正値！`
+})
+console.log('結果値：', res)
+
+// 正常系（options値が無名関数）
+const statusFn = new Status({
+    start: ()=>{msg:'開始'},
+    middle: ()=>{msg:'中間'},
+    end: ()=>{msg:'完了'},
+}, (v, opt, rawV)=>console.log(`値が代入された：`, v, opt, rawV))
+statusFn.value = statusFn.keys[Math.floor(Math.random() * statusFn.keys.length)]
+console.log(`テスト値：${statusFn.value}`)
+console.log('結果値：', statusFn.match({
+    start: (v)=>`1. ${v.msg}`,
+    middle: (v)=>`2. ${v.msg}`,
+    end: (v)=>`3. ${v.msg}`,
+    _: (v)=>`不正値！`
+}))
+
+
+// 不正値系
+status.value = '存在しない状態識別子'
+console.log(status.match({
+    start: (v)=>`1. ${v.msg}`,
+    middle: (v)=>`2. ${v.msg}`,
+    end: (v)=>`3. ${v.msg}`,
+    _: (v)=>`不正値！`
+}))
+
+// エラー系（網羅不足）
+/*
+status.match({
+    start: (v)=>`1. ${v.msg}`,
+})
+// エラー系（網羅不足_）
+status.match({
+    start: (v)=>`1. ${v.msg}`,
+    middle: (v)=>`2. ${v.msg}`,
+    end: (v)=>`3. ${v.msg}`,
+})
+*/
+</script>
