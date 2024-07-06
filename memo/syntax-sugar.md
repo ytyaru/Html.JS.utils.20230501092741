@@ -158,10 +158,11 @@ let R = result(50, match(50))
 　`State`クラスの場合、`value`をセットするときディスクリプタを仕掛けると良いかもしれない。
 
 ```javascript
-class State {
-  constructor() {
-    this.value = null
+class ObserVal {
+  constructor(v) {
+    this.value = v
   }
+  set value(v) { 
 }
 ```
 
