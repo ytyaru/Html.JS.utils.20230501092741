@@ -31,7 +31,7 @@ class ValidVal extends ObserVal {
 }
 class SomeVal extends ValidVal {
     constructor(v, whitelist, onSet) {
-        super(v, null, onSet)
+        super(v, undefined, onSet)
         this._whitelist = []
         this.whilelist = whitelist
         this._initV(v)
