@@ -2,21 +2,29 @@
 <script>
 window.addEventListener('DOMContentLoaded', async(e)=>{
     //const point = new ObserVal(Math.floor(Math.random() * 100) + 1)
-    const point = new ObserVal(0)
+    //const point = new SomeVal(0)
+    const point = new RangeVal(0)
     console.log(point)
     console.log(point.v)
+    console.log(point._v)
+    console.log(point._o)
     console.assert(0===point.v)
+    console.assert(null===point._o)
     point.v = 1
+    console.log(point.v)
     console.assert(1===point.v)
     console.assert(0===point._o)
-    point.onSet = (v)=>{
-        if(v.v < 0 || 100 < v.v){ v._back() }
-    }
+    point.setRange(0, 100)
+    //point.whitelist = [1,2,3]
+    //point.onValidate = (v)=>(0 <= v && v <= 100)
+    //point.onSet = (v)=>{
+        //if(v.v < 0 || 100 < v.v){ v._back() }
+    //}
     point.v = 2
     console.assert(2===point.v)
     console.assert(1===point._o)
     point.v = -1
-    console.assert(2===point.v)
+    console.assert(2===point.v) // rollback
     console.assert(null===point._o)
 })
 </script>

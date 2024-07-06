@@ -1,0 +1,14 @@
+<script>
+window.addEventListener('DOMContentLoaded', async(e)=>{
+    class C {
+        constructor(n) { this._name = n; }
+        get name( ) { return this._name }
+        set name(v) { this._name = v }
+    }
+    class D extends C { constructor(n) { super(n) }}
+    const d = new D('A')
+    console.assert('A'===d.name)
+    console.log(d)
+    console.log(d.name)
+})
+</script>
