@@ -39,6 +39,7 @@ class SomeVal extends ValidVal {
         this._initV(v)
     }
     get whitelist( ) { return this._whitelist }
+    //set whitelist(v) { if (Array.isArray(v)) { this._whitelist = v; this._setOnValidate(); this._initV(); } }
     set whitelist(v) {
         if (Array.isArray(v)) {
             this._whitelist = v
@@ -51,6 +52,7 @@ class SomeVal extends ValidVal {
     _setOnValidate() { if (!this.onValidate) { this.onValidate = (v)=>this._whitelist.some(l=>l===v) } }
 }
 class Range {
+    //constructor(min, max) { this._min = min ?? 0; this._max = max ?? 0; }
     constructor(min, max) { this._min = min; this._max = max; }
     get min( ) { return this._min }
     get max( ) { return this._max }
@@ -67,6 +69,7 @@ class RangeVal extends ValidVal {
         this._ON_VALID = (v)=> this._range.isRange(v)
         this._range = new Range(min, max)
         console.log(this._range)
+        //if (!this._range.isValid) { this._range = null; console.warn(`Out of range. 範囲不正です。`); }
         if (!this._range.isValid) { console.warn(`Out of range. 範囲不正です。`); }
         this._setOnValidate()
     }
@@ -83,4 +86,15 @@ class RangeVal extends ValidVal {
     set max(v) { this._range.max = v; this._setOnValidate(); }
     _setOnValidate() { if (!this.onValidate) { this.onValidate = this._range.isValid ? this._ON_VALID : null } }
 }
-
+/*
+class RangeVal extends ObserVal {
+    constructor(v, range, onSet) {
+        super(v, null, onSet)
+        this._range = this._validRange(range) ? range : null
+        this._setOnValidate()
+    }
+    _validRange(v) { return v instanceof Range && v.isValid }
+    _setOnValidate() { if (!this.onValidate && this._range) { this.onValidate = (v)=> this.range.isRange(v) } }
+    _initV() { this._v = (this._range) ? this._range.min : null }
+}
+*/

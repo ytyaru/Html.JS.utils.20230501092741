@@ -1,33 +1,31 @@
 class ObserVal {
     constructor(v, onSet) {
-        this._v = v ?? null
-        this._o = null
-        this._onSet = onSet ?? null
+        this._v = v
+        this._onSet = onSet
+        this._onSet = this._isFn(onSet) ? onSet : ObserVal._onSetDefault
+        console.log(this._v)
+        this.v = v
     }
     get v( ) { return this._v }
-    set v(v) { this._set(v); this._runOnSet(); }
+    set v(v) { if (this._isFnOnSet) { this._v = this._onSet(v, this._v) } }
     get onSet( ) { return this._onSet }
     set onSet(v) { if (this._isFn(v)) this._onSet = v }
-    _set(v) { this._o = this._v; this._v = v; }
-    _back() { this._v = this._o; this._o = null; console.log('_back()', this._v, this._o); }
-    _runOnSet() { if (this._isFnOnSet) this._onSet(this) }
     get _isFnOnSet() { return this._isFn(this._onSet) }
     _isFn(v) { return 'function'===typeof v }
+    static _onSetDefault(v, o) { return v } // v:今回代入要求値, o:前回代入された値
 }
 class ValidVal extends ObserVal {
     constructor(v, onValidate, onSet) {
         super(v, onSet)
-        this._onValidate = onValidate ?? null
+        this.onValidate = onValidate 
+        this.v = v
     }
     get onValidate( ) { return this._onValidate }
     set onValidate(v) { if (this._isFn(v)) this._onValidate = v }
     get v() { return super.v } // setだけオーバーライド不可 https://qiita.com/mohayonao/items/63c14384c734a6e0d599
     set v(v) {
-        this._set(v)
-        this._rollback()
-        this._runOnSet()
+        if (this._runOnValidate(v)) { super.v = v }
     }
-    _rollback() { if (this._onValidate && !this._runOnValidate()) { this._back() } }
     _runOnValidate(v) { if (this._isFnOnValidate) return this._onValidate(v ?? this.v) }
     get _isFnOnValidate() { return this._isFn(this._onValidate) }
 }
