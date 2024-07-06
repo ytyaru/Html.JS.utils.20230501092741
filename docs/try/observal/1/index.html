@@ -1,0 +1,22 @@
+<script src="observal.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(e)=>{
+    //const point = new ObserVal(Math.floor(Math.random() * 100) + 1)
+    const point = new ObserVal(0)
+    console.log(point)
+    console.log(point.v)
+    console.assert(0===point.v)
+    point.v = 1
+    console.assert(1===point.v)
+    console.assert(0===point._o)
+    point.onSet = (v)=>{
+        if(v.v < 0 || 100 < v.v){ v.back() }
+    }
+    point.v = 2
+    console.assert(2===point.v)
+    console.assert(1===point._o)
+    point.v = -1
+    console.assert(2===point.v)
+    console.assert(null===point._o)
+})
+</script>
