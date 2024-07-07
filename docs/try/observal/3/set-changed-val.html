@@ -1,0 +1,245 @@
+<meta charset="utf-8">
+<!--
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+-->
+<script src="../../../js/util/test.js"></script>
+<script src="../../../lib/underscore/1.13.6/min.js"></script>
+<script src="../../../js/util/type.js"></script>
+<!--<script src="../js/util/syntax-sugar/observal.js"></script>-->
+<!--<script src="../js/util/syntax-sugar/set-val.js"></script>-->
+<script src="set-val.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    test.run([
+        ()=>{
+            const v = new SetChangedVal()
+            if (undefined!==v.v) { return false }
+            if (undefined!==v._v) { return false }
+            if (undefined===v.onSet) { return false }
+            if (undefined===v._onSet) { return false }
+            if (undefined!==v._o) { return false }
+            if (undefined!==v.onChanged) { return false }
+            if (undefined!==v._onChanged) { return false }
+            return true
+        },
+        ()=>{
+            const v = new SetChangedVal(0)
+            console.log(this._v, this._o)
+            if (0!==v.v) { return false }
+            if (0!==v._v) { return false }
+            if (null===v.onSet) { return false }
+            if (null===v._onSet) { return false }
+            if (undefined!==v._o) { return false }
+            if (undefined!==v.onChanged) { return false }
+            if (undefined!==v._onChanged) { return false }
+            return true
+        },
+        ()=>{
+            const v = new SetChangedVal('A')
+            if ('A'!==v.v) { return false }
+            if ('A'!==v._v) { return false }
+            if (null===v.onSet) { return false }
+            if (null===v._onSet) { return false }
+            if (undefined!==v._o) { return false }
+            if (undefined!==v.onChanged) { return false }
+            if (undefined!==v._onChanged) { return false }
+            return true
+        },
+        ()=>{
+            const expected = ['A']
+            const v = new SetChangedVal(expected)
+            if (expected!==v.v) { return false }
+            if (expected!==v._v) { return false }
+            if (null===v.onSet) { return false }
+            if (null===v._onSet) { return false }
+            if (undefined!==v._o) { return false }
+            if (undefined!==v.onChanged) { return false }
+            if (undefined!==v._onChanged) { return false }
+            return true
+        },
+        ()=>{
+            const expected = {k:'v'}
+            const v = new SetChangedVal(expected)
+            if (expected!==v.v) { return false }
+            if (expected!==v._v) { return false }
+            if (null===v.onSet) { return false }
+            if (null===v._onSet) { return false }
+            if (undefined!==v._o) { return false }
+            if (undefined!==v.onChanged) { return false }
+            if (undefined!==v._onChanged) { return false }
+            return true
+        },
+        // 代入
+        ()=>{
+            const v = new SetChangedVal(0)
+            if (0!==v.v) { return false }
+            v.v = 1
+            if (1!==v.v) { return false }
+            v.v = 2
+            if (2!==v.v) { return false }
+            return true
+        },
+        ()=>{
+            const v = new SetChangedVal(0)
+            if (0!==v.v) { return false }
+            v.v = 1
+            if (1!==v.v) { return false }
+            v.v = 2
+            if (2!==v.v) { return false }
+            return true
+        },
+        ()=>{
+            const v = new SetChangedVal(0)
+            if (0!==v.v) { return false }
+            v.v++
+            if (1!==v.v) { return false }
+            v.v++
+            if (2!==v.v) { return false }
+            return true
+        },
+        ()=>{
+            const v = new SetChangedVal(100)
+            if (100!==v.v) { return false }
+            v.v -= 50
+            if (50!==v.v) { return false }
+            v.v *= 3
+            if (150!==v.v) { return false }
+            return true
+        },
+        ()=>{
+            const v = new SetChangedVal(0)
+            if (0!==v.v) { return false }
+            v.v = 'A'
+            if ('A'!==v.v) { return false }
+            v.v = null
+            if (null!==v.v) { return false }
+            return true
+        },
+        // onSet
+        ()=>{
+            const v = new SetChangedVal(0, (v,o)=>v+100)
+            if (100!==v.v) { return false }
+            v.v++
+            if (201!==v.v) { return false }
+            v.v++
+            if (302!==v.v) { return false }
+            return true
+        },
+        // onChange
+        ()=>{
+            let c = 0
+            const v = new SetChangedVal(0, null, (v,o)=>c++) // onSet=nullだと標準関数（代入値そのまま返す）を使う
+            if (0!==v.v) { return false }
+            if (0!==c) { return false } // ChangedValと違い、初回時はonChangedが実行されない
+            console.log('c:',c)
+            v.v++
+            if (1!==v.v) { return false }
+            if (1!==c) { return false }
+            v.v++
+            if (2!==v.v) { return false }
+            if (2!==c) { return false }
+            /* ChangedValのときは初回時onChangedが実行される
+            if (0!==v.v) { return false }
+            if (1!==c) { return false }
+            v.v++
+            if (1!==v.v) { return false }
+            if (2!==c) { return false }
+            v.v++
+            if (2!==v.v) { return false }
+            if (3!==c) { return false }
+            */
+            return true
+        },
+
+        // onSet, onChange
+        ()=>{
+            let c = 0
+            const v = new SetChangedVal(0, (v,o)=>v+100, (v,o)=>c++)
+            if (100!==v.v) { return false }
+            if (0!==c) { return false } // ChangedValと違い、初回時はonChangedが実行されない
+            console.log(v._o)
+            v.v++
+            if (201!==v.v) { return false }
+            if (1!==c) { return false }
+            v.v++
+            if (302!==v.v) { return false }
+            if (2!==c) { return false }
+            /* ChangedValのときは初回時onChangedが実行される
+            if (100!==v.v) { return false }
+            if (1!==c) { return false }
+            if (0!==v._o) { return false }
+            v.v++
+            if (1!==v.v) { return false }
+            if (2!==c) { return false }
+            v.v++
+            if (2!==v.v) { return false }
+            if (3!==c) { return false }
+            */
+            return true
+        },
+        // onSet 非関数セット時
+        ()=>{
+            const v = new SetChangedVal(0, '非関数セット時はセットされずデフォルト処理となる。')
+            if (0!==v.v) { return false }
+            v.v = 50
+            if (50!==v.v) { return false }
+            return true
+        },
+        // onSet, onChange に非関数セット時
+        ()=>{
+            const v = new SetChangedVal(0, '非関数セット時はセットされずデフォルト処理となる。', '非関数セット時は無視される')
+            if (0!==v.v) { return false }
+            v.v = 50
+            if (50!==v.v) { return false }
+            return true
+        },
+        /*
+        ()=>{
+            const v = new SetChangedVal(0, (v,o)=>(0<=v&&v<=100) ? v : o) // 0〜100以内なら新値vを返す。それ以外なら旧値oを返す。
+            if (0!==v.v) { return false }
+            v.v = 100
+            if (100!==v.v) { return false }
+            v.v = -1
+            if (100!==v.v) { return false }
+            v.v = 101
+            if (100!==v.v) { return false }
+            return true
+        },
+        // onSet 条件付き代入
+        ()=>{
+            // 最初から条件外の値（その結果はOutOfRangeのような定数値のほうが嬉しい。undefinedだと意味が違う）
+            const v = new SetChangedVal(-1, (v,o)=>(0<=v&&v<=100) ? v : ((0<=o&&o<=100) ? o : undefined))
+            console.log(v.v)
+            if (undefined!==v.v) { return false }
+            v.v = 0
+            if (0!==v.v) { return false }
+            v.v = 100
+            if (100!==v.v) { return false }
+            v.v = -1
+            if (100!==v.v) { return false }
+            v.v = 101
+            if (100!==v.v) { return false }
+            return true
+        },
+        // onSet 非関数セット時
+        ()=>{
+            const v = new SetChangedVal(0, '非関数セット時はセットされずデフォルト処理となる。')
+            if (0!==v.v) { return false }
+            v.v = 50
+            if (50!==v.v) { return false }
+            return true
+        },
+        */
+//        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>complexCase.toChain()),
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
