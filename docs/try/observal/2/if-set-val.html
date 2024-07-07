@@ -18,24 +18,30 @@ window.addEventListener('DOMContentLoaded', (event) => {
             console.log(v.v)
             if (undefined!==v.v) { return false }
             if (undefined!==v._v) { return false }
-            if (undefined!==v.onIfSet) { return false }
-            if (undefined!==v._onIfSet) { return false }
+            if (undefined===v.onIfSet) { return false }
+            if (undefined===v._onIfSet) { return false }
+            if (_Val._onSetDefault!==v.onIfSet) { return false }
+            if (_Val._onSetDefault!==v._onIfSet) { return false }
             return true
         },
         ()=>{
             const v = new IfSetVal(0)
             if (0!==v.v) { return false }
             if (0!==v._v) { return false }
-            if (undefined!==v.onIfSet) { return false }
-            if (undefined!==v._onIfSet) { return false }
+            if (undefined===v.onIfSet) { return false }
+            if (undefined===v._onIfSet) { return false }
+            if (_Val._onSetDefault!==v.onIfSet) { return false }
+            if (_Val._onSetDefault!==v._onIfSet) { return false }
             return true
         },
         ()=>{
             const v = new IfSetVal('A')
             if ('A'!==v.v) { return false }
             if ('A'!==v._v) { return false }
-            if (undefined!==v.onIfSet) { return false }
-            if (undefined!==v._onIfSet) { return false }
+            if (undefined===v.onIfSet) { return false }
+            if (undefined===v._onIfSet) { return false }
+            if (_Val._onSetDefault!==v.onIfSet) { return false }
+            if (_Val._onSetDefault!==v._onIfSet) { return false }
             return true
         },
         ()=>{
@@ -43,8 +49,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
             const v = new IfSetVal(expected)
             if (expected!==v.v) { return false }
             if (expected!==v._v) { return false }
-            if (undefined!==v.onIfSet) { return false }
-            if (undefined!==v._onIfSet) { return false }
+            if (undefined===v.onIfSet) { return false }
+            if (undefined===v._onIfSet) { return false }
+            if (_Val._onSetDefault!==v.onIfSet) { return false }
+            if (_Val._onSetDefault!==v._onIfSet) { return false }
             return true
         },
         ()=>{
@@ -52,67 +60,77 @@ window.addEventListener('DOMContentLoaded', (event) => {
             const v = new IfSetVal(expected)
             if (expected!==v.v) { return false }
             if (expected!==v._v) { return false }
-            if (undefined!==v.onIfSet) { return false }
-            if (undefined!==v._onIfSet) { return false }
+            if (undefined===v.onIfSet) { return false }
+            if (undefined===v._onIfSet) { return false }
+            if (_Val._onSetDefault!==v.onIfSet) { return false }
+            if (_Val._onSetDefault!==v._onIfSet) { return false }
             return true
         },
         // onIfSetがないと変更不可（実質固定値）
+        // onIfSetがないときは標準関数を使用する（代入値をそのまま返す）
         ()=>{
             const v = new IfSetVal(0)
             console.log(v.v)
             if (0!==v.v) { return false }
             v.v = 1
             console.log(v.v)
-            //if (1!==v.v) { return false }
-            if (0!==v.v) { return false }
+            if (1!==v.v) { return false }
+            //if (0!==v.v) { return false }
             v.v = 2
-            //if (2!==v.v) { return false }
-            if (0!==v.v) { return false }
+            if (2!==v.v) { return false }
+            //if (0!==v.v) { return false }
             return true
         },
         ()=>{
             const v = new IfSetVal(0)
             if (0!==v.v) { return false }
             v.v++
-            //if (1!==v.v) { return false }
-            if (0!==v.v) { return false }
+            if (1!==v.v) { return false }
+            //if (0!==v.v) { return false }
             v.v++
-            //if (2!==v.v) { return false }
-            if (0!==v.v) { return false }
+            if (2!==v.v) { return false }
+            //if (0!==v.v) { return false }
             return true
         },
         ()=>{
             const v = new IfSetVal(100)
             if (100!==v.v) { return false }
             v.v -= 50
-            //if (50!==v.v) { return false }
-            if (100!==v.v) { return false }
+            if (50!==v.v) { return false }
+            //if (100!==v.v) { return false }
             v.v *= 3
-            //if (150!==v.v) { return false }
-            if (100!==v.v) { return false }
+            if (150!==v.v) { return false }
+            //if (100!==v.v) { return false }
             return true
         },
         ()=>{
             const v = new IfSetVal(0)
             if (0!==v.v) { return false }
             v.v = 'A'
-            //if ('A'!==v.v) { return false }
-            if (0!==v.v) { return false }
+            if ('A'!==v.v) { return false }
+            //if (0!==v.v) { return false }
             v.v = null
-            //if (null!==v.v) { return false }
-            if (0!==v.v) { return false }
+            if (null!==v.v) { return false }
+            //if (0!==v.v) { return false }
             return true
         },
         // onIfSet 条件付き代入
         ()=>{
-            const v = new IfSetVal(0, (v)=>0<=v&&v<=100) // 0〜100以内なら代入する。それ以外なら無視する。
+            const onIfSet = (v)=>0<=v&&v<=100
+            //const v = new IfSetVal(0, (v)=>0<=v&&v<=100) // 0〜100以内なら代入する。それ以外なら無視する。
+            const v = new IfSetVal(0, onIfSet) // 0〜100以内なら代入する。それ以外なら無視する。
             if (0!==v.v) { return false }
+            if (onIfSet!==v.onIfSet) { return false }
             v.v = 100
             if (100!==v.v) { return false }
+            v.v = 0
+            if (0!==v.v) { return false }
+            v.v = 50
+            if (50!==v.v) { return false }
             v.v = -1
-            if (100!==v.v) { return false }
+            if (50!==v.v) { return false }
             v.v = 101
-            if (100!==v.v) { return false }
+            if (50!==v.v) { return false }
             return true
         },
         // onIfSet 条件付き代入 最初から無効値（Invalid）

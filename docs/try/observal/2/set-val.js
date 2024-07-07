@@ -1,14 +1,17 @@
+class FixVal { constructor(v) { this._v = v } get v() { return this._v } }
 class _Val { // 共通部分
     constructor(v) { this._v = v }
     get v( ) { return this._v }
     set v(v) { this._v = v }
     _isFn(v) { return 'function'===typeof v }
+    static _onSetDefault(v, o) { return v } // v:今回代入要求値, o:前回代入された値
 }
 class SetVal extends _Val{
     constructor(v, onSet) {
         super(v)
         this._onSet = onSet
-        this._onSet = this._isFn(onSet) ? onSet : SetVal._onSetDefault
+        //this._onSet = this._isFn(onSet) ? onSet : SetVal._onSetDefault
+        this._onSet = this._isFn(onSet) ? onSet : _Val._onSetDefault
         this.v = v
     }
     get v( ) { return this._v }
@@ -16,8 +19,14 @@ class SetVal extends _Val{
     get onSet( ) { return this._onSet }
     set onSet(v) { if (this._isFn(v)) this._onSet = v }
     get _isFnOnSet() { return this._isFn(this._onSet) }
-    static _onSetDefault(v, o) { return v } // v:今回代入要求値, o:前回代入された値
+//    static _onSetDefault(v, o) { return v } // v:今回代入要求値, o:前回代入された値
 }
+/*
+// onIfSetが未定義のときは何も実行せず実質固定値になるのはおかしい。次の４パターンが欲しい。
+// * undefined:        _onSetDefault
+// * null:             何も実行せず実質固定値（nullをセットする。onIfSetに）
+// * 任意関数:         それをセットする。onIfSetに。
+// * 上記以外の非関数: 無視する（前回までの値保持）
 class IfSetVal extends _Val {
     constructor(v, onIfSet) {
         super(v)
@@ -31,7 +40,44 @@ class IfSetVal extends _Val {
     _runOnIfSet(v) { if (this._isFnOnIfSet) return this._onIfSet(v ?? this.v) }
     get _isFnOnIfSet() { return this._isFn(this._onIfSet) }
 }
-class FixVal extends IfSetVal {constructor(v){super(v)}} // IfSetValのonIfSetを与えねば変更不可になり実質固定値になる
+*/
+class IfSetVal extends _Val {
+    constructor(v, onIfSet) {
+        super(v)
+        this.onIfSet = onIfSet
+        this.v = v
+    }
+    get onIfSet( ) { return this._onIfSet }
+    set onIfSet(v) {
+        if (undefined===v) { this._onIfSet = _Val._onSetDefault }
+        else if (null===v || this._isFn(v)) { this._onIfSet = v }
+        else {} // 無視
+    }
+    get v() { return this._v } // setだけオーバーライド不可 https://qiita.com/mohayonao/items/63c14384c734a6e0d599
+    set v(v) { if (this._runOnIfSet(v)) { this._v = v } }
+    _runOnIfSet(v) { if (this._isFnOnIfSet) return this._onIfSet(v ?? this.v) }
+    get _isFnOnIfSet() { return this._isFn(this._onIfSet) }
+}
+//class FixVal extends IfSetVal {constructor(v){super(v,null)}} // IfSetValのonIfSetにnullを与えたら変更不可になり実質固定値になる
+/*
+// onIfSetプロパティを削除したかったが、できなかった
+class FixVal extends IfSetVal {// IfSetValのonIfSetにnullを与えたら変更不可になり実質固定値になる
+    constructor(v){
+        super(v,null)
+// SyntaxError: Delete of an unqualified identifier in strict mode.
+//        delete _onIfSet 
+//        delete onIfSet
+//        this._onIfSet = null
+//        this.onIfSet = null
+//        this.prototype._onIfSet = null
+//        this.prototype.onIfSet = null
+//        super._onIfSet = null
+//        super.onIfSet = null
+//        super.prototype._onIfSet = null
+//        super.prototype.onIfSet = null
+    }
+} 
+*/
 class ChangedVal extends _Val{
     constructor(v, onChanged) {
         super()
@@ -72,10 +118,12 @@ class SetChangedVal extends SetVal {
 }
 class IfSetChangedVal extends IfSetVal {
     constructor(v, onIfSet, onChanged) {
-        super(undefined, onIfSet)
+        //super(undefined, onIfSet)
+        super(v, onIfSet)
         this._o = undefined
         this.onChanged = onChanged
         this.v = v
+        this._o = undefined
     }
     get v( ) { return this._v }
     set v(v) {
