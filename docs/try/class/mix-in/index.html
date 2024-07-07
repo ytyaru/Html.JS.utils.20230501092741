@@ -1,0 +1,34 @@
+<script>
+window.addEventListener('DOMContentLoaded', async(event)=>{
+    class C {
+        constructor(n) { this._name = n; }
+        get name( ) { return this._name }
+        set name(v) { this._name = v }
+    }
+    class D {
+        constructor(a) { this._age = a; }
+        get age( ) { return this._age }
+        set age(v) { this._age = v }
+    }
+    // C, Dを多重継承したいが、仕様上不可能
+    //class E extends C, D { constructor(n) { super(n) }}
+
+    /*
+    // Object.assignを使ってもダメ
+    const E = Object.assign(C.__proto__, D.__proto__)
+//    const e = new E(0) // TypeError: E is not a constructor
+    const e = E(0) // undefined
+    console.log(e)
+    console.log(E)
+    */
+
+    const E = Object.assign(C.constructor, D.constructor)
+    console.log(E)
+    console.log(new E(0))
+
+    console.log(C.constructor)
+    console.log(C.constructor('A'))
+    console.log(new C.constructor('A'))
+    console.log(typeof C.constructor)
+})
+</script>

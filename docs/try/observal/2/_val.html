@@ -1,0 +1,108 @@
+<meta charset="utf-8">
+<!--
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+-->
+<script src="../../../js/util/test.js"></script>
+<script src="../../../lib/underscore/1.13.6/min.js"></script>
+<script src="../../../js/util/type.js"></script>
+
+<!--<script src="../js/util/syntax-sugar/observal.js"></script>-->
+<!--<script src="../js/util/syntax-sugar/set-val.js"></script>-->
+<script src="set-val.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    test.run([
+        ()=>{
+            const v = new _Val()
+            if (undefined!==v.v) { return false }
+            if (undefined!==v._v) { return false }
+            if (!v._isFn(()=>true)) { return false }
+            if ( v._isFn()) { return false }
+            if ( v._isFn(0)) { return false }
+            return true
+        },
+        ()=>{
+            const v = new _Val(0)
+            if (0!==v.v) { return false }
+            if (0!==v._v) { return false }
+            return true
+        },
+        ()=>{
+            const v = new _Val('A')
+            if ('A'!==v.v) { return false }
+            if ('A'!==v._v) { return false }
+            return true
+        },
+        ()=>{
+            const expected = ['A']
+            const v = new _Val(expected)
+            if (expected!==v.v) { return false }
+            if (expected!==v._v) { return false }
+            return true
+        },
+        ()=>{
+            const expected = {k:'v'}
+            const v = new _Val(expected)
+            if (expected!==v.v) { return false }
+            if (expected!==v._v) { return false }
+            return true
+        },
+        ()=>{
+            const v = new _Val(0)
+            if (0!==v.v) { return false }
+            v.v = 1
+            if (1!==v.v) { return false }
+            v.v = 2
+            if (2!==v.v) { return false }
+            return true
+        },
+        // v
+        ()=>{
+            const v = new _Val(0)
+            if (0!==v.v) { return false }
+            v.v = 1
+            if (1!==v.v) { return false }
+            v.v = 2
+            if (2!==v.v) { return false }
+            return true
+        },
+        ()=>{
+            const v = new _Val(0)
+            if (0!==v.v) { return false }
+            v.v++
+            if (1!==v.v) { return false }
+            v.v++
+            if (2!==v.v) { return false }
+            return true
+        },
+        ()=>{
+            const v = new _Val(100)
+            if (100!==v.v) { return false }
+            v.v -= 50
+            if (50!==v.v) { return false }
+            v.v *= 3
+            if (150!==v.v) { return false }
+            return true
+        },
+        ()=>{
+            const v = new _Val(0)
+            if (0!==v.v) { return false }
+            v.v = 'A'
+            if ('A'!==v.v) { return false }
+            v.v = null
+            if (null!==v.v) { return false }
+            return true
+        },
+//        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>complexCase.toChain()),
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
