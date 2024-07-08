@@ -19,7 +19,7 @@ class SetVal extends _Val{
     set onSet(v) { if (this._isFn(v)) this._onSet = v }
     get _isFnOnSet() { return this._isFn(this._onSet) }
 }
-class IfSetVal extends _Val {
+class IfSetVal extends _Val { // onIfが真を返した時だけ代入する。それ以外は無視する。
     constructor(v, onIf) {
         super(v)
         this.onIf = onIf
@@ -37,24 +37,43 @@ class IfSetVal extends _Val {
     get _isFnOnIf() { return this._isFn(this._onIf) }
     static _onIfDefault(v, o) { return true } // v:今回代入要求値, o:前回代入された値, return: 必ずセットする
 }
-class IfElSetVal extends IfSetVal {
-    constructor(v, onIfSet, onElSet) {
-        super(v, onIfSet)
-        this.onElSet = onElSet
+class IfElSetVal extends IfSetVal { // onIfが真を返した時だけ代入する。それ以外はonElを実行する。
+    constructor(v, onIf, onEl) {
+        super(v, onIf)
+        this.onEl = onEl
         this.v = v
     }
-    get onElSet( ) { return this._onElSet }
-    set onElSet(v) {
-        if (undefined===v) { this._onElSet = _onElSetDefault }
-        else if (null===v || this._isFn(v)) { this._onElSet = v }
+    get onEl( ) { return this._onEl }
+    set onEl(v) {
+        if (undefined===v) { this._onEl = IfElSetVal._onElDefault }
+        else if (null===v || this._isFn(v)) { this._onEl = v }
         else {} // 無視
     }
-    get v() { return this._v } // setだけオーバーライド不可 https://qiita.com/mohayonao/items/63c14384c734a6e0d599
-    set v(v) { if (this._runOnIfSet(v)) { this._v = v } else { this._runOnElSet(v, this._v) } }
-    _runOnElSet(v) { if (this._isFnOnElSet) return this._onElSet(v, this.v) }
-    get _isFnOnElSet() { return this._isFn(this._onElSet) }
+    get v() { return this._v }
+    set v(v) { if (this._runOnIf(v)) { this._v = v } else { this._runOnEl(v, this._v) } }
+    _runOnEl(v) { if (this._isFnOnEl) return this._onEl(v, this.v) }
+    get _isFnOnEl() { return this._isFn(this._onEl) }
     static _onElDefault(v, o) { } // v:今回代入要求値, o:前回代入された値, return: 何もせず無視する
 }
+class IfFinSetVal extends IfSetVal { // onIfが真を返した時だけ代入する。onIfの真偽に関わらず必ずonFinを実行する。
+    constructor(v, onIfSet, onFin) {
+        super(v, onIfSet)
+        this.onFin = onFin
+        this.v = v
+    }
+    get onFin( ) { return this._onFin }
+    set onFin(v) {
+        if (undefined===v) { this._onFin = _onFinDefault }
+        else if (null===v || this._isFn(v)) { this._onFin = v }
+        else {} // 無視
+    }
+    get v() { return this._v }
+    set v(v) { if (this._runOnIfSet(v)) { this._v = v } this._runOnFin(v, this._v); }
+    _runOnFin(v) { if (this._isFnOnFin) return this._onFin(v, this.v) }
+    get _isFnOnFin() { return this._isFn(this._onFin) }
+    static _onFinDefault(v, o) { } // v:今回代入要求値, o:前回代入された値, return: 何もせず無視する
+}
+
 class ChangedVal extends _Val{
     constructor(v, onChanged) {
         super(v)
