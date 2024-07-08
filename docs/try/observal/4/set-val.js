@@ -56,8 +56,8 @@ class IfElSetVal extends IfSetVal { // onIfが真を返した時だけ代入す�
     static _onElDefault(v, o) { } // v:今回代入要求値, o:前回代入された値, return: 何もせず無視する
 }
 class IfFinSetVal extends IfSetVal { // onIfが真を返した時だけ代入する。onIfの真偽に関わらず必ずonFinを実行する。
-    constructor(v, onIfSet, onFin) {
-        super(v, onIfSet)
+    constructor(v, onIf, onFin) {
+        super(v, onIf)
         this.onFin = onFin
         this.v = v
     }
@@ -73,6 +73,25 @@ class IfFinSetVal extends IfSetVal { // onIfが真を返した時だけ代入す
     get _isFnOnFin() { return this._isFn(this._onFin) }
     static _onFinDefault(v, o) { } // v:今回代入要求値, o:前回代入された値, return: 何もせず無視する
 }
+class IfElFinSetVal extends IfElSetVal { // onIfが真を返した時だけ代入し,それ以外はonElを実行し,onIfの真偽に関わらずonFinを実行する
+    constructor(v, onIf, onEl, onFin) {
+        super(v, onIf, onEl)
+        this.onFin = onFin
+        this.v = v
+    }
+    get onFin( ) { return this._onFin }
+    set onFin(v) {
+        if (undefined===v) { this._onFin = _onFinDefault }
+        else if (null===v || this._isFn(v)) { this._onFin = v }
+        else {} // 無視
+    }
+    get v() { return this._v }
+    set v(v) { super.v = v; this._runOnFin(v, this._v); }
+    _runOnFin(v) { if (this._isFnOnFin) return this._onFin(v, this.v) }
+    get _isFnOnFin() { return this._isFn(this._onFin) }
+    static _onFinDefault(v, o) { } // v:今回代入要求値, o:前回代入された値, return: 何もせず無視する
+}
+
 
 class ChangedVal extends _Val{
     constructor(v, onChanged) {
