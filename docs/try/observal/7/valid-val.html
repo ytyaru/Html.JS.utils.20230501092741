@@ -223,123 +223,151 @@ window.addEventListener('DOMContentLoaded', (event) => {
             if (104!==v.v) { return false } // 入力値は偶数なのでValidとなりSetが実行される。今回設定したそれは入力値+100の値を返す
             return true
         },
-        /*
-        // onIf
-        ()=>{
-            const onIf = (v)=>0<=v&&v<=100
-            const v = new ValidVal(0, onIf) // 0〜100以内なら代入する。それ以外なら無視する。
-            if (0!==v.v) { return false }
-            if (onIf!==v.onIf) { return false }
-            v.v = 100
-            if (100!==v.v) { return false }
+        ()=>{ // onValidate, onSet, onSetDefault, onValid, onInvalid：代入直後にValid/Invalid各場合のみ実行する。
+            let validCnt = 0
+            let invalidCnt = 0
+            const onValidate = (i,o)=>0===i%2    // 入力値が偶数の時のみ代入する
+            const onSet = (i,o)=>i+100    // Valid時、100加算した値を代入する
+            const onSetDefault = (i,o)=>0 // Invalid時、0を代入する（初期値、前回値、条件内値などをセットする）
+            const onValid = (n,i,o)=>validCnt++
+            const onInvalid = (n,i,o)=>invalidCnt++
+            const v = new ValidVal(1, {onValidate:onValidate, onSet:onSet, onSetDefault:onSetDefault, onValid:onValid, onInvalid:onInvalid})
+            if (v._onValidate!==onValidate) { return false }
+            if (v._onSet!==onSet) { return false }
+            if (v._onSetDefault!==onSetDefault) { return false }
+            if (v._onValid!==onValid) { return false }
+            if (v._onInvalid!==onInvalid) { return false }
+            if (1!==v.v) { return false } // 奇数だが初期値の場合は代入される
+            if (0!==validCnt) { return false }
+            if (0!==invalidCnt) { return false }
+            v.v = 3
+            if (0!==v.v) { return false } // 入力値は奇数なのでInvalidとなりSetDefaultが実行される。今回設定したそれは必ず0を返す
+            if (0!==validCnt) { return false }
+            if (1!==invalidCnt) { return false }
+            v.v = 4
+            if (104!==v.v) { return false } // 入力値は偶数なのでValidとなりSetが実行される。今回設定したそれは入力値+100の値を返す
+            if (1!==validCnt) { return false }
+            if (1!==invalidCnt) { return false }
+            v.v = 6
+            if (106!==v.v) { return false } // 入力値は偶数なのでValidとなりSetが実行される。今回設定したそれは入力値+100の値を返す
+            if (2!==validCnt) { return false }
+            if (1!==invalidCnt) { return false }
+            return true
+        },
+        ()=>{ // onValidate, onSet, onSetDefault, onChanged：Valid/Invalidどちらでも前回値から変化したらonChangedを実行する
+            let changedCnt = 0
+            const onValidate = (i,o)=>0===i%2    // 入力値が偶数の時のみ代入する
+            const onSet = (i,o)=>i+100    // Valid時、100加算した値を代入する
+            const onSetDefault = (i,o)=>0 // Invalid時、0を代入する（初期値、前回値、条件内値などをセットする）
+            const onChanged= (n,i,o)=>changedCnt++
+            const v = new ValidVal(1, {onValidate:onValidate, onSet:onSet, onSetDefault:onSetDefault, onChanged:onChanged})
+            if (v._onValidate!==onValidate) { return false }
+            if (v._onSet!==onSet) { return false }
+            if (v._onSetDefault!==onSetDefault) { return false }
+            if (v._onChanged!==onChanged) { return false }
+            if (1!==v.v) { return false } // 奇数だが初期値の場合は代入される
+            if (0!==changedCnt) { return false }
+            v.v = 3
+            if (0!==v.v) { return false } // 入力値は奇数なのでInvalidとなりSetDefaultが実行される。今回設定したそれは必ず0を返す
+            if (1!==changedCnt) { return false } // 初期値1から0に変化したのでonChanged実行する
+            v.v = 3
+            if (0!==v.v) { return false } // 入力値は奇数なのでInvalidとなりSetDefaultが実行される。今回設定したそれは必ず0を返す
+            if (1!==changedCnt) { return false } // 初期値0から同値0で変化しなかったのでonChanged実行せず
+            v.v = 4
+            if (104!==v.v) { return false } // 入力値は偶数なのでValidとなりSetが実行される。今回設定したそれは入力値+100の値を返す
+            if (2!==changedCnt) { return false } // 初期値0から104に変化したのでonChanged実行する
+            return true
+        },
+
+        ()=>{ // 全部乗せ：onBegin, onValidate, onSet, onSetDefault, onValid, onInvalid, onEnd
+            const count = {
+                Begin: 0,
+                Validate: 0,
+                Set: 0,
+                SetDefault: 0,
+                Valid: 0,
+                Invalid: 0,
+                Changed: 0,
+                End: 0,
+            }
+            const on = {
+                Begin: (i,o)=>count.Begin++,
+                Validate: (i,o)=>0===i%2,           // 入力値が偶数の時のみ代入する
+                Set: (i,o)=>i+100,                  // Valid時、100加算した値を代入する
+                SetDefault: (i,o)=>0,               // Invalid時、0を代入する（初期値、前回値、条件内値などをセットする）
+                Valid: (n,i,o)=>count.Valid++,
+                Invalid: (n,i,o)=>count.Invalid++,
+                Changed: (n,i,o)=>count.Changed++,
+                End: (n,i,o)=>count.End++,
+            }
+            const v = new ValidVal(1, {
+                onBegin: on.Begin,
+                onValidate: on.Validate,
+                onSet: on.Set,
+                onSetDefault: on.SetDefault, 
+                onValid: on.Valid,
+                onInvalid: on.Invalid,
+                onChanged: on.Changed,
+                onEnd: on.End,
+            })
+            if (v._onBegin!==on.Begin) { return false }
+            if (v._onValidate!==on.Validate) { return false }
+            if (v._onSet!==on.Set) { return false }
+            if (v._onSetDefault!==on.SetDefault) { return false }
+            if (v._onValid!==on.Valid) { return false }
+            if (v._onInvalid!==on.Invalid) { return false }
+            if (v._onChanged!==on.Changed) { return false }
+            if (v._onEnd!==on.End) { return false }
+
+            if (1!==v.v) { return false } // 奇数だが初期値の場合は代入される
+            if (0!==count.Begin) { return false }
+            if (0!==count.Valid) { return false }
+            if (0!==count.Invalid) { return false }
+            if (0!==count.Changed) { return false }
+            if (0!==count.End) { return false }
+
+            v.v = 3
+            if (0!==v.v) { return false } // 入力値は奇数なのでInvalidとなりSetDefaultが実行される。今回設定したそれは必ず0を返す
+            if (1!==count.Begin) { return false }
+            if (0!==count.Valid) { return false }
+            if (1!==count.Invalid) { return false }
+            if (1!==count.Changed) { return false } // 初期値1から0に変化したのでonChangedを実行する
+            if (1!==count.End) { return false }
+
+            v.v = 4
+            if (104!==v.v) { return false } // 入力値は偶数なのでValidとなりSetが実行される。今回設定したそれは入力値+100の値を返す
+            if (2!==count.Begin) { return false }
+            if (1!==count.Valid) { return false }
+            if (1!==count.Invalid) { return false }
+            if (2!==count.Changed) { return false } // 0から104に変化したのでonChangedを実行する
+            if (2!==count.End) { return false }
+
+            v.v = 6
+            if (106!==v.v) { return false } // 入力値は偶数なのでValidとなりSetが実行される。今回設定したそれは入力値+100の値を返す
+            if (3!==count.Begin) { return false }
+            if (2!==count.Valid) { return false }
+            if (1!==count.Invalid) { return false }
+            if (3!==count.Changed) { return false } // 104から106に変化したのでonChangedを実行する
+            if (3!==count.End) { return false }
+
             v.v = 0
-            if (0!==v.v) { return false }
-            v.v = 50
-            if (50!==v.v) { return false }
-            v.v = -1
-            if (50!==v.v) { return false }
-            v.v = 101
-            if (50!==v.v) { return false }
-            return true
-        },
-        // onIf, onEl
-        ()=>{
-            let elCnt = 0
-            const onIf = (v)=>0<=v&&v<=100
-            const onEl = ()=>elCnt++
-            const v = new ValidVal(0, onIf, onEl) // 0〜100以内なら代入する。それ以外なら無視する。
-            if (0!==v.v) { return false }
-            if (onIf!==v.onIf) { return false }
-            if (0!==elCnt) { return false }
-            v.v = 100
-            if (100!==v.v) { return false }
-            if (0!==elCnt) { return false }
+            console.log(v.v)
+            if (100!==v.v) { return false } // 入力値は偶数なのでValidとなりSetが実行される。今回設定したそれは入力値+100の値を返す
+            if (4!==count.Begin) { return false }
+            if (3!==count.Valid) { return false }
+            if (1!==count.Invalid) { return false }
+            if (4!==count.Changed) { return false } // 106から100に変化したのでonChangedを実行する
+            if (4!==count.End) { return false }
+
             v.v = 0
-            if (0!==v.v) { return false }
-            if (0!==elCnt) { return false }
-            v.v = 50
-            if (50!==v.v) { return false }
-            if (0!==elCnt) { return false }
-            v.v = -1 // 0〜100範囲外なので onSet せず onEl を実行する
-            if (50!==v.v) { return false }
-            if (1!==elCnt) { return false }
-            v.v = 101 // 0〜100範囲外なので onSet せず onEl を実行する
-            if (50!==v.v) { return false }
-            if (2!==elCnt) { return false }
+            if (100!==v.v) { return false } // 入力値は偶数なのでValidとなりSetが実行される。今回設定したそれは入力値+100の値を返す
+            if (5!==count.Begin) { return false }
+            if (4!==count.Valid) { return false }
+            if (1!==count.Invalid) { return false }
+            if (4!==count.Changed) { return false } // 0から0で変化なくonChangedを実行せず
+            if (5!==count.End) { return false }
             return true
         },
-        // onIfSet 条件付き代入 最初から無効値（Invalid）
-        ()=>{
-            const v = new ValidVal(-1, (v)=>0<=v&&v<=100) // 0〜100以内なら代入する。それ以外なら無視する。
-            console.log(v.v)
-            // 初回は無効値が代入された状態になってしまう！代わりに代入すべき値が不明だから（これをSomeValやRangeValで改善したい）
-            if (-1!==v.v) { return false }
-            v.v = 100
-            console.log(v.v)
-            if (100!==v.v) { return false }
-            v.v = 0
-            if (0!==v.v) { return false }
-            v.v = 101
-            if (0!==v.v) { return false }
-            return true
-        },
-        // onIfSet 非関数セット時
-        ()=>{
-            const v = new ValidVal(0, ...'非関数セット時はセットされずデフォルト処理となる。'.repeat(2))
-            if (0!==v.v) { return false }
-            v.v = 50
-            if (0!==v.v) { return false } // onIfSetが無効値だと代入できず定数になる
-            return true
-        },
-        ()=>{ // undefined, null も代入できること
-            const v = new ValidVal(0)
-            if (0!==v.v) { return false }
-            console.log(v.v)
-            v.v = undefined
-            console.log(v.v)
-            if (undefined!==v.v) { return false }
-            console.log(v.v)
-            v.v = null
-            console.log(v.v)
-            if (null!==v.v) { return false }
-            console.log(v.v)
-            return true
-        },
-        ()=>{ // onIf,onElコールバック関数で第二引数の旧値も使ってみる
-            let elCnt = 0 // onEl実行回数
-            let diff = 0  // onEl実行時の前回値との差
-            const onIf = (v,o)=>0<=v&&v<=100&&10<=Math.abs(v-o)  // 0〜100以内かつ前回値との差が10以上あれば代入する
-            const onEl = (v,o)=>{if([v,o].every(n=>Number.isFinite(n))){diff=Math.abs(v-o)}} // それ以外なら差をdiffにセットする
-            const v = new ValidVal(-1, onIf, onEl) 
-            if (-1!==v.v) { return false } // 生成時はまだonIfが機能しないため範囲外の値でも代入されてしまう。この不都合を解決するには代わりに代入する値を取得できるロジックが必要。ValidValにはないため、SomeVal, RangeValなどで実装したい
-            if (0!==diff) { return false } // 生成時はまだonElが機能しない
-            v.v = 100
-            if (100!==v.v) { return false }
-            if (0!==diff) { return false }
-            v.v = 0
-            if (0!==v.v) { return false }
-            if (0!==diff) { return false }
-            v.v = 1 // 10以上の差がないため代入されず
-            if (0!==v.v) { return false }
-            if (1!==diff) { return false } // onEl 実行
-            v.v = null // 数値比較の時点でNaNになりfalseが返り代入されず
-            if (0!==v.v) { return false }
-            if (1!==diff) { return false } // onEl 実行 v が null のため onEl 関数内のif文にて無視されdiffは前回値のまま
-            v.v = 101 // 0〜100の範囲外のため代入されず
-            if (0!==v.v) { return false }
-            if (101!==diff) { return false } // onEl 実行
-            v.v = -1 // 0〜100の範囲外のため代入されず
-            if (0!==v.v) { return false }
-            if (1!==diff) { return false } // onEl 実行
-            v.v = 10 // 0〜100の範囲内で、かつ前回値との差が10以上のため代入される
-            if (10!==v.v) { return false }
-            if (1!==diff) { return false } // onEl 実行されずdiffは前回値のまま
-            v.v = 19 // 0〜100の範囲内だが、前回値との差が10未満のため代入されず
-            if (10!==v.v) { return false }
-            if (9!==diff) { return false } // onEl 実行
-            return true
-        },
-        */
 //        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>complexCase.toChain()),
     ])
 })
