@@ -128,21 +128,6 @@ class ValidVal extends _Val {
         this.#setup(options)
     }
     get v( ) { return this._v }
-    /*
-    set v(i) {
-        const o = this._v
-        this._runOnBegin(i, o)
-        if (this._runOnValidate(i, o)) {        // input, old
-            this._v = this._runOnSet(i, o)      // input, old
-            this._runOnValid(this._v, i, o)     // now, input, old（現在値, 入力値, 旧値）
-        } else {
-            this._v = this._runOnSetDefault(i, o) // デフォルト値を返す（代入条件式が真を返す値）初期/前回/条件内値
-            this._runOnInvalid(this._v, i, o)   // now, input, old（現在値, 入力値, 旧値）
-        }
-        if (o!==this._v) { this._runOnChanged(this._v, i, o) }
-        this._runOnEnd(this._v, i, o)
-    }
-    */
     set v(i) {
         const o = this._v
         this._runOnBegin(i)
@@ -189,37 +174,10 @@ class RunFnMixer {
         });
     }
     static #setRunOn(obj, name, cName, writable=true, enumerable=true, configurable=false) {
-        //this.#addProp(o, name, (v)=>o[`_isFnOn${cName}`] ? o[`_on${cName}`](v, o._v) : undefined)
-        /*
-        const fn = ('Begin,Validate,Set,SetDefault'.split(','))
-                    ? ((  i,o)=>obj[`_isFnOn${cName}`] ? obj[`_on${cName}`](        i, obj._v) : undefined)
-                    : ((n,i,o)=>obj[`_isFnOn${cName}`] ? obj[`_on${cName}`](obj._v, i, o     ) : undefined)
-        */
         const fn = ('Begin,Validate,Set,SetDefault'.split(',').some(v=>v===cName))
                     ? ((i  )=>obj[`_isFnOn${cName}`] ? obj[`_on${cName}`](        i, obj._v) : undefined)
                     : ((i,o)=>obj[`_isFnOn${cName}`] ? obj[`_on${cName}`](obj._v, i, o     ) : undefined)
         this.setProp(obj, name, fn)
-        /*
-        this.#addProp(obj, name, (i,o)=>obj[`_isFnOn${cName}`] ? obj[`_on${cName}`](i, obj._v) : undefined)
-        this.#addProp(obj, name, (n,i,o)=>obj[`_isFnOn${cName}`] ? obj[`_on${cName}`](obj._v, i, o) : undefined)
-
-        this.#addProp(o, name, (v)=>{
-            if ('SetDefault'===cName) {
-                console.log(cName, o[`_isFnOn${cName}`], v, o._v, o[`_on${cName}`](v, o._v))
-            }
-            //console.log(cName, o, o[`_isFnOn${cName}`])
-            return o[`_isFnOn${cName}`] ? o[`_on${cName}`](v, o._v) : undefined
-
-            if ('Begin,Validate,Set,SetDefault'.split(',')) {
-                return o[`_isFnOn${cName}`] ? o[`_on${cName}`](v, o._v) : undefined
-            } else { // ,Valid,Invalid,Changed,End
-                return o[`_isFnOn${cName}`] ? o[`_on${cName}`](o._v, v, o._v) : undefined
-            }
-
-
-            return o[`_isFnOn${cName}`] ? o[`_on${cName}`](v, o._v) : undefined
-        })
-        */
     }
     static #capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : '' }
 }
