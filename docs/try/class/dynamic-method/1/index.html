@@ -1,0 +1,13 @@
+<script>
+window.addEventListener('DOMContentLoaded', async(event)=>{
+    class C {}
+    const methodObj = {
+        name: 'speak',
+        fn: (p)=>console.log(`やっほー:${p}`)
+    }
+    C.prototype[methodObj.name] = methodObj.fn
+    const c = new C()
+    c.speak()
+    c.speak('あっほー')
+})
+</script>

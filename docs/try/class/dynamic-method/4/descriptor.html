@@ -1,0 +1,97 @@
+<script>
+window.addEventListener('DOMContentLoaded', async(event)=>{
+    class C {}
+    class D {}
+    console.log(C, new C)
+//    Object.defineProperty(C.prototype, `_some`, {value:1})
+    /*
+    const addProp = (o, name, value=null, writable=true, enumerable=true, configurable=false)=>{
+        Object.defineProperty(o, name, {
+            value: value,
+            writable: writable,         // value を書き換え可能か
+            enumerable: enumerable,     // Object.assign, Spread構文[...], for in, Object.key, で列挙されるか
+            configurable: configurable, // オブジェクトから削除可能か。value, writable以外（enumerable, configurable）を変更可能か。
+        });
+    }
+    addProp(C.prototype, `_some`, 1)
+    */
+    /*
+    const addProp = (o, name, value=null, writable=true, enumerable=true, configurable=false)=>{
+        Object.defineProperty(o, `_${name}`, {
+            value: value,
+            writable: writable,         // value を書き換え可能か
+            enumerable: enumerable,     // Object.assign, Spread構文[...], for in, Object.key, で列挙されるか
+            configurable: configurable, // オブジェクトから削除可能か。value, writable以外（enumerable, configurable）を変更可能か。
+        });
+    }
+    addProp(C.prototype, `some`, 1)
+    */
+
+    // 指定した名前のGetter/Setterを作成する（_名前なプライベートプロパティも作る） o: Class.prototype
+    const addProp = (o, name, value=null, writable=true, enumerable=true, configurable=false)=>{
+        const pName = `_${name}` // name に _ を付与してプライベートな変数名を作る
+        Object.defineProperty(o, pName , {
+            value: value,
+            writable: writable,         // value を書き換え可能か
+            enumerable: enumerable,     // Object.assign, Spread構文[...], for in, Object.key, で列挙されるか
+            configurable: configurable, // オブジェクトから削除可能か。value, writable以外（enumerable, configurable）を変更可能か。
+        });
+        Object.defineProperty(o, name, {
+            get( ) { return this[pName] },
+            set(v) { this[pName] = v },
+        });
+    }
+    addProp(C.prototype, `some`, 1)
+    console.log(C, new C)
+
+    const c = new C()
+    c.some = 2
+    console.log(c.some)
+    const c2 = new C()
+    c2.some = 100
+    console.log(c2.some, c.some)
+
+    class E {
+        constructor() {
+            //addProp(E.prototype, `some`, 1) // new E()するとエラーになる
+            addProp(this, `some`, 1)
+        }
+    }
+    console.log(E, new E)
+    const e = new E()
+    e.some = 999
+    console.log(e.some, c.some, c2.some)
+    /*
+    */
+
+    /*
+    const addSetter = (o, name, value=null)=>{
+        Object.defineProperty(o, `_${name}`, {value:value})
+        Object.defineProperty(o, name, {
+            get( ) { console.log(`getter:`,o,name,   o[`_${name}`], this, this[`_${name}`]); return this[`_${name}`]; },
+            set(v) { console.log(`setter:`,o,name,v, o[`_${name}`], this, this[`_${name}`]); this[`_${name}`] = v; console.log(o[`_${name}`]); },
+//            get( ) { console.log(`getter:`,o,name,   o[`_${name}`]); return o[`_${name}`]; },
+//            set(v) { console.log(`setter:`,o,name,v, o[`_${name}`]); o[`_${name}`] = v; console.log(o[`_${name}`]); },
+//            get( ) { return prop },
+//            set(v) { prop = v },
+//            get( ) { console.log(`getter`); return prop },
+//            set(v) { console.log(`setter`); prop = v },
+        });
+    }
+//    addSetter(C, 'staticProp1')
+//    console.log(C)
+    addSetter(C.prototype, 'prop1')
+    console.log(C)
+    const c = new C()
+    c.prop1 = 'c value'
+    console.log(c.prop1, C.prop1)
+    */
+})
+</script>
+
+<!---
+    _runOnIf(v) { if (this._isFnOnIf) return this._onIf(v, this.v) }
+    get _isFnOnIf() { return this._isFn(this._onIf) }
+    static _onIfDefault(v, o) { return true } // v:今回代入要求値, o:前回代入された値, return: 必ずセットする
+-->
+

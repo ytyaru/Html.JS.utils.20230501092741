@@ -1,0 +1,78 @@
+<script>
+window.addEventListener('DOMContentLoaded', async(event)=>{
+    class C {}
+    class D {}
+    console.log(C, new C)
+    const staticMethodObj = {
+        staticMethod: (p)=>console.log(`static method:${p}`),
+    }
+    const instanceMethodObj = {
+        instanceMethod: (p)=>console.log(`instance method:${p}`),
+    }
+    const addProp = (o, name, value=null, writable=true, enumerable=true, configurable=false)=>{
+        Object.defineProperty(o, name, {
+            value: value,
+            writable: writable,         // value を書き換え可能か
+            enumerable: enumerable,     // Object.assign, Spread構文[...], for in, Object.key, で列挙されるか
+            configurable: configurable, // オブジェクトから削除可能か。value, writable以外（enumerable, configurable）を変更可能か。
+        });
+    }
+    const addSetter = (o, name, value=null)=>{
+        Object.defineProperty(o, `_${name}`, {value:value})
+        Object.defineProperty(o, name, {
+            get( ) { console.log(`getter:`,o,name,   o[`_${name}`], this); return o[`_${name}`]; },
+            set(v) { console.log(`setter:`,o,name,v, o[`_${name}`], this); o[`_${name}`] = v; console.log(o[`_${name}`]); },
+//            get( ) { console.log(`getter:`,o,name,   o[`_${name}`]); return o[`_${name}`]; },
+//            set(v) { console.log(`setter:`,o,name,v, o[`_${name}`]); o[`_${name}`] = v; console.log(o[`_${name}`]); },
+//            get( ) { return prop },
+//            set(v) { prop = v },
+//            get( ) { console.log(`getter`); return prop },
+//            set(v) { console.log(`setter`); prop = v },
+        });
+    }
+//    C[methodObj.name] = methodObj.fn
+//    C.prototype[methodObj.name] = methodObj.fn
+    Object.assign(C, staticMethodObj);
+    Object.assign(C.prototype, instanceMethodObj);
+    addSetter(C, 'staticProp1')
+    console.log(C)
+    addSetter(C.prototype, 'prop1')
+    console.log(C)
+
+    C.staticMethod()
+//    C.instanceMethod() // TypeError: C.instanceMethod is not a function
+    console.log(C.staticProp1)
+    console.log(C.prop1)
+    C.staticProp1 = 'staticProp1 value.'
+    console.log(C.staticProp1)
+    const c = new C()
+//    c.staticMethod() // TypeError: c.staticMethod is not a function
+    c.instanceMethod()
+    console.log(c.prop1, C.prop1)
+    c.prop1 = 'c value'
+    console.log(c.prop1, C.prop1)
+    console.log(c.staticProp1, C.staticProp1)
+    c.staticProp1 = 'staticProp1 value 2 !'
+    console.log(c.staticProp1, C.staticProp1)
+    const c2 = new C()
+    console.log(c.prop1, c2.prop1)
+    console.log(c.staticProp1, c2.staticProp1)
+    c2.prop1 = 'c2 value'
+    console.log(c.prop1, c2.prop1)
+
+    const d = new D()
+    addSetter(D.prototype, 'prop1')
+    console.log(d.prop1, D.prop1)
+    console.log(c.prop1, C.prop1)
+    d.prop1 = 'd value'
+    console.log(d.prop1, D.prop1)
+    console.log(c.prop1, C.prop1)
+})
+</script>
+
+<!---
+    _runOnIf(v) { if (this._isFnOnIf) return this._onIf(v, this.v) }
+    get _isFnOnIf() { return this._isFn(this._onIf) }
+    static _onIfDefault(v, o) { return true } // v:今回代入要求値, o:前回代入された値, return: 必ずセットする
+-->
+

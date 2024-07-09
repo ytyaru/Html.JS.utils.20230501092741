@@ -1,0 +1,29 @@
+<script>
+window.addEventListener('DOMContentLoaded', async(event)=>{
+    class C {}
+
+    const staticMethodObj = {
+        staticMethod: (p)=>console.log(`static method:${p}`),
+    }
+    const instanceMethodObj = {
+        instanceMethod: (p)=>console.log(`instance method:${p}`),
+    }
+//    C[methodObj.name] = methodObj.fn
+//    C.prototype[methodObj.name] = methodObj.fn
+    Object.assign(C, staticMethodObj);
+    Object.assign(C.prototype, instanceMethodObj);
+    console.log(C, C.name)
+    C.staticMethod()
+//    C.instanceMethod() // TypeError: C.instanceMethod is not a function
+    const c = new C()
+//    c.staticMethod() // TypeError: c.staticMethod is not a function
+    c.instanceMethod()
+})
+</script>
+
+<!---
+    _runOnIf(v) { if (this._isFnOnIf) return this._onIf(v, this.v) }
+    get _isFnOnIf() { return this._isFn(this._onIf) }
+    static _onIfDefault(v, o) { return true } // v:今回代入要求値, o:前回代入された値, return: 必ずセットする
+-->
+
