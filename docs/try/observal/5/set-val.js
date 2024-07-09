@@ -1,3 +1,4 @@
+/*
 class Settable = superClass =>
     class extends superClass {
         constructor(v) { this._v = v }
@@ -7,7 +8,6 @@ class Settable = superClass =>
         static _onSetDefault(v, o) { return v } // v:今回代入要求値, o:前回代入された値, return そのままの値を返す
     }
 }
-
 // idによって各プロパティやメソッドの名前を変更したいが、その仕組みがない
 class HasCallable = (superClass, id) =>
     class extends superClass {
@@ -15,9 +15,7 @@ class HasCallable = (superClass, id) =>
         _isFn(v) { return 'function'===typeof v }
         static _onSetDefault(v, o) { return v } // v:今回代入要求値, o:前回代入された値, return そのままの値を返す
     }
-
-
-
+*/
 class FixVal { constructor(v) { this._v = v } get v() { return this._v } }
 class _Val { // 共通部分
     constructor(v) { this._v = v }
@@ -25,6 +23,16 @@ class _Val { // 共通部分
     set v(v) { this._v = v }
     _isFn(v) { return 'function'===typeof v }
     static _onSetDefault(v, o) { return v } // v:今回代入要求値, o:前回代入された値, return そのままの値を返す
+    static defaultMethods = { // n:現在値, i:入力値, o:旧値
+        onBegin:      (i,o)=>undefined, // 最初に実行する
+        onValidate:   (i,o)=>true,      // 入力値の妥当性を確認する（真偽値を返す）
+        onSet:        (i,o)=>v,         // 代入する値を返す（onValidateが真を返した場合）
+        onSetDefault: (i,o)=>o,         // 代入する値を返す（onValidateが偽を返した場合）初期値/前回値/条件内値など妥当値を返す
+        onValid:    (n,i,o)=>undefined, // 妥当値を代入した後に実行する（onSet後）
+        onInvalid:  (n,i,o)=>undefined, // 妥当値を代入した後に実行する（onSetDefault後）
+        onChanged:  (n,i,o)=>undefined, // 前回値と妥当値が異なる場合に実行する
+        onEnd:      (n,i,o)=>undefined, // 最後に実行する
+    }
 }
 class SetVal extends _Val{
     constructor(v, onSet) {
@@ -112,6 +120,185 @@ class IfElFinSetVal extends IfElSetVal { // onIfが真を返した時だけ代�
     static _onFinDefault(v, o) { } // v:今回代入要求値, o:前回代入された値, return: 何もせず無視する
 }
 
+class ValidVal extends _Val {
+    constructor(v, options) { // {onValidate:(v,o)=>console.log(), onChanged:(
+        super(v)
+        RunFnMixer.addFns(this, 'Begin,Validate,Set,SetDefault,Valid,Invalid,Changed,End'.split(','))
+//        RunFnMixer.addFns(this, 'Validate,Valid,Invalid,Set,SetDefault,Changed,Fin'.split(','))
+//        super._addFns(this, 'Validate,Valid,Invalid,Set,SetDefault,Changed,Fin'.split(','))
+//        #setup()
+    }
+    get v( ) { return this._v }
+    set v(i) {
+        const o = this._v
+        this._runOnBegin(i, o)
+        if (this._runOnValidate(i, o)) {        // input, old
+            this._v = this._runOnSet(i, o)      // input, old
+            this._runOnValid(this._v, i, o)     // now, input, old（現在値, 入力値, 旧値）
+        } else {
+            this._v = this._runOnSetDefault(i, o) // デフォルト値を返す（代入条件式が真を返す値）初期/前回/条件内値
+            this._runOnInvalid(this._v, i, o)   // now, input, old（現在値, 入力値, 旧値）
+        }
+        if (o!==this._v) { this._runOnChanged(this._v, i, o) }
+        this._runOnEnd(this._v, i, o)
+    }
+
+    /*
+    set v(v) {
+        const o = this._v
+        this._runOnBegin(v, o)
+        if (this._runOnValidate(v, o)) {        // input, old
+            this._v = this._runOnSet(v, o)      // input, old
+            this._runOnValid(this._v, v, o)     // now, input, old（現在値, 入力値, 旧値）
+        } else {
+            this._v = this._runOnSetDefault(v, o) // デフォルト値を返す（代入条件式が真を返す値）初期/前回/条件内値
+            this._runOnInvalid(this._v, v, o)   // now, input, old（現在値, 入力値, 旧値）
+        }
+        if (o!==this._v) { this._runOnChanged(this._v, v, o) }
+        this._runOnEnd(this._v, v, o)
+    }
+    */
+    /*
+    set v(v) {
+        const o = this._v
+        if (this.onValidate(v, o)) {
+            this._v = this.onSet(v, o)
+            this.onValid(v, this._v, o) // input, now, old
+        } else {
+            this._v = this.onSetDefault(v, o) // デフォルト値を返す（代入条件式が真を返す値）初期/前回/条件内値
+            this.onInvalid(v, this._v, o)
+        }
+        if (o!==this._v) { this.onChanged(v, this._v, o) }
+        this.onFin(v, this._v, o)
+    }
+    #setup() {
+        this._onSet = ValidVal._onSetDefault
+        this._onSetDefault = ValidVal._onSetDefaultDefault
+        this._onValidate = ValidVal._onValidateDefault
+        this._onValid = ValidVal._onValidDefault
+        this._onInvalid = ValidVal._onInvalidDefault
+        this._onChanged = ValidVal._onChangedDefault
+    }
+    _runOnFin(v) { if (this._isFnOnFin) return this._onFin(v, this.v) }
+    get _isFnOnFin() { return this._isFn(this._onFin) }
+    static _onFinDefault(v, o) { } // v:今回代入要求値, o:前回代入された値, return: 何もせず無視する
+
+    static _onSetDefault(v,o) { return v }
+    static _onSetDefaultDefault(v,o) { return o }
+    static _onValidateDefault(v,o) { return true }
+    static _onValidDefault(v,o) { return v }
+    static _onInvalidDefault(v,o) { }
+    static _onChangedDefault(v,o) { }
+    static _onFinDefault(v,o) { }
+    */
+}
+class RunFnMixer {
+    static addFns(o, names) { for (let name of names) { this.addFn(o, name) } } // o:追加対象object, names:追加する名前配列
+    static addFn(o, name) {
+        const cName = this.#capitalize(name)
+        const pName = `_on${cName}`
+        //this.#addProp(o, pName)
+        this.#addProp(o, pName, _Val.defaultMethods[`on${cName}`])
+        this.#addRunOn(o, `_runOn${cName}`)
+        this.#addIsFnOn(o, `_isFn${cName}`, cName)
+//        this.#addOnInit(o, `_on${cName}_Init`, cName) // _Init の部分は name に使う値だと名前重複する恐れ有り（Default等）
+//        this.#addProp(o, pName, this[`_on${cName}_Init`])
+    }
+    static #addProp(o, pName, value=null, writable=true, enumerable=true, configurable=false) {
+        Object.defineProperty(o, pName, {
+            value: value,
+            writable: writable,         // value を書き換え可能か
+            enumerable: enumerable,     // Object.assign, Spread構文[...], for in, Object.key, で列挙されるか
+            configurable: configurable, // オブジェクトから削除可能か。value,writable以外(enumerable,configurable)を変更可能か
+        });
+    }
+    static #addIsFnOn(o, name, cName) {
+        Object.defineProperty(o, name, {
+            get( ) { return this._isFn(this[`_on${cName}`]) },
+        });
+    }
+    static #addRunOn(o, name, cName, writable=true, enumerable=true, configurable=false) {
+        //this.#addProp(o, name, (v)=>this[`_isFnOn${cName}`] ? this[`_on${cName}`](v, this._v) : undefined)
+        //this.#addProp(o, name, (v)=>o[`_isFnOn${cName}`] ? o[`_on${cName}`](v, o._v) : undefined)
+        this.#addProp(o, name, (v)=>o[`_isFnOn${cName}`] ? o[`_on${cName}`](v, o._v) : undefined)
+    }
+    /*
+    static #addOnInit(o, name, cName, writable=true, enumerable=true, configurable=false) {
+        //this.#addProp(o.prototype, name, RunFnMixer[`_on${cName}Default`])
+//        console.log(o, o.prototype)
+        //this.#addProp(o.prototype, name, this[`_on${cName}Default`])
+        //this.#addProp(o, name, this[`_on${cName}Init`])
+        //this.#addProp(o, name, RunFnMixer[`_on${cName}_Init`])
+        this.#addProp(o, name, _Val.defaultMethods[`on${cName}`])
+    }
+    */
+    /*
+    #addRunOn(o, name, cName, writable=true, enumerable=true, configurable=false) {
+        Object.defineProperty(o, name, {
+            //value: (v)=>{if (this._isFnOnFin) return this._onFin(v, this.v)},
+            value: (v)=>this.[`_isFnOn${cName}`] ? this[`_on${cName}`](v, this._v) : undefined,
+            writable: writable,         // value を書き換え可能か
+            enumerable: enumerable,     // Object.assign, Spread構文[...], for in, Object.key, で列挙されるか
+            configurable: configurable, // オブジェクトから削除可能か。value,writable以外(enumerable,configurable)を変更可能か
+        });
+    }
+    #addOnDefault(o, name, value=null, writable=true, enumerable=true, configurable=false) {
+        Object.defineProperty(o.prototype, name, {
+//            value: value,
+            value: RunFnMixer[`_on${cName}Default`],
+            writable: writable,         // value を書き換え可能か
+            enumerable: enumerable,     // Object.assign, Spread構文[...], for in, Object.key, で列挙されるか
+            configurable: configurable, // オブジェクトから削除可能か。value,writable以外(enumerable,configurable)を変更可能か
+        });
+    }
+    */
+    static #capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1) : '' }
+    /*
+    static _onSet_Init(i,o) { return i }
+    static _onSetDefault_Init(i,o) { return o }
+    static _onValidate_Init(i,o) { return true }
+    static _onValid_Init(n,i,o) { }
+    static _onInvalid_Init(n,i,o) { }
+    static _onChanged_Init(n,i,o) { }
+    static _onFin_Init(n,i,o) { }
+    */
+//    static _onIfDefault(v,o) { return true }
+//    static _onElDefault(v,o) { }
+
+    /*
+    #addMethod(o, name, isStatic, value=null, writable=true, enumerable=true, configurable=false) {
+        Object.defineProperty(isStatic ? o.prototype : o, name, {
+            value: value,
+            writable: writable,         // value を書き換え可能か
+            enumerable: enumerable,     // Object.assign, Spread構文[...], for in, Object.key, で列挙されるか
+            configurable: configurable, // オブジェクトから削除可能か。value,writable以外(enumerable,configurable)を変更可能か
+        });
+    }
+    #addSGetter(o, setter, getter) {
+        Object.defineProperty(o, name, {
+            get( ) { return this[pName] },
+            set(v) { this[pName] = v },
+        });
+    }
+    //#capitalize(s) { return s ? s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() : '' }
+    */
+}
+
+/*
+    _onValidate = _onValidateDefault
+    get onValidate() { return this._onValidate }
+    onValidate(v, o) {
+
+    }
+*/
+
+/*
+class AddFn {
+    add(o, name, fn) {
+        
+    }
+}
+
 
 class ChangedVal extends _Val{
     constructor(v, onChanged) {
@@ -187,6 +374,7 @@ class ValidVal extends _Val {
     _runOnValidate(v) { if (this._isFnOnValidate) return this._onValidate(v ?? this.v) }
     get _isFnOnValidate() { return this._isFn(this._onValidate) }
 }
+*/
 class SomeVal extends ValidVal {
     constructor(v, whitelist) {
         super(v, undefined)

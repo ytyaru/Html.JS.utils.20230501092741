@@ -17,6 +17,20 @@ window.addEventListener('DOMContentLoaded', async(event)=>{
             set(v) { this[pName] = v },
         });
     }
+    const addProp2 = (o, name, value=null, writable=true, enumerable=true, configurable=false)=>{
+        const pName = `_${name}` // name に _ を付与してプライベートな変数名を作る
+        Object.defineProperty(o, pName , {
+            value: value,
+            writable: writable,         // value を書き換え可能か
+            enumerable: enumerable,     // Object.assign, Spread構文[...], for in, Object.key, で列挙されるか
+            configurable: configurable, // オブジェクトから削除可能か。value, writable以外（enumerable, configurable）を変更可能か。
+        });
+        Object.defineProperty(o, name, {
+            get( ) { return this[pName] },
+            set(v) { this[pName] = v },
+        });
+    }
+
     addProp(C.prototype, `some`, 1)
     console.log(C, new C)
 

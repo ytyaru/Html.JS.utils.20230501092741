@@ -1,0 +1,22 @@
+<script>
+window.addEventListener('DOMContentLoaded', async(event)=>{
+    class C {}
+    class D { constructor() { this._some=null; } }
+    console.log('_some' in D)
+    console.log('_some' in D.prototype)
+    console.log('_some' in D.constructor)
+    console.log(D.hasOwnProperty('_some'))
+    console.log(D.prototype.hasOwnProperty('_some'))
+    console.log(D.constructor.hasOwnProperty('_some'))
+    console.log(D.hasOwn('_some'))
+    console.log(D.prototype.hasOwn('_some'))
+    console.log(D.constructor.hasOwn('_some'))
+})
+</script>
+
+<!---
+    _runOnIf(v) { if (this._isFnOnIf) return this._onIf(v, this.v) }
+    get _isFnOnIf() { return this._isFn(this._onIf) }
+    static _onIfDefault(v, o) { return true } // v:今回代入要求値, o:前回代入された値, return: 必ずセットする
+-->
+
