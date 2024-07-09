@@ -1,0 +1,352 @@
+<meta charset="utf-8">
+<!--
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+-->
+<script src="../../../js/util/test.js"></script>
+<script src="../../../lib/underscore/1.13.6/min.js"></script>
+<script src="../../../js/util/type.js"></script>
+<!--<script src="../js/util/syntax-sugar/observal.js"></script>-->
+<script src="set-val.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    test.run([
+        ()=>{
+            const v = new ValidVal()
+            if (undefined!==v.v) { return false }
+            if (undefined!==v._v) { return false }
+            let o = v.v
+            if (undefined!==o) { return false }
+            for (let id of 'Begin,Validate,Set,SetDefault,Valid,Invalid,Changed,End'.split(',')) {
+                if (v[`_on${id}`]!==_Val.defaultMethods[`on${id}`]) { return false }
+                if (!v[`_isFnOn${id}`]) { return false } // デフォルト関数がセットされているので真を返すはず
+            }
+            if (v._runOnBegin(0)!==undefined) { return false } // 何もしない
+            if (v._runOnValidate(0)!==true) { return false }   // 必ず真を返す
+            if (v._runOnSet(0)!==0) { return false }           // 入力値をそのまま返す
+            if (v._runOnSetDefault(0)!==o) { return false }    // 前回値をそのまま返す
+            if (v._runOnValid(0,undefined)!==undefined) { return false }   // 何もしない
+            if (v._runOnInvalid(0,undefined)!==undefined) { return false } // 何もしない
+            if (v._runOnValid(0,undefined)!==undefined) { return false }   // 何もしない
+            if (v._runOnChanged(0,undefined)!==undefined) { return false } // 何もしない
+            if (v._runOnEnd(0,undefined)!==undefined) { return false }     // 何もしない
+            return true
+        },
+        ()=>{
+            const v = new ValidVal(0)
+            if (0!==v.v) { return false }
+            if (0!==v._v) { return false }
+            let o = v.v
+            if (0!==o) { return false }
+            for (let id of 'Begin,Validate,Set,SetDefault,Valid,Invalid,Changed,End'.split(',')) {
+                if (v[`_on${id}`]!==_Val.defaultMethods[`on${id}`]) { return false }
+                if (!v[`_isFnOn${id}`]) { return false } // デフォルト関数がセットされているので真を返すはず
+            }
+            if (v._runOnBegin(1)!==undefined) { return false } // 何もしない
+            if (v._runOnValidate(1)!==true) { return false }   // 必ず真を返す
+            if (v._runOnSet(1)!==1) { return false }           // 入力値をそのまま返す
+            if (v._runOnSetDefault(1)!==o) { return false }    // 前回値をそのまま返す
+            if (v._runOnValid(1,0)!==undefined) { return false }   // 何もしない
+            if (v._runOnInvalid(1,0)!==undefined) { return false } // 何もしない
+            if (v._runOnValid(1,0)!==undefined) { return false }   // 何もしない
+            if (v._runOnChanged(1,0)!==undefined) { return false } // 何もしない
+            if (v._runOnEnd(1,0)!==undefined) { return false }     // 何もしない
+            return true
+        },
+        ()=>{
+            let i = 'A'
+            const v = new ValidVal(i)
+            if (i!==v.v) { return false }
+            if (i!==v._v) { return false }
+            let o = v.v
+            if (i!==o) { return false }
+            for (let id of 'Begin,Validate,Set,SetDefault,Valid,Invalid,Changed,End'.split(',')) {
+                if (v[`_on${id}`]!==_Val.defaultMethods[`on${id}`]) { return false }
+                if (!v[`_isFnOn${id}`]) { return false } // デフォルト関数がセットされているので真を返すはず
+            }
+            i = 'B'
+            if (v._runOnBegin(i)!==undefined) { return false } // 何もしない
+            if (v._runOnValidate(i)!==true) { return false }   // 必ず真を返す
+            if (v._runOnSet(i)!==i) { return false }           // 入力値をそのまま返す
+            if (v._runOnSetDefault(i)!==o) { return false }    // 前回値をそのまま返す
+            if (v._runOnValid(i,o)!==undefined) { return false }   // 何もしない
+            if (v._runOnInvalid(i,o)!==undefined) { return false } // 何もしない
+            if (v._runOnValid(i,o)!==undefined) { return false }   // 何もしない
+            if (v._runOnChanged(i,o)!==undefined) { return false } // 何もしない
+            if (v._runOnEnd(i,o)!==undefined) { return false }     // 何もしない
+            return true
+        },
+        ()=>{
+            let i = ['A']
+            const v = new ValidVal(i)
+            if (i!==v.v) { return false }
+            if (i!==v._v) { return false }
+            let o = v.v
+            if (i!==o) { return false }
+            for (let id of 'Begin,Validate,Set,SetDefault,Valid,Invalid,Changed,End'.split(',')) {
+                if (v[`_on${id}`]!==_Val.defaultMethods[`on${id}`]) { return false }
+                if (!v[`_isFnOn${id}`]) { return false } // デフォルト関数がセットされているので真を返すはず
+            }
+            i = ['B']
+            if (v._runOnBegin(i)!==undefined) { return false } // 何もしない
+            if (v._runOnValidate(i)!==true) { return false }   // 必ず真を返す
+            if (v._runOnSet(i)!==i) { return false }           // 入力値をそのまま返す
+            if (v._runOnSetDefault(i)!==o) { return false }    // 前回値をそのまま返す
+            if (v._runOnValid(i,o)!==undefined) { return false }   // 何もしない
+            if (v._runOnInvalid(i,o)!==undefined) { return false } // 何もしない
+            if (v._runOnValid(i,o)!==undefined) { return false }   // 何もしない
+            if (v._runOnChanged(i,o)!==undefined) { return false } // 何もしない
+            if (v._runOnEnd(i,o)!==undefined) { return false }     // 何もしない
+            return true
+        },
+        ()=>{
+            let i = {k:'v'}
+            const v = new ValidVal(i)
+            if (i!==v.v) { return false }
+            if (i!==v._v) { return false }
+            let o = v.v
+            if (i!==o) { return false }
+            i = {l:'w'}
+            if (v._runOnBegin(i)!==undefined) { return false } // 何もしない
+            if (v._runOnValidate(i)!==true) { return false }   // 必ず真を返す
+            if (v._runOnSet(i)!==i) { return false }           // 入力値をそのまま返す
+            if (v._runOnSetDefault(i)!==o) { return false }    // 前回値をそのまま返す
+            if (v._runOnValid(i,o)!==undefined) { return false }   // 何もしない
+            if (v._runOnInvalid(i,o)!==undefined) { return false } // 何もしない
+            if (v._runOnValid(i,o)!==undefined) { return false }   // 何もしない
+            if (v._runOnChanged(i,o)!==undefined) { return false } // 何もしない
+            if (v._runOnEnd(i,o)!==undefined) { return false }     // 何もしない
+            return true
+        },
+        // onIfがないときは標準関数を使用する（代入値をそのまま返す）
+        ()=>{
+            let i = 0
+            const v = new ValidVal(i)
+            console.log(v.v)
+            if (i!==v.v) { return false }
+            i = 1
+            v.v = i
+            if (i!==v.v) { return false }
+            i = 2
+            v.v = i
+            if (i!==v.v) { return false }
+            return true
+        },
+        ()=>{
+            const v = new ValidVal(0)
+            if (0!==v.v) { return false }
+            v.v++
+            if (1!==v.v) { return false }
+            v.v++
+            if (2!==v.v) { return false }
+            return true
+        },
+        ()=>{
+            const v = new ValidVal(100)
+            if (100!==v.v) { return false }
+            v.v -= 50
+            if (50!==v.v) { return false }
+            v.v *= 3
+            if (150!==v.v) { return false }
+            return true
+        },
+        ()=>{
+            const v = new ValidVal(0)
+            if (0!==v.v) { return false }
+            v.v = 'A'
+            if ('A'!==v.v) { return false }
+            v.v = null
+            if (null!==v.v) { return false }
+            return true
+        },
+        // onSet
+        ()=>{
+            const onSet = (i,o)=>i+100
+            const v = new ValidVal(0, {onSet:onSet}) // 100加算した値を代入する
+            console.log(v._onSet)
+            if (v._onSet!==onSet) { return false }
+            v.v++
+            console.log(v.v)
+            if (101!==v.v) { return false }
+            return true
+        },
+        // onSet, onSetDefault：onValidateは初期値で常に真を返すからonSetしか実行されない
+        ()=>{
+            const onSet = (i,o)=>i+100    // 100加算した値を代入する
+            const onSetDefault = (i,o)=>0 // 0を代入する
+            const v = new ValidVal(-1, {onSet:onSet, onSetDefault:onSetDefault})
+            if (v._onSet!==onSet) { return false }
+            if (v._onSetDefault!==onSetDefault) { return false }
+            v.v++
+            if (100!==v.v) { return false }
+            return true
+        },
+        // onValidateは初期値で常に真を返すからonSetしか実行されない
+        ()=>{
+            const onValidate = (i,o)=>0===i%2    // 入力値が偶数の時のみ代入する
+            const v = new ValidVal(1, {onValidate:onValidate})
+            if (v._onValidate!==onValidate) { return false }
+            if (1!==v.v) { return false } // 奇数だが初期値の場合は代入される
+            v.v = 3
+            if (1!==v.v) { return false } // 入力値は奇数なのでInvalidとなりSetDefaultが実行される。その初期値は前回値をそのまま返すため初期値の1である
+            v.v = 4
+            if (4!==v.v) { return false } // 入力値は偶数なのでValidとなりSetが実行される。その初期値は入力値をそのまま返すため4である
+            return true
+        },
+        ()=>{ // onValidate, onSet
+            const onValidate = (i,o)=>0===i%2    // 入力値が偶数の時のみ代入する
+            const onSet = (i,o)=>i+100    // 100加算した値を代入する
+            const v = new ValidVal(1, {onValidate:onValidate, onSet:onSet})
+            if (v._onValidate!==onValidate) { return false }
+            if (v._onSet!==onSet) { return false }
+            if (1!==v.v) { return false } // 奇数だが初期値の場合は代入される
+            v.v = 3
+            if (1!==v.v) { return false } // 入力値は奇数なのでInvalidとなりSetDefaultが実行される。その初期値は前回値をそのまま返すため初期値の1である
+            v.v = 4
+            if (104!==v.v) { return false } // 入力値は偶数なのでValidとなりSetが実行される。今回は入力値+100の値を返す
+            return true
+        },
+        ()=>{ // onValidate, onSet, onSetDefault：妥当性確認の結果次第で代入処理を分岐する
+            const onValidate = (i,o)=>0===i%2    // 入力値が偶数の時のみ代入する
+            const onSet = (i,o)=>i+100    // Valid時、100加算した値を代入する
+            const onSetDefault = (i,o)=>0 // Invalid時、0を代入する（初期値、前回値、条件内値などをセットする）
+            const v = new ValidVal(1, {onValidate:onValidate, onSet:onSet, onSetDefault:onSetDefault})
+            if (v._onValidate!==onValidate) { return false }
+            if (v._onSet!==onSet) { return false }
+            if (v._onSetDefault!==onSetDefault) { return false }
+            if (1!==v.v) { return false } // 奇数だが初期値の場合は代入される
+            v.v = 3
+            if (0!==v.v) { return false } // 入力値は奇数なのでInvalidとなりSetDefaultが実行される。今回設定したそれは必ず0を返す
+            v.v = 4
+            if (104!==v.v) { return false } // 入力値は偶数なのでValidとなりSetが実行される。今回設定したそれは入力値+100の値を返す
+            return true
+        },
+        /*
+        // onIf
+        ()=>{
+            const onIf = (v)=>0<=v&&v<=100
+            const v = new ValidVal(0, onIf) // 0〜100以内なら代入する。それ以外なら無視する。
+            if (0!==v.v) { return false }
+            if (onIf!==v.onIf) { return false }
+            v.v = 100
+            if (100!==v.v) { return false }
+            v.v = 0
+            if (0!==v.v) { return false }
+            v.v = 50
+            if (50!==v.v) { return false }
+            v.v = -1
+            if (50!==v.v) { return false }
+            v.v = 101
+            if (50!==v.v) { return false }
+            return true
+        },
+        // onIf, onEl
+        ()=>{
+            let elCnt = 0
+            const onIf = (v)=>0<=v&&v<=100
+            const onEl = ()=>elCnt++
+            const v = new ValidVal(0, onIf, onEl) // 0〜100以内なら代入する。それ以外なら無視する。
+            if (0!==v.v) { return false }
+            if (onIf!==v.onIf) { return false }
+            if (0!==elCnt) { return false }
+            v.v = 100
+            if (100!==v.v) { return false }
+            if (0!==elCnt) { return false }
+            v.v = 0
+            if (0!==v.v) { return false }
+            if (0!==elCnt) { return false }
+            v.v = 50
+            if (50!==v.v) { return false }
+            if (0!==elCnt) { return false }
+            v.v = -1 // 0〜100範囲外なので onSet せず onEl を実行する
+            if (50!==v.v) { return false }
+            if (1!==elCnt) { return false }
+            v.v = 101 // 0〜100範囲外なので onSet せず onEl を実行する
+            if (50!==v.v) { return false }
+            if (2!==elCnt) { return false }
+            return true
+        },
+        // onIfSet 条件付き代入 最初から無効値（Invalid）
+        ()=>{
+            const v = new ValidVal(-1, (v)=>0<=v&&v<=100) // 0〜100以内なら代入する。それ以外なら無視する。
+            console.log(v.v)
+            // 初回は無効値が代入された状態になってしまう！代わりに代入すべき値が不明だから（これをSomeValやRangeValで改善したい）
+            if (-1!==v.v) { return false }
+            v.v = 100
+            console.log(v.v)
+            if (100!==v.v) { return false }
+            v.v = 0
+            if (0!==v.v) { return false }
+            v.v = 101
+            if (0!==v.v) { return false }
+            return true
+        },
+        // onIfSet 非関数セット時
+        ()=>{
+            const v = new ValidVal(0, ...'非関数セット時はセットされずデフォルト処理となる。'.repeat(2))
+            if (0!==v.v) { return false }
+            v.v = 50
+            if (0!==v.v) { return false } // onIfSetが無効値だと代入できず定数になる
+            return true
+        },
+        ()=>{ // undefined, null も代入できること
+            const v = new ValidVal(0)
+            if (0!==v.v) { return false }
+            console.log(v.v)
+            v.v = undefined
+            console.log(v.v)
+            if (undefined!==v.v) { return false }
+            console.log(v.v)
+            v.v = null
+            console.log(v.v)
+            if (null!==v.v) { return false }
+            console.log(v.v)
+            return true
+        },
+        ()=>{ // onIf,onElコールバック関数で第二引数の旧値も使ってみる
+            let elCnt = 0 // onEl実行回数
+            let diff = 0  // onEl実行時の前回値との差
+            const onIf = (v,o)=>0<=v&&v<=100&&10<=Math.abs(v-o)  // 0〜100以内かつ前回値との差が10以上あれば代入する
+            const onEl = (v,o)=>{if([v,o].every(n=>Number.isFinite(n))){diff=Math.abs(v-o)}} // それ以外なら差をdiffにセットする
+            const v = new ValidVal(-1, onIf, onEl) 
+            if (-1!==v.v) { return false } // 生成時はまだonIfが機能しないため範囲外の値でも代入されてしまう。この不都合を解決するには代わりに代入する値を取得できるロジックが必要。ValidValにはないため、SomeVal, RangeValなどで実装したい
+            if (0!==diff) { return false } // 生成時はまだonElが機能しない
+            v.v = 100
+            if (100!==v.v) { return false }
+            if (0!==diff) { return false }
+            v.v = 0
+            if (0!==v.v) { return false }
+            if (0!==diff) { return false }
+            v.v = 1 // 10以上の差がないため代入されず
+            if (0!==v.v) { return false }
+            if (1!==diff) { return false } // onEl 実行
+            v.v = null // 数値比較の時点でNaNになりfalseが返り代入されず
+            if (0!==v.v) { return false }
+            if (1!==diff) { return false } // onEl 実行 v が null のため onEl 関数内のif文にて無視されdiffは前回値のまま
+            v.v = 101 // 0〜100の範囲外のため代入されず
+            if (0!==v.v) { return false }
+            if (101!==diff) { return false } // onEl 実行
+            v.v = -1 // 0〜100の範囲外のため代入されず
+            if (0!==v.v) { return false }
+            if (1!==diff) { return false } // onEl 実行
+            v.v = 10 // 0〜100の範囲内で、かつ前回値との差が10以上のため代入される
+            if (10!==v.v) { return false }
+            if (1!==diff) { return false } // onEl 実行されずdiffは前回値のまま
+            v.v = 19 // 0〜100の範囲内だが、前回値との差が10未満のため代入されず
+            if (10!==v.v) { return false }
+            if (9!==diff) { return false } // onEl 実行
+            return true
+        },
+        */
+//        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>complexCase.toChain()),
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
