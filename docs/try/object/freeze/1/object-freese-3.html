@@ -1,0 +1,54 @@
+<script>
+// Proxy()を使って代入時の処理を代行させる
+const handler = {
+    get: (target, prop)=>target[prop],
+    set: (target, prop, value)=>{throw new TypeError('再代入も新しいプロパティ追加もできません。')},
+}
+
+/*
+const handler = {
+    set: (target, prop, value)=>{
+        if ([...target.getOwnPropertyDescriptors().keys()].some(k=>k===prop)) { throw new TypeError('再代入も新しいプロパティ追加もできません。') }
+    },
+}
+*/
+/*
+const O = {}
+//O = {} // TypeError: Assignment to constant variable.
+Object.defineProperty(O, 'v', {get(){return 1},set(){throw new TypeError(`Assignment to fix value.`)}})
+console.log(O)
+console.assert(1===O.v)
+//O.v = 2 // TypeError: Assignment to fix value.
+Object.freeze(O)
+O.l = 'w' // 代入式は書けてしまうが代入されず例外発生せず（プロパティ名をタイポしてても気づけない！）
+console.log(O)
+//Object.assign(O, {l:'w'}) // TypeError: Cannot add property l, object is not extensible
+//console.log(O)
+console.log(Object.getOwnPropertyDescriptors(O))
+*/
+
+//const O = {v:1}
+//O.v = new Proxy(O.v, handler) // TypeError: Cannot create proxy with a non-object as target or handler
+//Object.freeze(O)
+
+
+const o = new Proxy({v:1}, handler)
+console.log(o)
+console.assert(1===o.v)
+o.v = 2
+Object.freeze(o)
+
+
+
+
+
+
+
+//O = {} // TypeError: Assignment to constant variable.
+//Object.defineProperty(O, 'v', {value:1, writable:true, enumerable:true, configurable:false})
+//Object.defineProperty(O, 'v', {value:new Proxy(O.v, handler), writable:false, enumerable:true, configurable:false})
+
+
+//const vp = new Proxy(O.v, handler)
+
+</script>

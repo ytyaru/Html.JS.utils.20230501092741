@@ -1,0 +1,69 @@
+<script>
+const a = [1,2]
+//a = [3,4] // TypeError: Assignment to constant variable.
+Object.freeze(a)
+// freezeすると破壊的メソッドを使ったとき例外発生するようになる
+//a.pop() // TypeError: Cannot delete property '1' of [object Array]
+//a.push(3) // TypeError: Cannot add property 2, object is not extensible
+a.concat([3,4]) // 非破壊メソッドは素直に処理した値を返す
+console.log(a)
+
+const o = {k:'v'}
+//o = {l:'L'} // TypeError: Assignment to constant variable.
+Object.freeze(o)
+o.l = 'w' // 代入式は書けてしまうが代入されず例外発生せず
+console.log(o)
+//Object.assign(o, {l:'w'}) // TypeError: Cannot add property l, object is not extensible
+//console.log(o)
+console.log(Object.getOwnPropertyDescriptors(o))
+
+/*
+const O = {get(){return 1},set(){throw new TypeError(`Assignment to fix value.`)}}
+console.log(O)
+console.assert(1===O)
+//o = {l:'L'} // TypeError: Assignment to constant variable.
+Object.freeze(O)
+O.l = 'w' // 代入式は書けてしまうが代入されず例外発生せず
+console.log(O)
+//Object.assign(O, {l:'w'}) // TypeError: Cannot add property l, object is not extensible
+//console.log(O)
+console.log(Object.getOwnPropertyDescriptors(O))
+*/
+
+// 成功
+const O = {}
+//O = {} // TypeError: Assignment to constant variable.
+Object.defineProperty(O, 'v', {get(){return 1},set(){throw new TypeError(`Assignment to fix value.`)}})
+console.log(O)
+console.assert(1===O.v)
+//O.v = 2 // TypeError: Assignment to fix value.
+Object.freeze(O)
+O.l = 'w' // 代入式は書けてしまうが代入されず例外発生せず（プロパティ名をタイポしてても気づけない！）
+console.log(O)
+//Object.assign(O, {l:'w'}) // TypeError: Cannot add property l, object is not extensible
+//console.log(O)
+console.log(Object.getOwnPropertyDescriptors(O))
+
+
+
+//class C { constructor() { this.v } }
+//Object.freeze(C)
+//C.w = 1 // 代入式は書けてしまうが代入されず例外発生せず
+//console.log(C, C.w)
+
+// 変わらず
+const C = class C { constructor() { this.v = 0 } }
+Object.freeze(C)
+C.w = 1 // 代入式は書けてしまうが代入されず例外発生せず
+console.log(C)
+console.log(C.w) // undefined
+console.log(new C) // undefined
+
+const c = new C()
+Object.freeze(c)
+c.v = 1 // 代入式は書けてしまうが代入されず例外発生せず
+console.log(c)
+
+
+
+</script>

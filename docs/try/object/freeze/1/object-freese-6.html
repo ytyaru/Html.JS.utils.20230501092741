@@ -1,0 +1,51 @@
+<script>
+const valk = {
+    fix: (v)=>{
+        // Proxy()を使って代入時の処理を代行させる（代入と削除の完全禁止）
+        const handler = {
+            get: (target, key)=>target[key],
+            set: (target, key, value)=>{throw new TypeError('再代入も新しいプロパティ追加も禁止です。')},
+            deleteProperty: (target, key)=>{throw new TypeError('プロパティの削除禁止です。')},
+            defineProperty: (target, key, descriptor)=>{throw new TypeError('プロパティの定義禁止です。')},
+        }
+        return new Proxy({v:v}, handler)
+    }
+}
+const zero = valk.fix(0)
+// zero = 1 // TypeError: Assignment to constant variable.
+console.log(zero)
+console.log(zero.v)
+//console.assert(zero instanceof Proxy) // TypeError: Function has non-object prototype 'undefined' in instanceof check
+console.assert(0===zero.v)
+//zero.v = 2    // TypeError: 再代入も新しいプロパティ追加も禁止です。
+//zero.a = 9    // TypeError: 再代入も新しいプロパティ追加も禁止です。
+//delete zero.v // TypeError: プロパティの削除禁止です。
+//Object.defineProperty(zero, 'p', {value:'P'})         // TypeError: プロパティの定義禁止です。
+//Object.defineProperty(zero, 'g', {get(){return 9}})   // TypeError: プロパティの定義禁止です。
+//Object.defineProperty(zero, 's', {set(v){this.v=v}})  // TypeError: プロパティの定義禁止です。
+
+
+
+// Proxy()を使って代入時の処理を代行させる（代入と削除の完全禁止）
+const handler = {
+    get: (target, key)=>target[key],
+    set: (target, key, value)=>{throw new TypeError('再代入も新しいプロパティ追加も禁止です。')},
+    deleteProperty: (target, key)=>{throw new TypeError('プロパティの削除禁止です。')},
+    defineProperty: (target, key, descriptor)=>{throw new TypeError('ディスクリプタ（ゲッター・セッター）の作成禁止です。')},
+}
+const o = new Proxy({v:1}, handler)
+console.log(o)
+console.log(o.v)
+console.assert(1===o.v)
+//o.v = 2    // 再代入も新しいプロパティ追加も禁止です。
+//o.a = 9    // 再代入も新しいプロパティ追加も禁止です。
+//delete o.v // プロパティの削除禁止です。
+//Object.defineProperty(o, 'p', {value:'P'})
+//Object.defineProperty(o, 'g', {get(){return 9}})
+//Object.defineProperty(o, 's', {set(v){this.v=v}})
+
+// const だとローカル変数のみ（オブジェクトに対して不可能）
+// freezeだと代入式が書けてしまう状態で代入されず例外発生しない。constの挙動と異なるため例外発生させるようにしたい。そこでProxyを使った
+//Object.freeze(o)
+
+</script>

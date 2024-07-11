@@ -1,0 +1,13 @@
+<script>
+const o = {get(){return 1},set(){throw new TypeError(`Assignment to fix value.`)}}
+console.log(o)
+console.assert(1===o.get())
+console.assert(1===o) // 値が1等プリミティブ型ならvalueOfでごまかせるが、オブジェクト型はvalueOfだと文字列を返してしまい使えない
+//o = {l:'L'} // TypeError: Assignment to constant variable.
+Object.freeze(o)
+o.l = 'w' // 代入式は書けてしまうが代入されず例外発生せず
+console.log(o)
+//Object.assign(o, {l:'w'}) // TypeError: Cannot add property l, object is not extensible
+//console.log(o)
+console.log(Object.getOwnPropertyDescriptors(o))
+</script>

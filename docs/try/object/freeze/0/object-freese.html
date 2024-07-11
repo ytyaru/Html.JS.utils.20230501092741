@@ -1,0 +1,49 @@
+<script>
+const a = [1,2]
+//a = [3,4] // TypeError: Assignment to constant variable.
+Object.freeze(a)
+// freezeすると破壊的メソッドを使ったとき例外発生するようになる
+//a.pop() // TypeError: Cannot delete property '1' of [object Array]
+//a.push(3) // TypeError: Cannot add property 2, object is not extensible
+a.concat([3,4]) // 非破壊メソッドは素直に処理した値を返す
+console.log(a)
+
+const o = {k:'v'}
+//o = {l:'L'} // TypeError: Assignment to constant variable.
+Object.freeze(o)
+o.l = 'w' // 代入式は書けてしまうが代入されず例外発生せず
+console.log(o)
+//Object.assign(o, {l:'w'}) // TypeError: Cannot add property l, object is not extensible
+//console.log(o)
+
+//class C { constructor() { this.v } }
+//Object.freeze(C)
+//C.w = 1 // 代入式は書けてしまうが代入されず例外発生せず
+//console.log(C, C.w)
+
+// 変わらず
+const C = class C { constructor() { this.v = 0 } }
+Object.freeze(C)
+C.w = 1 // 代入式は書けてしまうが代入されず例外発生せず
+console.log(C)
+console.log(C.w) // undefined
+console.log(new C) // undefined
+
+const c = new C()
+Object.freeze(c)
+c.v = 1 // 代入式は書けてしまうが代入されず例外発生せず
+console.log(c)
+
+/*
+class C { constructor() { throw new Error('クラス生成例外') } }
+const c = new C
+
+function cpyAry(a) { return [...a] }
+class FixArray {
+    constructor(a) {
+        if (Array.isArray(a)) { this._v = a }
+        this._v = Array.isArray(a) ? a : []
+    }
+}
+*/
+</script>

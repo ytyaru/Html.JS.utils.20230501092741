@@ -1,0 +1,314 @@
+<script>
+class Const {
+    static get NUM()  { return 10 }
+    static set NUM(v) { this._throwError() }
+    //static get Names() { return Object.getOwnPropertyNames(this) }
+    //static get Names() { return Object.getOwnPropertyNames(this).filter(n=>this.hasOwnProperty(n)) }
+    //static get Names() { return Object.getOwnPropertyNames(this).filter(n=>this.hasOwn(n)) }
+    static _throwError() { throw new TypeError(`Assignment to fix value.`) }
+    static get Names() {
+        const proto = Object.getPrototypeOf(obj);
+        return Object.getOwnPropertyNames(proto).filter((name) => {
+            const descriptor = Object.getOwnPropertyDescriptor(proto, name);
+            return this._isFn(descriptor.get);
+        });
+    }
+    const _isFn(v) {
+        const str = Object.prototype.toString.call(any);
+        return /^\[object (Generator)?Function\]$/.test(str);
+    }
+}
+console.assert(10===Const.NUM)
+//Const.NUM = 1
+console.log(Const.Names)
+/*
+class C {
+    const C_NUM = 0 // SyntaxError: Unexpected identifier
+}
+class C {
+    constructor() {
+        const this.I_NUM = 0 // SyntaxError: Unexpected token 'this'
+    }
+}
+class C {
+    constructor() { this._v = 0 }
+    const get P_NUM() { return this.v } // SyntaxError: Unexpected token 'get'
+}
+*/
+
+/*
+class Fix {
+    constructor(v) { this._v = v }
+    get v() { return this._v }
+    valueOf() { return this._v }
+}
+const zero = new Fix(0)
+console.assert(zero instanceof Fix)
+console.assert(zero === zero)
+console.assert(zero !== 0)
+console.assert(zero == 0)
+console.assert(1 === zero + 1)
+//zero = 1 // TypeError: Assignment to constant variable.
+//console.log(zero++) // TypeError: Assignment to constant variable.（固定値なので変更不可）
+zero.v = 1 // 代入されず無視されるが例外発生せず（zero = 1のときと異なる挙動）
+console.log(zero.v)
+*/
+
+/*
+function Fix(v, writable=false, enumerable=true, configurable=false) {
+    const obj = {}
+    Object.defineProperty(obj, '_v', {
+        value: v,
+        writable: writable,         // value を書き換え可能か
+        enumerable: enumerable,     // Object.assign, Spread構文[...], for in, Object.key, で列挙されるか
+        configurable: configurable, // オブジェクトから削除可能か。value,writable以外(enumerable,configurable)を変更可能か
+    });
+    obj.instanceOf = ()=>{}
+    //Object.assign(obj, {valueOf:()=>this._v})
+    Object.assign(obj, {valueOf(){return this._v}})
+    return obj
+}
+const one = Fix(1)
+console.log(one)
+//console.assert(one instanceof Fix)
+console.assert(one === one)
+console.assert(one !== 1)
+console.assert(one == 1)
+console.assert(2 === one + 1)
+//one = 2 // TypeError: Assignment to constant variable.
+//console.log(one++) // TypeError: Assignment to constant variable.（固定値なので変更不可）
+one.v = 1
+console.log(one.v)
+*/
+
+/*
+class Fix {
+    constructor(v) { this._v = v }
+    get v( ) { return this._v }
+    set v(v) { throw new TypeError(`Assignment to fix value.`) }
+    valueOf() { return this._v }
+}
+const one = new Fix(1)
+console.log(one)
+console.assert(one instanceof Fix)
+console.assert(one === one)
+console.assert(one !== 1)
+console.assert(one == 1)
+console.assert(2 === one + 1)
+//one = 2   // TypeError: Assignment to constant variable. （const定義によるエラー）
+//one++     // TypeError: Assignment to constant variable. （const定義によるエラー）
+//one.v = 1 // TypeError: Assignment to fix value.         （Fix.v定義によるエラー）
+
+let two = new Fix(2)
+console.assert(two instanceof Fix)
+console.assert(two === two)
+console.assert(two !== 2)
+console.assert(two == 2)
+console.assert(3 === two + 1)
+two = 5   // 代入できてしまう！
+console.assert(5 !== two)
+two++     // 代入できてしまう！
+console.assert(6 !== two)
+two.v = 7 // 代入不可
+console.assert(7 !== two)
+*/
+
+
+/* 
+valueOf は プリミティブ値のみ
+https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/Object/valueOf
+https://developer.mozilla.org/ja/docs/Glossary/Primitive
+インスタンスを返したかったが非プリミティブなので不可能だった。代わりにtoString()が実行されるっぽい。
+ならば代わりにインスタンスにシリアライズ可能な文字列(JSON等)を使ってはどうかと考えたが、値に関数が入っていると使えない。つまりメソッドのシリアライズは不可能。evalやFunction()を使えば可能だろうが危険なので避けたい。仮にできてもその文字列をデシリアライズしてインスタンスに復元するメソッドの実行が呼び出し元で必要になるため、煩雑なコードになる。演算子オーバーライドができないから。
+
+`Fix.deserialize(one) + 5`
+
+それならもうvalueOfは諦めて`one.v`のように`.v`で値参照することを許容したほうがマシ。
+
+class _Fix {
+    constructor(v) { this._v = v }
+    get v( ) { return this._v }
+    set v(v) { throw new TypeError(`Assignment to fix value.`) }
+    valueOf() { return this._v }
+}
+class Fix {
+    constructor(v) { this._v = new _Fix(v) }
+    get v( ) { return this._v }
+    set v(v) { throw new TypeError(`Assignment to fix value.`) }
+    valueOf() { console.log('valueOf...', this._v); return this._v }
+}
+const one = new Fix(1)
+console.log(one)
+console.log(one.v)
+console.log(one+0)
+console.assert(one instanceof Fix)
+console.assert(one === one)
+console.assert(one !== 1)
+console.assert(one == 1)
+console.assert(2 === one + 1)
+//one = 2   // TypeError: Assignment to constant variable. （const定義によるエラー）
+//one++     // TypeError: Assignment to constant variable. （const定義によるエラー）
+//one.v = 1 // TypeError: Assignment to fix value.         （Fix.v定義によるエラー）
+
+let two = new Fix(2)
+console.assert(two instanceof Fix)
+console.assert(two === two)
+console.assert(two !== 2)
+console.assert(two == 2)
+console.assert(3 === two + 1)
+two = 5   // 代入できてしまう！
+console.assert(5 !== two)
+two++     // 代入できてしまう！
+console.assert(6 !== two)
+two.v = 7 // 代入不可
+console.assert(7 !== two)
+*/
+
+/*
+class Fix {
+    constructor(v) { this._v = v }
+    get v( ) { return this._v }
+    set v(v) { throw new TypeError(`Assignment to fix value.`) }
+}
+const one = new Fix(1)
+console.log(one)
+console.assert(one instanceof Fix)
+console.assert(one === one)
+console.assert(one !== 1)
+console.assert(one != 1)
+console.assert(2 !== one + 1) // 2になって欲しかった valueOf なら可能だが 値がプリミティブ型のときのみなのでI/F共通化のため諦める?
+console.assert('[object Object]1'===one + 1)
+//one = 2   // TypeError: Assignment to constant variable. （const定義によるエラー）
+//one++     // TypeError: Assignment to constant variable. （const定義によるエラー）
+//one.v = 1 // TypeError: Assignment to fix value.         （Fix.v定義によるエラー）
+
+let two = new Fix(2)
+console.assert(two instanceof Fix)
+console.assert(two === two)
+console.assert(two !== 2)
+console.assert(two == 2)
+console.assert(3 === two + 1)
+two = 5   // 代入できてしまう！
+console.assert(5 !== two)
+two++     // 代入できてしまう！
+console.assert(6 !== two)
+two.v = 7 // 代入不可
+console.assert(7 !== two)
+*/
+
+// それでもプリミティブ型のときは計算式でv省略したい
+class Fix {
+    constructor(v) { this._v = v }
+    get v( ) { return this._v }
+    set v(v) { throw new TypeError(`Assignment to fix value.`) }
+    valueOf() { return this._v }
+}
+const one = new Fix(1)
+console.log(one)
+console.assert(one instanceof Fix)
+console.assert(one === one)
+console.assert(one !== 1)
+console.assert(one == 1)
+console.assert(2 == one + 1) // 2になる。valueOfのおかげ。値がプリミティブ型のときのみ有効
+//console.assert('[object Object]1'===one + 1)
+console.assert(one.v === 1)
+console.assert(one.v == 1)
+//console.assert('[object Object]1'===one + 1)
+//one = 2   // TypeError: Assignment to constant variable. （const定義によるエラー）
+//one++     // TypeError: Assignment to constant variable. （const定義によるエラー）
+//one.v = 1 // TypeError: Assignment to fix value.         （Fix.v定義によるエラー）
+
+const D = new Date('2000-01-01 00:00:00')
+let d = new Fix(D)
+console.assert(d instanceof Fix)
+console.log(d, d.v, d.v===D)
+//console.assert(d === new Date('2000-01-01 00:00:00')) // 参照ポインタが異なるため不一致
+console.assert(d !== D)
+//console.assert(d == D) // valueOfが無効
+console.assert('[object Object]1'===d + 1)
+//console.assert(3 === d + 1)
+d = 5   // 代入できてしまう！
+console.assert(5 !== d)
+d++     // 代入できてしまう！
+console.assert(6 !== d)
+d.v = 7 // 代入不可
+console.assert(7 !== d)
+
+
+/*
+class _Val {
+    static defaultMethods = {
+        onGet: (v)=>v
+    }
+//    static _onGetDefault(v) { return this._v }
+    static _isFn(fn) { return 'function' === typeof fn }
+}
+class GettableVal {
+    //constructor(v, fn) { this._v = v; this._onGet = this._isFn(fn) ? fn : this._onGetDefault; }
+    //constructor(v, fn) { this._v = v; this._onGet = this._isFn(fn) ? fn : _Val.defaultMethods.onGet; }
+    constructor(v, fn) { this._v = v; this._onGet = _Val._isFn(fn) ? fn : _Val.defaultMethods.onGet; }
+    valueOf() { return this._v }
+    get v() { return this._onGetDefault }
+    get onGet() { return this._onGetDefault }
+    set onGet(fn) { if (_Val._isFn(fn)) this._onGetDefault = fn }
+}
+class Fix extends GettableVal {constructor(v){super(v)}}
+const one = new Fix(1)
+console.log(one)
+console.assert(one instanceof Fix)
+console.assert(one === one)
+console.assert(one !== 1)
+console.assert(one == 1)
+console.assert(2 === one + 1)
+//one = 2 // TypeError: Assignment to constant variable.
+//one++ // TypeError: Assignment to constant variable.（固定値なので変更不可）
+one.v = 1
+console.log(one.v)
+*/
+
+
+class C {
+    NUM = new Fix(0)
+    static S_NUM = new Fix(0)
+    constructor() {
+        this.I_NUM = new Fix(0)
+        this._p = new Fix(0)
+    }
+    get P( ) { return this._p }
+    set P(v) { this._p = v }
+}
+const c = new C
+console.log(C.NUM)
+console.log(C.S_NUM)
+console.log(C.C_NUM)
+console.log(c.I_NUM)
+C.NUM = 1
+C.S_NUM = 1
+C.C_NUM = 1
+c.I_NUM = 1
+console.log(C.NUM)
+console.log(C.S_NUM)
+console.log(C.C_NUM)
+console.log(c.I_NUM)
+/*
+class C {
+    static NUM = 0
+    static S_NUM = 0
+    const C_NUM = 0
+    constructor() { this.I_NUM = 0 }
+}
+const c = new C
+console.log(C.NUM)
+console.log(C.S_NUM)
+console.log(C.C_NUM)
+console.log(c.I_NUM)
+C.NUM = 1
+C.S_NUM = 1
+C.C_NUM = 1
+c.I_NUM = 1
+console.log(C.NUM)
+console.log(C.S_NUM)
+console.log(C.C_NUM)
+console.log(c.I_NUM)
+*/
+</script>

@@ -1,0 +1,12 @@
+<script>
+// Proxy()を使って代入時の処理を代行させる
+const handler = {
+    get: (target, prop)=>target[prop],
+    set: (target, prop, value)=>{throw new TypeError('再代入も新しいプロパティ追加もできません。')},
+}
+const o = new Proxy({v:1}, handler)
+console.log(o)
+console.assert(1===o.v)
+o.v = 2
+Object.freeze(o)
+</script>

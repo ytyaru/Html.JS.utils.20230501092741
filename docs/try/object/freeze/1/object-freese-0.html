@@ -1,0 +1,10 @@
+<script>
+const o = {k:'v'}
+//o = {l:'L'} // TypeError: Assignment to constant variable.
+Object.freeze(o)
+o.l = 'w' // 代入式は書けてしまうが代入されず例外発生せず
+console.log(o)
+//Object.assign(o, {l:'w'}) // TypeError: Cannot add property l, object is not extensible
+//console.log(o)
+console.log(Object.getOwnPropertyDescriptors(o))
+</script>
