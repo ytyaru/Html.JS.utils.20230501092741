@@ -1,0 +1,149 @@
+<script>
+/*
+(function(){
+class Fix { constructor(v) { this.v = v } }
+   
+}
+})()
+*/
+class Valk {
+    fix(v) {
+        const target = this._getTarget(v)
+        const handler = this._getHandler()
+        console.log(this._isPrimitive(v))
+        console.log(target, handler)
+        return new Proxy({v:target}, handler)
+        //return new Proxy(target, handler)
+
+        /*
+//        const isPrim = this._isPrimitive(v)
+        const V = isPrim ? v : this._defObj2Proxy(v) // オブジェクトなら固定化する
+        const handler = {
+            get: (target, key)=>{if('v'===key){return target[key]}else{throw new TypeError('プロパティはvのみ存在します。')}},
+            set: (target, key, value)=>{throw new TypeError('再代入も新しいプロパティ追加も禁止です。')},
+            deleteProperty: (target, key)=>{throw new TypeError('プロパティの削除禁止です。')},
+            defineProperty: (target, key, descriptor)=>{throw new TypeError('プロパティの定義禁止です。')},
+        }
+        return new Proxy({v:v}, handler)
+        */
+    }
+    _isPrimitive(v){const T=typeof v; return ['object','function'].every(t=>t!==T)}
+    _isObject(v){return 'Object'===v.constructor.name}
+    _isFunction(v){return 'Function'===v.constructor.name}
+    //_getTarget(v) { return this._isPrimitive(v) ? {v:v} : this._objV2Proxy(v) }
+    _getTarget(v) { return this._isPrimitive(v) ? v : this._objV2Proxy(v) }
+    _objV2Proxy(objV) { return new Proxy(objV, this._getHandler(objV)) }
+    _getHandler(v) {
+        if (!this._isPrimitive(v)) console.log(Object.getOwnPropertyDescriptor(v))
+        if (!this._isPrimitive(v)) console.log(Object.getOwnPropertyNames(v))
+        console.log()
+        const get = this._isPrimitive(v)
+            ? (target, key)=>{if('v'===key){return target[key]}else{throw new TypeError('プロパティはvのみ存在します。')}}
+            //: (target, key)=>{if([...Object.getOwnPropertyDescriptor(target).keys()].some(k=>k===key)){target[key]}else{throw new TypeError('存在しないプロパティを参照しました。')}}
+            //: (target, key)=>{if(Object.getOwnPropertyNames(target).some(k=>k===key)){return target[key]}else{throw new TypeError('存在しないプロパティを参照しました。')}}
+            //: (target, key)=>{console.log(target,key,Object.getOwnPropertyNames(key));if(Object.getOwnPropertyNames(target).some(k=>k===key)){return target[key]}else{throw new TypeError('存在しないプロパティを参照しました。')}}
+            //: (target, key)=>{console.log(target,key,Object.getOwnPropertyNames(target));if(Object.getOwnPropertyNames(target).some(k=>k===key)){return target[key]}else{throw new TypeError(`存在しないプロパティを参照しました。:${Object.getOwnPropertyNames(target)}`)}}
+            // https://qiita.com/irico/items/86a03db80bb081f59519
+            //: (target, key, receiver)=>{console.log(target,key,Object.getOwnPropertyNames(target));if(Object.getOwnPropertyNames(target).some(k=>k===key)){return Reflect.get(target,name,receiver);}else{throw new TypeError(`存在しないプロパティを参照しました。:${key}, [${Object.getOwnPropertyNames(target)}]`)}}
+            : (target, key, receiver)=>{console.log(target,key,Object.getOwnPropertyNames(target));if(Object.getOwnPropertyNames(target).some(k=>k===key)){return Reflect.get(target,key,receiver);}else{throw new TypeError(`存在しないプロパティを参照しました。:${key}, [${Object.getOwnPropertyNames(target)}]`)}}
+
+        return {
+            get: get,
+            set: (target, key, value)=>{throw new TypeError('再代入も新しいプロパティ追加も禁止です。')},
+            deleteProperty: (target, key)=>{throw new TypeError('プロパティの削除禁止です。')},
+            defineProperty: (target, key, descriptor)=>{throw new TypeError('プロパティの定義禁止です。')},
+        }
+    }
+}
+const valk = new Valk()
+    /*
+const valk = {
+    fix: (v)=>{
+        // Proxy()を使って代入時の処理を代行させる（代入と削除の完全禁止）
+        const handler = {
+            get: (target, key)=>{if('v'===key){return target[key]}else{throw new TypeError('プロパティはvのみ存在します。')}},
+            set: (target, key, value)=>{throw new TypeError('再代入も新しいプロパティ追加も禁止です。')},
+            deleteProperty: (target, key)=>{throw new TypeError('プロパティの削除禁止です。')},
+            defineProperty: (target, key, descriptor)=>{throw new TypeError('プロパティの定義禁止です。')},
+        }
+        return new Proxy({v:v}, handler)
+    },
+    def: {
+        obj2Proxy:(obj)=> {
+            // Proxy()を使って代入時の処理を代行させる（代入と削除の完全禁止）
+            const handler = {
+                get: (target, key)=>{if('v'===key){return target[key]}else{throw new TypeError('プロパティはvのみ存在します。')}},
+                set: (target, key, value)=>{throw new TypeError('再代入も新しいプロパティ追加も禁止です。')},
+                deleteProperty: (target, key)=>{throw new TypeError('プロパティの削除禁止です。')},
+                defineProperty: (target, key, descriptor)=>{throw new TypeError('プロパティの定義禁止です。')},
+            }
+            return new Proxy({v:v}, handler)
+        },
+        get:(obj,k)=>obj[k],
+        set:(obj,k,v)=>obj[k]=v,
+    },
+    util: {
+        isPrimitive:(v)=>['object','function'].every(n=>n!==typeof v),
+    }
+    some: (v, list, options)=>{
+
+    },
+    range: (v, min, max, options)=>{
+
+    },
+    valid: (v, min, max, options)=>{
+
+    },
+//    types: 'Fix,Some,Range,Valid'.split(','),
+    types: {
+        Fix: class Fix {},
+        Some: class Some {},
+        Range: class Range {},
+        Valid: class Valid {},
+    },
+}
+    */
+const zero = valk.fix(0)
+// zero = 1 // TypeError: Assignment to constant variable.
+console.log(zero)
+console.log(zero.v)
+//console.assert(zero instanceof Proxy) // TypeError: Function has non-object prototype 'undefined' in instanceof check
+console.assert(0===zero.v)
+//zero.w // TypeError: プロパティはvのみ存在します。
+//zero.v = 2    // TypeError: 再代入も新しいプロパティ追加も禁止です。
+//zero.a = 9    // TypeError: 再代入も新しいプロパティ追加も禁止です。
+//delete zero.v // TypeError: プロパティの削除禁止です。
+//Object.defineProperty(zero, 'p', {value:'P'})         // TypeError: プロパティの定義禁止です。
+//Object.defineProperty(zero, 'g', {get(){return 9}})   // TypeError: プロパティの定義禁止です。
+//Object.defineProperty(zero, 's', {set(v){this.v=v}})  // TypeError: プロパティの定義禁止です。
+
+// 固定値にしたい値がオブジェクトのときは？
+const obj = valk.fix({k:'v'})
+//obj = {} // TypeError: Assignment to constant variable.
+console.log(obj)
+console.log(typeof obj)
+//console.log(obj.constructor.name)
+console.log(obj.v)
+console.log(obj.v.k)
+//console.log(obj.k) // TypeError: プロパティはvのみ存在します。
+//console.assert(obj instanceof Proxy) // TypeError: Function has non-object prototype 'undefined' in instanceof check
+console.assert('v'===obj.v.k)
+//obj.v.w // TypeError: 存在しないプロパティを参照しました。:w, [k]
+//obj.v.k = 2    // TypeError: 再代入も新しいプロパティ追加も禁止です。
+//obj.v.a = 9    // TypeError: 再代入も新しいプロパティ追加も禁止です。
+//delete obj.v // TypeError: プロパティの削除禁止です。
+//delete obj.v.k // TypeError: プロパティの削除禁止です。
+//delete obj.v.a // TypeError: プロパティの削除禁止です。 （存在しないキーでも例外になる）
+//Object.defineProperty(obj, 'p', {value:'P'})         // TypeError: プロパティの定義禁止です。
+//Object.defineProperty(obj, 'g', {get(){return 9}})   // TypeError: プロパティの定義禁止です。
+//Object.defineProperty(obj, 's', {set(v){this.v=v}})  // TypeError: プロパティの定義禁止です。
+//Object.defineProperty(obj.v, 'p', {value:'P'})         // TypeError: プロパティの定義禁止です。
+//Object.defineProperty(obj.v, 'g', {get(){return 9}})   // TypeError: プロパティの定義禁止です。
+//Object.defineProperty(obj.v, 's', {set(v){this.v=v}})  // TypeError: プロパティの定義禁止です。
+//Object.defineProperty(obj.v.k, 'p', {value:'P'})         // TypeError: Object.defineProperty called on non-object
+//Object.defineProperty(obj.v.k, 'g', {get(){return 9}})   // TypeError: Object.defineProperty called on non-object
+//Object.defineProperty(obj.v.k, 's', {set(v){this.v=v}})  // TypeError: Object.defineProperty called on non-object
+//obj.v.a = '追加しちゃダメ'       // TypeError: 再代入も新しいプロパティ追加も禁止です。
+console.log(obj.v)
+
+</script>
