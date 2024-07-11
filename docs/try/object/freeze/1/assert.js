@@ -1,8 +1,12 @@
 class Assert {
     static ok(valueOrFn) {
         console.log(this._getActual(valueOrFn))
-        try { if (!this._getActual(valueOrFn)) {this._errorStack(`テスト失敗。真であるべき所が偽である。`, this.ok)} }
+        //try { if (!this._getActual(valueOrFn)) {this._errorStack(`テスト失敗。真であるべき所が偽である。`, this.ok)} }
+        try {
+            if (this._getActual(valueOrFn)) { return true }
+            else { this._errorStack(`テスト失敗。真であるべき所が偽である。`, this.ok); return false; } }
         catch (err) {this._errorStack(`テスト失敗。真であるべき所で例外発生した。`, this.ok)}
+        //console.log(this._getActual(valueOrFn))
     }
     static error(type, msg, fn) {
         try { fn() }

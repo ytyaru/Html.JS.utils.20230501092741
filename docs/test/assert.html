@@ -1,0 +1,41 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/assert.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    console.log(Assert.ok(true))
+    test.run([
+        ()=> Assert.ok(true),
+        ()=>!Assert.ok(false),
+        ()=> Assert.ok(()=>true),
+        ()=>!Assert.ok(()=>false),
+        ()=>!Assert.ok(()=>{throw new Error(`なんかエラー`)}),
+        ()=>!Assert.no(true),
+        ()=> Assert.no(false),
+        ()=>!Assert.no(()=>true),
+        ()=> Assert.no(()=>false),
+        ()=>!Assert.no(()=>{throw new Error(`なんかエラー`)}),
+        ()=> Assert.error(Error, undefined, ()=>{throw new Error('')}),
+        ()=> Assert.error(Error, null, ()=>{throw new Error('')}),
+        ()=> Assert.error(Error, '', ()=>{throw new Error()}),
+        ()=> Assert.error(Error, '', ()=>{throw new Error('')}),
+        ()=> Assert.error(Error, 'M', ()=>{throw new Error('M')}),
+        ()=>!Assert.error(Error, 'X', ()=>{throw new Error('M')}),
+        ()=> Assert.error(TypeError, undefined, ()=>{throw new TypeError('')}),
+        ()=>!Assert.error(TypeError, undefined, ()=>{throw new Error('')}),
+        ()=>!Assert.error(TypeError, 'M', ()=>{throw new Error('M')}),
+        ()=>!Assert.error(TypeError, 'X', ()=>{throw new Error('M')}),
+        ()=>!Assert.error(TypeError, '', ()=>{}),
+//        ()=>Test.assertError(Error, '入力strは次のいずれかのケースであるべきです。chain,snake,camel,pascal,constant,title', ()=>complexCase.toChain()),
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
