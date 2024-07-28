@@ -9,6 +9,9 @@ window.addEventListener('DOMContentLoaded', (event) => {
     const a = [1,2,3]
     const s = new Set([1,2,3])
     const m = new Map([['k','v'],['l','w']])
+    const [v1,v2,v3,v4,v5] = [{},{},{},{},{}]
+    const ws = new WeakSet([v1,v2,v3,v4,v5])
+    const wm = new WeakMap([[v1,'v1'], [v2,'v2']])
     console.log(a.toString())
     console.log(s.toString())
     console.log(m.toString())
@@ -47,6 +50,21 @@ window.addEventListener('DOMContentLoaded', (event) => {
         ()=>!m.compare('[object Map]'),
         ()=>!m.compare(a),
         ()=>!m.compare(s),
+
+        /*
+        ()=>ws.compare(ws),
+        ()=>!ws.compare(new Set([1,2,3])),
+        ()=>!ws.compare(new Set([3,2,1])), // 順不同
+        ()=>!ws.compare(new Set([1,2,3,4])),
+        ()=>!ws.compare(new Set([1,2])),
+        ()=>!ws.compare(new Set([])),
+        ()=>!ws.compare(null),
+        ()=>!ws.compare('[object Set]'),
+        ()=>!ws.compare(a),
+        ()=>!ws.compare(s),
+        ()=>!ws.compare(m),
+        ()=>!ws.compare(wm),
+        */
     ])
 })
 </script>
