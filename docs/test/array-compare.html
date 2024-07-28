@@ -7,15 +7,46 @@
 window.addEventListener('DOMContentLoaded', (event) => {
     const test = new Test()
     const a = [1,2,3]
+    const s = new Set([1,2,3])
+    const m = new Map([['k','v'],['l','w']])
     console.log(a.toString())
+    console.log(s.toString())
+    console.log(m.toString())
+    console.log(s.compare(new Set([3,2,1])))
+    console.log(s.compare(new Set([1,2,3,4])))
     test.run([
+        ()=>a.compare(a),
         ()=>a.compare([1,2,3]),
-        ()=>!a.compare([3,2,1]),
+        ()=>!a.compare([3,2,1]), // 順同
         ()=>!a.compare([1,2,3,4]),
         ()=>!a.compare([1,2]),
         ()=>!a.compare([]),
         ()=>!a.compare(null),
         ()=>!a.compare('1,2,3'),
+        ()=>!a.compare(s),
+        ()=>!a.compare(m),
+
+        ()=>s.compare(s),
+        ()=>s.compare(new Set([1,2,3])),
+        ()=>s.compare(new Set([3,2,1])), // 順不同
+        ()=>!s.compare(new Set([1,2,3,4])),
+        ()=>!s.compare(new Set([1,2])),
+        ()=>!s.compare(new Set([])),
+        ()=>!s.compare(null),
+        ()=>!s.compare('[object Set]'),
+        ()=>!s.compare(a),
+        ()=>!s.compare(m),
+
+        ()=>m.compare(m),
+        ()=>m.compare(new Map([['k','v'],['l','w']])),
+        ()=>m.compare(new Map([['l','w'],['k','v']])), // 順不同
+        ()=>!m.compare(new Map([['k','v'],['l','w'],['m','x']])),
+        ()=>!m.compare(new Map([['k','v']])),
+        ()=>!m.compare(new Map([])),
+        ()=>!m.compare(null),
+        ()=>!m.compare('[object Map]'),
+        ()=>!m.compare(a),
+        ()=>!m.compare(s),
     ])
 })
 </script>
