@@ -1,0 +1,28 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/array/compare.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const test = new Test()
+    const a = [1,2,3]
+    console.log(a.toString())
+    test.run([
+        ()=>a.compare([1,2,3]),
+        ()=>!a.compare([3,2,1]),
+        ()=>!a.compare([1,2,3,4]),
+        ()=>!a.compare([1,2]),
+        ()=>!a.compare([]),
+        ()=>!a.compare(null),
+        ()=>!a.compare('1,2,3'),
+    ])
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+</main>
+<footer></footer>
+
