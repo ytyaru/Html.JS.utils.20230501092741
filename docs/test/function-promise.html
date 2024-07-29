@@ -1,0 +1,87 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/test/black-box.js"></script>
+<script src="../js/util/function/promise.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion()
+    const bb = new BlackBox()
+//    a.t(Object.hasOwnProperty(addOne, 'promise'))
+    ;(function(){
+        function addOne(v) { return v+1 }
+        a.t(Type.isFn(addOne))
+        a.t(Type.isFn(addOne.toPromise))
+        a.t(Function===addOne.type)
+        a.t('Function'===addOne.typeName)
+        //addOne.toPromise(1).then(r=>a.t(2===r))
+        //addOne.toPromise(1).then(r=>a.t(async()=>2===r))
+        //addOne.toPromise(1).then(r=>console.log(r))
+        //addOne.toPromise(1).then(r=>{a.t(async()=>2===r);a.fin();})
+        //addOne.toPromise(1).then(r=>{a.t(()=>2===r);a.fin();})
+        addOne.toPromise(1).then(r=>a.t(()=>2===r)).finally(()=>a.fin())
+        //addOne.toPromise(1).then(r=>a.t(()=>2===r))
+    })();
+    ;(function(){
+        let v = 0
+        function addOne() { return v++ }
+        a.t(Type.isFn(addOne))
+        a.t(Type.isFn(addOne.toPromise))
+        addOne.toPromise().finally(()=>{a.t(1===v);a.fin();})
+        //addOne.toPromise().finally(()=>a.t(1===v))
+    })();
+    ;(function(){
+        function addOne(v) { throw TypeError(`なんかエラーです。`) }
+        a.t(Type.isFn(addOne))
+        a.t(Type.isFn(addOne.toPromise))
+        a.e(TypeError, `なんかエラーです。`, addOne)
+        ///addOne.toPromise(1).then(r=>a.t(2===r)).catch(e=>a.e(TypeError, `なんかエラーです。`, addOne))
+        addOne.toPromise(1).then(r=>a.t(2===r)).catch(e=>a.e(TypeError, `なんかエラーです。`, addOne)).finally(()=>a.fin())
+    })();
+    ;(function(){
+        function *addOne(v) { yield v+1 }
+        a.t(Type.isFn(addOne))
+        a.t(Type.isFn(addOne.toPromise))
+        a.t(GeneratorFunction===addOne.type)
+        a.t('GeneratorFunction'===addOne.typeName)
+//        addOne.toPromise(1).then(r=>a.t(()=>2===r)).finally(()=>a.fin()) // 継承されない……
+    })();
+
+    /*
+    ;(async function(){
+        async function addOne(v) { return v+1 }
+        a.t(Type.isFn(addOne))
+        a.t(Type.isFn(addOne.toPromise))
+        console.log(addOne, typeof addOne, addOne.constructor.name)
+        addOne.toPromise(1).then(r=>a.t(()=>2===r)).finally(()=>a.fin())
+    })();
+    ;(async function(){
+        let v = 0
+        async function addOne() { return v++ }
+        a.t(Type.isFn(addOne))
+        a.t(Type.isFn(addOne.toPromise))
+        addOne.toPromise().finally(()=>{a.t(1===v);a.fin();})
+        //addOne.toPromise().finally(()=>a.t(1===v))
+    })();
+    ;(async function(){
+        async function addOne(v) { throw TypeError(`なんかエラーです。`) }
+        a.t(Type.isFn(addOne))
+        a.t(Type.isFn(addOne.toPromise))
+        a.e(TypeError, `なんかエラーです。`, addOne)
+        ///addOne.toPromise(1).then(r=>a.t(2===r)).catch(e=>a.e(TypeError, `なんかエラーです。`, addOne))
+        addOne.toPromise(1).then(r=>a.t(2===r)).catch(e=>a.e(TypeError, `なんかエラーです。`, addOne)).finally(()=>a.fin())
+    })();
+
+    */
+    a.fin()
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+</main>
+<footer></footer>
+
