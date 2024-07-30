@@ -1,0 +1,153 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/test/black-box.js"></script>
+<script src="../js/util/function/try.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion()
+    const bb = new BlackBox()
+    ;(function(){
+        const route = []
+        ;(function(){
+            try { return route.push('try') }
+            catch (e) {route.push('catch') }
+            finally {route.push('finally') }
+        })();
+        a.t(2===route.length)
+        a.t('try'===route[0])
+        a.t('finally'===route[1])
+    })();
+    ;(function(){
+        function addOne(v) { route.push('try'); return v+1 }
+        a.t(Type.isFn(addOne))
+        a.t(Type.isFn(addOne.try))
+        a.t(Type.isFn(addOne.catch))
+        a.t(Type.isFn(addOne.finally))
+    })();
+    ;(function(){
+        const route = []
+        function addOne(v) { route.push('try'); return v+1 }
+        a.e(TypeError, `引数は2個以上必要です。`, ()=>addOne.try())
+        //a.e(TypeError, `args is not iterable (cannot read property undefined)`, ()=>addOne.try())
+        a.t(0===route.length)
+    })();
+    ;(function(){
+        const route = []
+        function addOne(v) { route.push('try'); return v+1 }
+        a.e(TypeError, `引数は2個以上必要です。`, ()=>addOne.try([]))
+        a.e(TypeError, `引数は2個以上必要です。`, ()=>addOne.try(...[]))
+        a.e(TypeError, `引数は2個以上必要です。`, ()=>addOne.try(...[1]))
+    })();
+    ;(function(){
+        const route = []
+        function addOne(v) { route.push('try'); return v+1 }
+        a.e(TypeError, `引数の最後より一つ前はcatch関数であるべきです。`, ()=>addOne.try(...[1,2]))
+        a.e(TypeError, `引数の最後はfinally関数であるべきです。`, ()=>addOne.try(...[()=>{},2]))
+        a.t(Number.isNaN(addOne.try(...[()=>{},()=>{}])))
+    })();
+    ;(function(){
+        const route = []
+        function addOne(v) { route.push('try'); throw new TypeError(`なんかエラー`); return v+1 }
+        a.e(TypeError, `なんかエラー`, ()=>addOne.try(...[(e)=>{throw e}, ()=>{}]))
+        a.t(1===route.length)
+        a.t('try'===route[0])
+    })();
+    ;(function(){
+        const route = []
+        function addOne(v) { route.push('try'); throw new TypeError(`なんかエラー`); return v+1 }
+        a.f(()=>addOne.try(...[(e)=>false, ()=>{}]))
+        a.t(1===route.length)
+        a.t('try'===route[0])
+    })();
+    ;(function(){
+        const route = []
+        function addOne(v) { route.push('try'); return v+1 }
+        a.t(Number.isNaN(addOne.try((e)=>{route.push('catch');throw e;}, ()=>route.push('finally'))))
+        a.t(2===route.length)
+        a.t('try'===route[0])
+        a.t('finally'===route[1])
+    })();
+    ;(function(){
+        const route = []
+        function addOne(v) { route.push('try'); return v+1 }
+        a.t(2===addOne.try(1, (e)=>{route.push('catch');throw e;}, ()=>route.push('finally')))
+        a.t(2===route.length)
+        a.t('try'===route[0])
+        a.t('finally'===route[1])
+    })();
+    ;(function(){
+        const route = []
+        function addOne(v) { route.push('try'); throw new TypeError(`なんかエラー`); return v+1 }
+        a.e(TypeError, `なんかエラー`, ()=>addOne.try((e)=>{route.push('catch');throw e;}, ()=>route.push('finally')))
+        a.t(3===route.length)
+        a.t('try'===route[0])
+        a.t('catch'===route[1])
+        a.t('finally'===route[2])
+    })();
+    ;(function(){
+        const route = []
+        function addValues(...vs) { route.push('try'); return [...vs].reduce((sum,v)=>sum+v) }
+        a.t(6===addValues.try(1,2,3, (e)=>{route.push('catch');throw e;}, ()=>route.push('finally')))
+        console.log(route)
+        a.t(2===route.length)
+        a.t('try'===route[0])
+        a.t('finally'===route[1])
+    })();
+    ;(function(){
+        const route = []
+        function addValues(...vs) { route.push('try'); throw new TypeError(`なんかエラー`); return [...vs].reduce((sum,v)=>sum+v) }
+        a.e(TypeError, `なんかエラー`, ()=>addValues.try(1,2,3, (e)=>{route.push('catch');throw e;}, ()=>route.push('finally')))
+        a.t(3===route.length)
+        a.t('try'===route[0])
+        a.t('catch'===route[1])
+        a.t('finally'===route[2])
+    })();
+    // catch（tryとまったく同じ。別名定義にすぎない。）
+    ;(function(){
+        const route = []
+        function addOne(v) { route.push('try'); return v+1 }
+        addOne.catch(1, (e)=>{route.push('catch');throw e;})
+        a.t(1===route.length)
+        a.t('try'===route[0])
+    })();
+    ;(function(){
+        const route = []
+        function addOne(v) { route.push('try'); throw new TypeError(`なんかエラー`); return v+1; }
+        a.e(TypeError, `なんかエラー`, ()=>addOne.catch(1, (e)=>{route.push('catch');throw e;}))
+        console.log(route)
+        a.t(2===route.length)
+        a.t('try'===route[0])
+        a.t('catch'===route[1])
+    })();
+    // finally
+    ;(function(){
+        const route = []
+        function addOne(v) { route.push('try'); return v+1 }
+        addOne.finally(1, ()=>route.push('finally'))
+        a.t(2===route.length)
+        a.t('try'===route[0])
+        a.t('finally'===route[1])
+    })();
+    ;(function(){
+        const route = []
+        function addOne(v) { route.push('try'); throw new TypeError(`なんかエラー`); return v+1; }
+        a.e(TypeError, `なんかエラー`, ()=>addOne.finally(1, ()=>route.push('finally')))
+        console.log(route)
+        a.t(2===route.length)
+        a.t('try'===route[0])
+        a.t('finally'===route[1])
+    })();
+
+    a.fin()
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+</main>
+<footer></footer>
+

@@ -278,6 +278,14 @@ Function.prototype.promise = function(args, cbArgs, resolve, reject) {
 }
 ```
 
+```javascript
+Function.prototype.try = function(args, catchFn, finallyFn)
+fn.try(...[], (e)=>{}, ()=>{}) // catch,finally必須
+fn.catch(...[], (e)=>{}) // catch必須。finally は ()=>{}
+fn.finally(..[], ()=>{}) // finally必須。catch は (e)=>{throw e}
+```
 
-
+* try-catch-finally
+    * 最後の一つが関数である：catch/finally（）
+    * 最後の二つが関数である：catch,finally
 
