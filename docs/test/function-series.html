@@ -1,0 +1,27 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/test/black-box.js"></script>
+<script src="../js/util/function/series.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion()
+    const bb = new BlackBox()
+    function A(v) { return v+'A' }
+    function B(v) { return v+'B' }
+    function C(v) { return v+'C' }
+    a.t('0ABC'===C(B(A('0'))))
+    a.t('0ABC'===A.series('0', B, C))
+    a.t('0ABC'===A.series(['0'], B, C))
+    a.fin()
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+</main>
+<footer></footer>
+

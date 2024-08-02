@@ -1,0 +1,34 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/test/black-box.js"></script>
+<script src="../js/util/promise/series.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', async(event) => {
+    const a = new Assertion()
+    const bb = new BlackBox()
+    async function A(v) { return v+'A' }
+    async function B(v) { return v+'B' }
+    async function C(v) { return v+'C' }
+    function D(v) { return v+'D' }
+    //a.t('0ABC'===C(B(A('0'))))
+    a.t('0ABC'===await C(await B(await A('0'))))
+    A('0').then(rA=>B(rA)).then(rB=>C(rB)).then(rC=>{a.t('0ABC'===rC);a.fin();})
+    A('0').series(B, C).then(res=>{a.t(res==='0ABC');a.fin()})
+//    console.log(A('0').series(B, C))
+    //a.t('0ABC'===await A('0').seriesAsync(B, C))
+    //a.t('0ABC'===await A.seriesAsync('0', B, C))
+    a.t('0ABC'===await (A('0').seriesAsync(B, C)))
+    a.t('0ABCD'===await (A('0').seriesAsync(B, C, D)))
+    a.fin()
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+</main>
+<footer></footer>
+
