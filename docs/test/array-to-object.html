@@ -1,0 +1,37 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/test/black-box.js"></script>
+<script src="../js/util/array/to-object.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion()
+    const bb = new BlackBox()
+    a.f('toObject' in Array)
+    a.t('toObject' in [])
+    ;(function(){
+        const obj = [['k', 1]].toObject()
+        a.t(Type.isObj(obj))
+        a.t('k' in obj)
+        a.t(1===obj.k)
+    })();
+    ;(function(){
+        const obj = [['k', 1], ['l', 2]].toObject()
+        a.t(Type.isObj(obj))
+        a.t('k' in obj)
+        a.t('l' in obj)
+        a.t(1===obj.k)
+        a.t(2===obj.l)
+    })();
+    a.fin()
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+</main>
+<footer></footer>
+
