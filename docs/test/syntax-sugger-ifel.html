@@ -1,0 +1,57 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/test/black-box.js"></script>
+<script src="../js/util/syntax-sugar/ifel.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion()
+    const bb = new BlackBox()
+    a.e(TypeError, `引数は2つ以上必要です。[condFn1, retFn1, condFn2, retFn2, ..., defFn]`, ()=>ifel())
+    a.e(TypeError, `引数は2つ以上必要です。[condFn1, retFn1, condFn2, retFn2, ..., defFn]`, ()=>ifel(true))
+    a.t(1===ifel(true, 1))
+    a.t(undefined===ifel(false, 1))
+    a.t(2===ifel(false, 1, 2))
+    a.t(1===ifel(()=>true, 1))
+    a.t(undefined===ifel(()=>false, 1))
+    a.t(1===ifel(()=>true, 1, 2))
+    a.t(2===ifel(()=>false, 1, 2))
+    a.t(1===ifel(()=>true, ()=>1))
+    a.t(2===ifel(()=>false, ()=>1, ()=>2))
+    a.t(1===ifel(()=>true, ()=>1, ()=>2))
+    a.t(1===ifel(
+        ()=>true, ()=>1, 
+        ()=>true, ()=>2))
+    a.t(1===ifel(
+        ()=>true, ()=>1, 
+        ()=>false, ()=>2))
+    a.t(2===ifel(
+        ()=>false, ()=>1, 
+        ()=>true, ()=>2))
+    a.t(undefined===ifel(
+        ()=>false, ()=>1, 
+        ()=>false, ()=>2))
+    a.t(1===ifel(
+        ()=>true, ()=>1, 
+        ()=>false, ()=>2, 
+        ()=>3))
+    a.t(2===ifel(
+        ()=>false, ()=>1, 
+        ()=>true, ()=>2, 
+        ()=>3))
+    a.t(3===ifel(
+        ()=>false, ()=>1, 
+        ()=>false, ()=>2, 
+        ()=>3))
+    a.fin()
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+</main>
+<footer></footer>
+
