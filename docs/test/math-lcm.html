@@ -1,0 +1,30 @@
+<meta charset="utf-8">
+<!--<script src="../js/util/test.js"></script>-->
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/test/black-box.js"></script>
+<!--<script src="../lib/underscore/1.13.6/min.js"></script>-->
+<!--<script src="../js/util/array/compare.js"></script>-->
+<script src="../js/util/math/lcm.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion()
+    const bb = new BlackBox()
+    a.t(72===Math.lcm(24, 18, 36)) // 最小公倍数
+    a.t(960===Math.lcm(320, 160, 240))
+    a.t(320===Math.lcm(320))
+    a.t(undefined===Math.lcm())
+    a.e(TypeError, `Contains a value that is not an integer.`, ()=>Math.lcm('x'))
+    a.e(TypeError, `Contains a value that is not an integer.`, ()=>Math.lcm('3'))
+    a.e(TypeError, `Contains a value that is not an integer.`, ()=>Math.lcm(1.2))
+    a.e(TypeError, `Contains a value that is not an integer.`, ()=>Math.lcm(1,2.3))
+    a.fin()
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+</main>
+<footer></footer>
+
