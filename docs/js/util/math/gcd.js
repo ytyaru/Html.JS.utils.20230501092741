@@ -1,6 +1,5 @@
 Object.defineProperty(Math, 'gcd', { // 最大公約数
     value(...args) {
-        //[...args].map(a=>if(!Number.isInteger(a)){throw new TypeError(`Contains a value that is not an integer.`)})
         [...args].map(a=>Number.isInteger(a) ? a : (()=>{throw new TypeError(`Contains a value that is not an integer.`)})())
         console.log([...args], Number.isInteger(args[0]))
         const f = (a, b) => b ? f(b, a % b) : a;
