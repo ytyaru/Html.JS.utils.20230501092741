@@ -1,0 +1,48 @@
+<meta charset="utf-8">
+<!--<script src="../js/util/test.js"></script>-->
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/test/black-box.js"></script>
+<!--<script src="../lib/underscore/1.13.6/min.js"></script>-->
+<!--<script src="../js/util/array/compare.js"></script>-->
+<script src="../js/util/math/gcd.js"></script>
+<script src="../js/util/type/fraction.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion()
+    const bb = new BlackBox()
+    a.t(Type.isCls(Fraction))
+    a.t(Type.isIns(new Fraction(1,2), Fraction))
+    a.t(Type.isIns(Fraction.of(1,2), Date))
+    a.t(1===(new Fraction(1,2)).top)
+    a.t(2===(new Fraction(1,2)).bottom)
+    a.t(1===Fraction.of(1,2).top)
+    a.t(2===Fraction.of(1,2).bottom)
+    a.t(0.5===(new Fraction(1,2)).float)
+    a.t(0.5===Fraction.of(1,2).float)
+
+    a.e(TypeError, 'Bottom is not positive integer.', ()=>new Fraction(1,2.5))
+    a.e(TypeError, 'Bottom is not positive integer.', ()=>Fraction.of(1,2.5))
+    a.e(TypeError, 'Top is not integer.', ()=>new Fraction(1.5,2))
+    a.e(TypeError, 'Top is not integer.', ()=>Fraction.of(1.5,2))
+    /*
+    a.t(10===Math.gcd(10, 20, 30, 100)) // 最大公約数
+    a.t(10===Math.gcd(10, 20, 30, 100)) // 最大公約数
+    a.t(160===Math.gcd(480, 320))
+    a.t(480===Math.gcd(480))
+    a.t(undefined===Math.gcd())
+    a.e(TypeError, `Contains a value that is not an integer.`, ()=>Math.gcd('x'))
+    a.e(TypeError, `Contains a value that is not an integer.`, ()=>Math.gcd('3'))
+    a.e(TypeError, `Contains a value that is not an integer.`, ()=>Math.gcd(1.2))
+    a.e(TypeError, `Contains a value that is not an integer.`, ()=>Math.gcd(1,2.3))
+    */
+    a.fin()
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+</main>
+<footer></footer>
+

@@ -17,4 +17,3 @@ Math.gcd = function(...args) { // 最大公約数
     return ans;
 }
 */
-console.log(Math)
