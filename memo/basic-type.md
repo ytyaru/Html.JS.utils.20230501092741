@@ -6,6 +6,8 @@
 
 type|params|和
 ----|------|--
+ref|参照型(object/instance/nil)
+val|値型(primitive)
 integer|bit-size, sign(正数のみ,負数のみ,正数負数両方)|整数
 ordinal|bit-size, start(0,1), limit|序数
 float|bit-size, sign|浮動少数
@@ -17,6 +19,13 @@ date|UTC
 time|UTC
 timespan|
 file|bytes, byte-order(endianness. big/little), serialize/deserialize
+
+```javascript
+isVal
+isRef
+isNil
+```
+
 
 ```javascript
 new Fraction(1, 2)
