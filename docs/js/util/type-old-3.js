@@ -60,10 +60,13 @@ class Type {
             ['Set', [[], (v)=>v instanceof Set]],
             ['WeakMap', [[], (v)=>v instanceof WeakMap]],
             ['WeakSet', [[], (v)=>v instanceof WeakSet]],
+            // https://github.com/lodash/lodash/blob/master/isPlainObject.js
             ['Object', [['Obj', 'O'], (v)=>{
-                // instance と区別するには constructor が Class かどうかで判断する
-                const P = Object.getPrototypeOf(v)
-                return null!==v && 'object'===typeof v && '[object Object]'===this.#getTag(v) && !(P && P.hasOwnProperty('constructor') && this.isCls(P.constructor));
+                if (!this.#isObjectLike(v) || this.#getTag(v) != '[object Object]') { return false }
+                if (Object.getPrototypeOf(v) === null) { return true }
+                let proto = v
+                while (Object.getPrototypeOf(proto) !== null) { proto = Object.getPrototypeOf(proto) }
+                return Object.getPrototypeOf(v) === proto
             }]],
             // https://stackoverflow.com/questions/643782/how-to-check-whether-an-object-is-a-date
             ['Date', [['Dt','D'], (v)=>this.isPrimitive(v) ? false : Boolean(v && v.getMonth && typeof v.getMonth === 'function' && Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v))]],
@@ -79,6 +82,7 @@ class Type {
             }]],
         ])
         for (let [k,v] of this._names.entries()) {
+            //console.log(k,v)
             const fnName = `is${k}`
             const [abbrs, fn] = v
             if ('function'!==typeof fn) { throw new Error(`${fnName}が未定義です。`)}
@@ -171,6 +175,7 @@ class Type {
             case 'function': return new Function(values[0])
             case 'class': return Function(`return class ${values[0]} {};`)() // values[0]: Class名（new ClassName()） 未定義エラーになる…
             case 'instance': {
+                console.log(values,...values);
                 if (0===values.length) { throw new Error(`コンストラクタが必要です。`) }
                 const c = values[0]
                 const args = values.slice(1)
@@ -180,6 +185,7 @@ class Type {
         }
     }
     hasProperty(obj,key) {
+        console.log('hasProperty:', obj, key)
         if (!obj || !key) {return false}
         else if (this.hasOwnProperty(obj,key)) { return true }
         else { return this.hasProperty(Object.getPrototypeOf(obj),key) }
@@ -217,10 +223,9 @@ class Type {
         else { return m }
     }
     getMethod(obj,key) {
-        if (this.hasProperty(obj,key)) {
-            console.log(obj, key, this.isIns(obj), this.isFn(obj[key]))
-            if (this.isIns(obj) && this.isFn(obj[key])) { return obj[key] }
-        }
+        const m = this._getDesc(obj,key).value
+        if (!this.isIns(obj) || !this.isFn(m) || this.hasGS(obj,key)) { return undefined }
+        else { return m }
     }
     getStaticMethod(obj,key) {
         const m = this.getOwnStaticMethod(obj,key)
@@ -229,16 +234,8 @@ class Type {
         else if (this.isIns(obj)) { return this.getStaticMethod(Object.getPrototypeOf(Object.getPrototypeOf(obj).constructor),key) }
         else { return undefined }
     }
-    getGetter(obj,key) {
-        const g = this.getOwnGetter(obj,key)
-        if (g) { return g }
-        else if (obj) { return this.getGetter(Object.getPrototypeOf(obj),key) }
-    }
-    getSetter(obj,key) {
-        const s = this.getOwnSetter(obj,key)
-        if (s) { return s }
-        else if (obj) { return this.getSetter(Object.getPrototypeOf(obj),key) }
-    }
+    getGetter(obj,key) { return obj.__lookupGetter__(key) ?? Object.getOwnPropertyDescriptor(obj, key).get }
+    getSetter(obj,key) { return obj.__lookupSetter__(key) ?? Object.getOwnPropertyDescriptor(obj, key).set }
     getField(obj,key) {
         const m = this._getDesc(obj,key).value
         if (this.isFn(m) || this.hasGS(obj,key)) { return undefined }
@@ -271,23 +268,19 @@ class Type {
     _hasOwnS(obj,key) { return this._hasOwnGS(obj,key,true) }
     _hasOwnGS(obj,key,isS) { try { return this.isFn(this._getOwnDesc(obj,key)[(isS ? 's' : 'g')+'et']) } catch(e) {return false} }
     _getOwnDesc(obj,key) { return Object.getOwnPropertyDescriptor(obj, key) }
-
-    getOwnProperty(obj,key){ if (this.hasOwnProperty(obj,key)) {return obj[key]} }
-    getOwnFn(obj,key){ if (this.hasOwnProperty(obj,key) && this.isFn(obj[key]) && !this.hasOwnGSo(obj,key)) {return obj[key]} }
-    getOwnMethod(obj,key) { if (this.isIns(obj) && this.hasOwnProperty(obj,key) && this.isFn(obj[key]) && !this.hasOwnGSo(obj,key)) {return obj[key]} }
+    getOwnMethod(obj,key) { return this.isIns(obj) && Object.getOwnPropertyNames(obj).includes(key) && Type.isFn(obj[key]) ? obj[key] : null }
     getOwnStaticMethod(obj,key) {
-        if (this.isCls(obj) && this.getOwnFn(obj,key)) {return obj[key]}
-        else if (this.isIns(obj) && this.getOwnFn(obj.constructor,key)) {return obj.constructor[key]}
+        if (this.isCls(obj)) {return Object.getOwnPropertyNames(obj).includes(key) && this.isFn(obj[key]) ? obj[key] : null}
+        else if (this.isIns(obj)) {
+            const C = obj.constructor
+            return Object.getOwnPropertyNames(C).includes(key) && this.isFn(C[key]) ? C[key] : null
+        }
+        return null
     }
-    getOwnGetter(obj,key) { if (obj && key) {
-        const d=this._getDesc(obj,key)
-        return d && d.hasOwnProperty('get') ? d.get : obj.__lookupGetter__(key)
-    }}
-    getOwnSetter(obj,key) { if (obj && key) {
-        const d=this._getDesc(obj,key)
-        return d && d.hasOwnProperty('set') ? d.set : obj.__lookupSetter__(key)
-    }}
-    getOwnField(obj,key) {if(this.hasOwnProperty(obj,key) && !this.isFn(obj[key]) && !this.hasOwnGSo(obj,key)){return obj[key]}}
+    getOwnGetter(obj,key) { return obj.__lookupGetter__(key) ?? Object.getOwnPropertyDescriptor(obj, key).get }
+    getOwnSetter(obj,key) { return obj.__lookupSetter__(key) ?? Object.getOwnPropertyDescriptor(obj, key).set }
+    getOwnField(obj,key) {Object.getOwnPropertyNames(obj).includes(key) && !Type.isFn(obj[key]) && !this._getOwnDesc(obj,key) ? obj[key] : null}
+    _getOwnDesc(obj,key) { return Object.getOwnPropertyDescriptor(obj, key) }
 }
 window.Type = new Type()
 String.prototype.capitalize = function() { return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase() }
@@ -325,6 +318,7 @@ class Auguments {
         const metNms = []
         for (let name of condStr.split(',')) {
             const metNm = `is${name.trim().capitalize()}`
+            console.log(metNm, metNm in Type, Type)
             if (!(metNm in Type)) { throw new TypeError(`引数condFns[${i}]はTypeにあるis系メソッド名の型名であるべきです。不正値: ${name}`) }
             metNms.push(metNm)
         }
