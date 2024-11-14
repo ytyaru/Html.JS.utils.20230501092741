@@ -13,12 +13,17 @@ class Type {
             GeneratorFunction: (function*(){yield undefined;}).constructor,
             AsyncGeneratorFunction: (async function*(){yield undefined;}).constructor,
         }
+        this._typeName = new TypeName(this)
         this._names = new Map([
             ['Null', [[], (v)=>null===v]],
             ['Undefined', [['Und'], (v)=>undefined===v]],
+            ['Defined', [['Def','Any'], (v)=>undefined!==v && !Number.isNaN(v)]],
             ['NullOrUndefined', [['NU'], (v)=>null===v || undefined===v]],
+            ['NullOrUndefinedNaN', [['NUN'], (v)=>null===v || undefined===v || Number.isNaN(v)]],
             ['Boolean', [['Bool', 'Bln', 'B'], (v)=>'boolean'===typeof v]],
             ['NaN', [[], (v)=>Number.isNaN(v)]],
+
+            // 数の型＝有限数Finitie(整数Integer, 少数(浮動Float/十進数Decimal), 分数Fraction, 比率Rate, 比Ratio)/無限数Infinitie
             // https://github.com/lodash/lodash/blob/master/isNumber.js
             ['Number', [['Num', 'N'], (v)=>('number'===typeof v && !isNaN(v)) || (this.#isObjectLike(v) && this.#getTag(v)=='[object Number]')]],
             ['Integer', [['Int', 'I'], (v)=>this.isNumber(v) && 0===v%1]],
@@ -29,10 +34,11 @@ class Type {
             ['String', [['Str', 'S'], (v)=>'string'===typeof v || v instanceof String]],
             ['Symbol', [['Sym'], (v)=>'symbol'===typeof v]],
             ['Primitive', [['Prim'], (v)=>v !== Object(v)]],
-            // null,undefinedを抜いたprimitive
-            ['ValidPrimitive', [['VPrim', 'VP'], (v)=>this.isNullOrUndefined(v) ? false : this.isPrim(v)]],
+            // null,undefined,nanを抜いたprimitive
+            ['ValidPrimitive', [['VPrim','VP','Val','Value'], (v)=>this.isNUN(v) ? false : this.isPrim(v)]],
+            ['Reference',[['Ref'],(v)=>!this.isNUN(v) && v === Object(v)]],
 
-            ['Class', [['Cls','Constructor'], (v)=>(('function'===typeof v) && (!!v.toString().match(/^class /)))]],
+            ['Class', [['Cls'], (v)=>(('function'===typeof v) && (!!v.toString().match(/^class /)))]],
             ['Instance', [['Ins'], (v, c)=>{
                 if (this.isPrimitive(v)) return false
                 if (this.isFunction(v)) return false
@@ -130,6 +136,19 @@ class Type {
         if (this.isGFn(v) || this.isAFn(v)) { throw new TypeError(`ジェネレータ関数や非同期関数は受け付けません。`) }
         return this.isFn(v) ? v() : v
     }
+    /*
+    valid(name) { // 型名nameがType既定の文字列／定義済みグローバル型名と一致するか
+        const N = name.toLowerCase()
+        for (let [k,v] of Type._names) {
+            const [abbr, fn] = v
+            if (N===k.toLowerCase()) {return true}
+            if (abbr.some(a=>a.toLowerCase()===N)) {return true}
+        }
+        if (name in window && Type.isCls(window[name])) {return true}
+        return false
+    }
+    */
+    get name() { return this._typeName }
     getName(v) {
         if (undefined===v) { return 'Undefined' }
         if (null===v) { return 'Null' }
@@ -239,7 +258,7 @@ class Type {
         if (this.isIns(obj)) {
             for (let k of ['Field','Method','Getter','Setter']) {
                 const item = this[`get${k}`](obj,key)
-                console.log(k, item, obj, key)
+//                console.log(k, item, obj, key)
                 if (undefined!==item && this.NOT_EXIST_FIELD!==item) {return item}
             }
         }
@@ -247,7 +266,7 @@ class Type {
             for (let k of ['Field','Fn','Getter','Setter']) {
                 const item = this[`get${k}`](obj,key)
                 //if (item) {return item}
-                console.log(k, item, obj, key, )
+//                console.log(k, item, obj, key, )
                 if (undefined!==item && this.NOT_EXIST_FIELD!==item) {return item}
             }
         }
@@ -259,7 +278,7 @@ class Type {
     }
     getMethod(obj,key) {
         if (this.hasProperty(obj,key)) {
-            console.log(obj, key, this.isIns(obj), this.isFn(obj[key]))
+//            console.log(obj, key, this.isIns(obj), this.isFn(obj[key]))
             if (this.isIns(obj) && this.isFn(obj[key])) { return obj[key] }
         }
     }
@@ -283,11 +302,11 @@ class Type {
     getField(obj,key) {
         if (!obj){return this.NOT_EXIST_FIELD}
         const f = this.getOwnField(obj,key)
-        console.log(f)
+//        console.log(f)
         if (this.NOT_EXIST_FIELD!==f) {return f}
 //        if (undefined!==f) { return f }
         const P = Object.getPrototypeOf(obj)
-        console.log(P)
+//        console.log(P)
         if (P) { return this.getField(P,key) }
         return this.NOT_EXIST_FIELD
 //        const f = this._getDesc(obj,key).value ?? obj[key]
@@ -308,7 +327,7 @@ class Type {
         if (this.isIns(obj)) {
             for (let k of ['Field','Method','Getter','Setter']) {
                 const item = this[`getOwn${k}`](obj,key)
-                console.log(k, item, obj, key)
+//                console.log(k, item, obj, key)
                 if (item) {return item}
             }
         }
@@ -345,7 +364,7 @@ class Type {
             let isNEF = false;
             for (let k of ['Field','Method','Getter','Setter']) {
                 const item = this[`getOwn${k}`](obj,key)
-                console.log(k, item, obj, key)
+//                console.log(k, item, obj, key)
                 if ('Field'===k && this.NOT_EXIST_FIELD===item) {isNEF=true}
                 if (undefined!==item && this.NOT_EXIST_FIELD!==item) {return item}
             }
@@ -356,7 +375,7 @@ class Type {
             for (let k of ['Field','Fn','Getter','Setter']) {
                 const item = this[`getOwn${k}`](obj,key)
                 //if (item) {return item}
-                console.log(k, item, obj, key, )
+//                console.log(k, item, obj, key, )
                 if ('Field'===k && this.NOT_EXIST_FIELD===item) {isNEF=true}
                 if (undefined!==item && this.NOT_EXIST_FIELD!==item) {return item}
             }
@@ -380,13 +399,32 @@ class Type {
     }}
     //getOwnField(obj,key) {if(this.hasOwnProperty(obj,key) && !this.isFn(obj[key]) && !this.hasOwnGSo(obj,key)){return obj[key]}}
     getOwnField(obj,key) {
-        console.log(this.hasOwnProperty(obj,key), !this.isFn(obj[key]), !this.hasOwnGSo(obj,key), obj[key])
+//        console.log(this.hasOwnProperty(obj,key), !this.isFn(obj[key]), !this.hasOwnGSo(obj,key), obj[key])
         if(this.hasOwnProperty(obj,key) && !this.isFn(obj[key]) && !this.hasOwnGSo(obj,key)){return obj[key]}
-        console.log('NOT_EXIST_FIELD:',this.NOT_EXIST_FIELD)
+//        console.log('NOT_EXIST_FIELD:',this.NOT_EXIST_FIELD)
         return this.NOT_EXIST_FIELD
     }
 }
 //Object.defineProperty(Type.prototype, 'NOT_EXIST_FIELD', {get(){return Symbol('not-exist-field')}})
+class TypeName {
+    constructor(type){this.T=type}
+    get(name) {
+        const N = name.toLowerCase()
+        console.log(this.T._names)
+        for (let [k,v] of this.T._names) {
+            const [abbr, fn] = v
+            if (N===k.toLowerCase()) {return k}
+            if (abbr.some(a=>a.toLowerCase()===N)) {return k}
+        }
+        if (name in window && this.T.isCls(window[name])) {return name}
+    }
+    valid(name) { return !!this.get(name) } // 型名nameがType既定の文字列／定義済みグローバル型名と一致するか
+    is(name, ...args) {
+        const N = this.get(name)
+        if (!N) {throw new TypeError(`'${name}'は不正な型名です。`)}
+        return this.T[`is${N}`](...args)
+    }
+}
 window.Type = new Type()
 String.prototype.capitalize = function() { return this.charAt(0).toUpperCase() + this.slice(1).toLowerCase() }
 })()
