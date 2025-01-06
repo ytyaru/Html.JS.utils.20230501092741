@@ -1,0 +1,38 @@
+<meta charset="utf-8">
+<!--
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+-->
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/string/escape-html.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion()
+    a.t(Type.isFn('A'.escapeHtml))
+    a.t('A'==='A'.escapeHtml())
+    a.t('&amp;'==='&'.escapeHtml())
+    a.t('&#39;'===`'`.escapeHtml())
+    a.t('&#96;'==='`'.escapeHtml())
+    a.t('&quot;'===`"`.escapeHtml())
+    a.t('&lt;'===`<`.escapeHtml())
+    a.t('&gt;'===`>`.escapeHtml())
+    a.t(`&`==='&amp;'.unescapeHtml())
+    a.t(`'`===`&#x27;`.unescapeHtml())
+    a.t(`'`===`&#39;`.unescapeHtml())
+    a.t('`'==='&#x60;'.unescapeHtml())
+    a.t('`'==='&#96;'.unescapeHtml())
+    a.t(`"`==='&quot;'.unescapeHtml())
+    a.t(`<`==='&lt;'.unescapeHtml())
+    a.t(`>`==='&gt;'.unescapeHtml())
+    a.t('&lt;p&gt;I&#39;m Andy.&lt;/p&gt;'===`<p>I'm Andy.</p>`.escapeHtml())
+    a.fin()
+})
+</script>
+
+<h1>String.escapeHtml()</h1>
+<header></header>
+<main></main>
+<footer></footer>
+
