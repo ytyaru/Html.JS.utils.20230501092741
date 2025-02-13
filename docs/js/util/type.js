@@ -27,8 +27,8 @@ class Type {
             // https://github.com/lodash/lodash/blob/master/isNumber.js
             ['Number', [['Num', 'N'], (v)=>('number'===typeof v && !isNaN(v)) || (this.#isObjectLike(v) && this.#getTag(v)=='[object Number]')]],
             ['Integer', [['Int', 'I'], (v)=>this.isNumber(v) && 0===v%1]],
-            ['PositiveInteger', [['PInt'], (v)=>this.isInteger(v) && 0<=v]],
-            ['NegativeInteger', [['NInt'], (v)=>this.isInteger(v) && v<0]],
+            ['PositiveInteger', [['PInt','PosInt'], (v)=>this.isInteger(v) && 0<=v]],
+            ['NegativeInteger', [['NInt','NegInt'], (v)=>this.isInteger(v) && v<0]],
             ['BigInt', [['Big'], (v)=>'bigint'===typeof v]],
             ['Float', [['Flt','F'], (v)=>this.isNumber(v) && (v % 1 !== 0 || 0===v)]],
             ['String', [['Str', 'S'], (v)=>'string'===typeof v || v instanceof String]],
@@ -45,7 +45,9 @@ class Type {
                 if (this.isCls(v)) return false // Class
                 if (this.isErrCls(v)) return false // Error Class
                 if (this.isObj(v)) return false   // Object
-                return ((undefined===c) ? true : (v instanceof c)); // cがあるときはそのクラスのインスタンスであるか確認する
+                if (this.isAry(v)) return false   // Array
+                try {return ((undefined===c) ? true : (v instanceof c));}// cがあるときはそのクラスのインスタンスであるか確認する
+                catch(err) {console.warn(err);return false}//TypeError: Right-hand side of 'instanceof' is not callable
             }]],
             ['ErrorClass', [['ErrCls'], (v)=>Error===v||Error.isPrototypeOf(v)]], // Error.isPrototypeOf(TypeError)
             ['ErrorInstance', [['ErrIns','Error','Err'], (v)=>v instanceof Error]], // new TypeError() instanceof Error
@@ -80,7 +82,7 @@ class Type {
                 return null!==v && 'object'===typeof v && '[object Object]'===this.#getTag(v) && !(P && P.hasOwnProperty('constructor') && this.isCls(P.constructor));
             }]],
             // https://stackoverflow.com/questions/643782/how-to-check-whether-an-object-is-a-date
-            ['Date', [['Dt','D'], (v)=>this.isPrimitive(v) ? false : Boolean(v && v.getMonth && typeof v.getMonth === 'function' && Object.prototype.toString.call(v) === '[object Date]' && !isNaN(v))]],
+            ['Date', [['Dt','D'], (v)=>this.isPrimitive(v) ? false : Boolean(v && v.getMonth && typeof v.getMonth === 'function' && this.#toString(v) === '[object Date]' && !isNaN(v))]],
             ['RegExp', [[], (v)=>v instanceof RegExp]],
             ['URL', [[], (v)=>v instanceof URL]],
             ['Element', [['Elm', 'El', 'E'], (v)=>{
@@ -105,11 +107,8 @@ class Type {
         }
     }
     #isObjectLike(v) { return typeof v === 'object' && v !== null }
-
-    // Symbol型のときエラー：TypeError: Cannot convert a Symbol value to a string
-    //#getTag(v) { return (v == null) ? (v === undefined ? '[object Undefined]' : '[object Null]') : toString.call(v) }
-    #getTag(v) { return (v == null) ? (v === undefined ? '[object Undefined]' : '[object Null]') : v.toString() }
-
+    #toString(v){return Object.prototype.toString.call(v)} // [object Object] のような文字列を返す。Object.create(null)でも。
+    #getTag(v) { return (v == null) ? (v === undefined ? '[object Undefined]' : '[object Null]') : this.#toString(v) }
     #defineMain(name, getter) {
         Object.defineProperty(this, name, {
             value: (...args)=>getter(...args),
@@ -322,7 +321,8 @@ class Type {
 
     hasOwn(obj,key){const r=this.getOwn(obj,key); return undefined!==r || this.NOT_EXIST_FIELD!==r; }
     hasOwnMember(obj,key){const r=this.getOwnMember(obj,key); return undefined!==r || this.NOT_EXIST_FIELD!==r; }
-    hasOwnProperty(obj,key) { return Object.getOwnPropertyNames(obj).includes(key) }
+    #getOwnPropertyNames(obj) { return Object.prototype.getOwnPropertyNames.call(obj) }
+    hasOwnProperty(obj,key) { return this.#getOwnPropertyNames(obj).includes(key) }
     hasOwnMember(ins,key) {
         if (this.isIns(obj)) {
             for (let k of ['Field','Method','Getter','Setter']) {

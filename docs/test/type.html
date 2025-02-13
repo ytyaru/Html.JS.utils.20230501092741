@@ -476,6 +476,7 @@ class TestType extends Tester {
     testIsObjectAry2() { console.assert(!Type.isObject([1,'A'])) }
     testIsObjectObj0() { console.assert(Type.isObject({})) }
     testIsObjectObj2() { console.assert(Type.isObject({'k':'v'})) }
+    testIsObjectObj3() { console.assert(Type.isObject(Object.create(null, {'k':{value:'v'}}), Object)) }
     testIsObjectFunc0() { console.assert(!Type.isObject(()=>{})) }
     testIsObjectFunc1() { console.assert(!Type.isObject(function(){})) }
     testIsObjectInsT() { console.assert(!Type.isObject(new Map(), Map)) }
@@ -522,42 +523,92 @@ class TestType extends Tester {
     testIsFunctionInsT() { console.assert(!Type.isFunction(new Map(), Map)) }
     testIsFunctionInsF() { console.assert(!Type.isFunction(new Map(), Set)) }
     // isInstance
-//    testIsInstanceBlank() { console.assert(Type.isInstance('', String)) }
-//    testIsInstanceSpace() { console.assert(Type.isInstance(' ', String)) }
-//    testIsInstanceNumStr() { console.assert(Type.isInstance('1', String)) }
-//    testIsInstanceAlpha() { console.assert(Type.isInstance('a', String)) }
-//    testIsInstanceBlankNew() { console.assert(Type.isInstance(String(''), String)) }
-//    testIsInstanceSpaceNew() { console.assert(Type.isInstance(String(' '), String)) }
-//    testIsInstanceNumStrNew() { console.assert(Type.isInstance(String('1'), String)) }
-//    testIsInstanceAlphaNew() { console.assert(Type.isInstance(String('a'), String)) }
+    testIsInstanceBlank() { console.assert(!Type.isInstance('', String)) } // String型インスタンスでなくプリミティブ値である
+    testIsInstanceSpace() { console.assert(!Type.isInstance(' ', String)) }
+    testIsInstanceNumStr() { console.assert(!Type.isInstance('1', String)) }
+    testIsInstanceAlpha() { console.assert(!Type.isInstance('a', String)) }
+    testIsInstanceBlankNew() { console.assert(Type.isInstance(String(''), String)) }
+    testIsInstanceSpaceNew() { console.assert(Type.isInstance(String(' '), String)) }
+    testIsInstanceNumStrNew() { console.assert(Type.isInstance(String('1'), String)) }
+    testIsInstanceAlphaNew() { console.assert(Type.isInstance(String('a'), String)) }
     testIsInstanceBlankNew() { console.assert(Type.isInstance(new String(''), String)) }
     testIsInstanceSpaceNew() { console.assert(Type.isInstance(new String(' '), String)) }
     testIsInstanceNumStrNew() { console.assert(Type.isInstance(new String('1'), String)) }
     testIsInstanceAlphaNew() { console.assert(Type.isInstance(new String('a'), String)) }
-//    testIsInstanceUndefined() { console.assert(Type.isInstance(undefined, undefined)) }
-//    testIsInstanceNull() { console.assert(Type.isInstance(null, null)) }
-//    testIsInstanceNaN() { console.assert(Type.isInstance(NaN, NaN)) }
-//    testIsInstanceNaN() { console.assert(Type.isInstance(Number.NaN, Number.NaN)) }
-//    testIsInstanceTrue() { console.assert(Type.isInstance(true, Boolean)) }
-//    testIsInstanceFalse() { console.assert(Type.isInstance(false, Boolean)) }
-//    testIsInstanceNumPos() { console.assert(Type.isInstance(1, Number)) }
-//    testIsInstanceNumNeg() { console.assert(Type.isInstance(-1, Number)) }
-//    testIsInstanceFloat() { console.assert(Type.isInstance(3.14, Number)) }
+    testIsInstanceUndefined() { console.assert(!Type.isInstance(undefined, undefined)) }
+    testIsInstanceNull() { console.assert(!Type.isInstance(null, null)) }
+    testIsInstanceNaN() { console.assert(!Type.isInstance(NaN, NaN)) }
+    testIsInstanceNaN() { console.assert(!Type.isInstance(Number.NaN, Number.NaN)) }
+    testIsInstanceTrue() { console.assert(!Type.isInstance(true, Boolean)) }
+    testIsInstanceFalse() { console.assert(!Type.isInstance(false, Boolean)) }
+    testIsInstanceNumPos() { console.assert(!Type.isInstance(1, Number)) }
+    testIsInstanceNumNeg() { console.assert(!Type.isInstance(-1, Number)) }
+    testIsInstanceFloat() { console.assert(!Type.isInstance(3.14, Number)) }
     testIsInstanceDate() { console.assert(Type.isInstance(new Date(), Date)) }
-//    testIsInstanceBigInt() { console.assert(Type.isInstance(BigInt(9007199254740991), BigInt)) }
-//    testIsInstanceSymbol() { console.assert(Type.isInstance(Symbol("Sym"), Symbol)) }
-//    testIsInstanceBigInt() { console.assert(Type.isInstance(new BigInt(9007199254740991), BigInt)) }
-//    testIsInstanceSymbol() { console.assert(Type.isInstance(new Symbol("Sym"), Symbol)) }
-//    testIsInstanceDoc() { console.assert(Type.isInstance(document, document)) }
+    testIsInstanceBigInt() { console.assert(Type.isInstance(BigInt(9007199254740991), BigInt)) }
+    testIsInstanceSymbol() { console.assert(Type.isInstance(Symbol("Sym"), Symbol)) }
+    //testIsInstanceBigInt() { console.assert(Type.isInstance(new BigInt(9007199254740991), BigInt)) }//TypeError: BigInt is not a constructor
+    testIsInstanceBigInt() { console.assert(!Type.isInstance(BigInt(9007199254740991), BigInt)) }
+//    testIsInstanceSymbol() { console.assert(Type.isInstance(new Symbol("Sym"), Symbol)) }//TypeError: Symbol is not a constructor
+    testIsInstanceSymbol() { console.assert(!Type.isInstance(Symbol("Sym"), Symbol)) }
+    testIsInstanceDoc() { console.assert(!Type.isInstance(document, document)) }//TypeError: Right-hand side of 'instanceof' is not callable
     testIsInstanceEl() { console.assert(Type.isInstance(document.createElement('p'), Element)) }
-    testIsInstanceAry0() { console.assert(Type.isInstance([], Array)) }
-    testIsInstanceAry2() { console.assert(Type.isInstance([1,'A'], Array)) }
-    testIsInstanceObj0() { console.assert(Type.isInstance({}, Object)) }
-    testIsInstanceObj2() { console.assert(Type.isInstance({'k':'v'}, Object)) }
-    testIsInstanceFunc0() { console.assert(Type.isInstance(()=>{}, Function)) }
-    testIsInstanceFunc1() { console.assert(Type.isInstance(function(){}, Function)) }
+    testIsInstanceAry0() { console.assert(!Type.isInstance([], Array)) }
+    testIsInstanceAry2() { console.assert(!Type.isInstance([1,'A'], Array)) }
+    testIsInstanceObj0() { console.assert(!Type.isInstance({}, Object)) }
+    testIsInstanceObj2() { console.assert(!Type.isInstance({'k':'v'}, Object)) }
+    testIsInstanceObj3() { console.assert(!Type.isInstance(Object.create(null, {'k':{value:'v'}}), Object)) }
+    testIsInstanceFunc0() { console.assert(!Type.isInstance(()=>{}, Function)) }
+    testIsInstanceFunc1() { console.assert(!Type.isInstance(function(){}, Function)) }
     testIsInstanceInsT() { console.assert(Type.isInstance(new Map(), Map)) }
     testIsInstanceInsF() { console.assert(!Type.isInstance(new Map(), Set)) }
+    testIsInstanceIns() { console.assert(Type.isInstance(new (class C{})())) }
+    testIsInstanceCls() { console.assert(!Type.isInstance(class C{})) }
+
+    // isClass
+    testIsClassBlank() { console.assert(!Type.isClass('')) }
+    testIsClassSpace() { console.assert(!Type.isClass(' ')) }
+    testIsClassNumStr() { console.assert(!Type.isClass('1')) }
+    testIsClassAlpha() { console.assert(!Type.isClass('a')) }
+    testIsClassBlankFunc() { console.assert(!Type.isClass(String(''))) }
+    testIsClassSpaceFunc() { console.assert(!Type.isClass(String(' '))) }
+    testIsClassNumStrFunc() { console.assert(!Type.isClass(String('1'))) }
+    testIsClassAlphaFunc() { console.assert(!Type.isClass(String('a'))) }
+    testIsClassBlankNew() { console.assert(!Type.isClass(new String(''))) }
+    testIsClassSpaceNew() { console.assert(!Type.isClass(new String(' '))) }
+    testIsClassNumStrNew() { console.assert(!Type.isClass(new String('1'))) }
+    testIsClassAlphaNew() { console.assert(!Type.isClass(new String('a'))) }
+    testIsClassUndefined() { console.assert(!Type.isClass(undefined)) }
+    testIsClassNull() { console.assert(!Type.isClass(null)) }
+    testIsClassNaN() { console.assert(!Type.isClass(NaN)) }
+    testIsClassNaN() { console.assert(!Type.isClass(Number.NaN)) }
+    testIsClassTrue() { console.assert(!Type.isClass(true)) }
+    testIsClassFalse() { console.assert(!Type.isClass(false)) }
+    testIsClassNumPos() { console.assert(!Type.isClass(1)) }
+    testIsClassNumNeg() { console.assert(!Type.isClass(-1)) }
+    testIsClassFloat() { console.assert(!Type.isClass(3.14)) }
+    testIsClassNumPosFunc() { console.assert(!Type.isClass(Number(1))) }
+    testIsClassNumNegFunc() { console.assert(!Type.isClass(Number(-1))) }
+    testIsClassFloatFunc() { console.assert(!Type.isClass(Number(3.14))) }
+    testIsClassNumPosNew() { console.assert(!Type.isClass(new Number(1))) }
+    testIsClassNumNegNew() { console.assert(!Type.isClass(new Number(-1))) }
+    testIsClassFloatNew() { console.assert(!Type.isClass(new Number(3.14))) }
+    testIsClassDate() { console.assert(!Type.isClass(new Date())) }
+    testIsClassBigInt() { console.assert(!Type.isClass(BigInt(9007199254740991))) }
+    testIsClassSymbol() { console.assert(!Type.isClass(Symbol("Sym"))) }
+    testIsClassDoc() { console.assert(!Type.isClass(document)) }
+    testIsClassEl() { console.assert(!Type.isClass(document.createElement('p'))) }
+    testIsClassAry0() { console.assert(!Type.isClass([])) }
+    testIsClassAry2() { console.assert(!Type.isClass([1,'A'])) }
+    testIsClassObj0() { console.assert(!Type.isClass({})) }
+    testIsClassObj2() { console.assert(!Type.isClass({'k':'v'})) }
+    testIsClassObj3() { console.assert(!Type.isClass(Object.create(null, {'k':{value:'v'}}), Object)) }
+    testIsClassFunc0() { console.assert(!Type.isClass(()=>{})) }
+    testIsClassFunc1() { console.assert(!Type.isClass(function(){})) }
+    testIsClassInsT() { console.assert(!Type.isClass(new Map(), Map)) }
+    testIsClassInsF() { console.assert(!Type.isClass(new Map(), Set)) }
+    testIsClassIns() { console.assert(!Type.isClass(new (class C{})())) }
+    testIsClassCls() { console.assert(Type.isClass(class C{})) }
 
     // isStrings
     testIsStringsAry0() { console.assert(Type.isStrings([])) } // trueになっちゃう
