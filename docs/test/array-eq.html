@@ -1,0 +1,140 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/test/black-box.js"></script>
+<script src="../js/util/array/eq.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion()
+    const bb = new BlackBox()
+    const names = 'Reference Type Length Size Value Ref Typ Len Siz Val R T L S V'.split(' ').map(v=>`eq${v}`)
+    a.t(names.every(n=>n in []))
+    a.t(names.every(n=>n in new Array(1)))
+    a.f(names.every(n=>n in Array))
+    a.t(names.every(n=>n in new Map()))
+    a.f(names.every(n=>n in Map))
+    a.t(names.every(n=>n in new Set()))
+    a.f(names.every(n=>n in Set))
+    // Array
+    a.t(()=>{
+        const [A,B] = [[],[]];
+        return !A.eqR(B) && A.eqT(B) && A.eqL(B) && A.eqS(B) && A.eqV(B)
+    })
+    a.t(()=>{
+        const [A,B] = [[],[1]];
+        return !A.eqR(B) && A.eqT(B) && !A.eqL(B) && !A.eqS(B) && !A.eqV(B)
+    })
+    a.t(()=>{
+        const [A,B] = [[1],[1]];
+        return !A.eqR(B) && A.eqT(B) && A.eqL(B) && A.eqS(B) && A.eqV(B)
+    })
+    a.t(()=>{
+        const [A,B] = [[1],['1']];
+        return !A.eqR(B) && A.eqT(B) && A.eqL(B) && A.eqS(B) && !A.eqV(B)
+    })
+    a.t(()=>{
+        const [A,B] = [[1],[2]];
+        return !A.eqR(B) && A.eqT(B) && A.eqL(B) && A.eqS(B) && !A.eqV(B)
+    })
+    a.t(()=>{
+        const [A,B] = [[1],[1,2]];
+        return !A.eqR(B) && A.eqT(B) && !A.eqL(B) && !A.eqS(B) && !A.eqV(B)
+    })
+    // Map
+    a.t(()=>{
+        const A = new Map();
+        const B = new Map();
+        return !A.eqR(B) && A.eqT(B) && A.eqL(B) && A.eqS(B) && A.eqV(B)
+    })
+    a.t(()=>{
+        const A = new Map();
+        const B = new Map([['k','v']]);
+        return !A.eqR(B) && A.eqT(B) && !A.eqL(B) && !A.eqS(B) && !A.eqV(B)
+    })
+    a.t(()=>{
+        const A = new Map([['k','v']]);
+        const B = new Map([['k','v']]);
+        return !A.eqR(B) && A.eqT(B) && A.eqL(B) && A.eqS(B) && A.eqV(B)
+    })
+    a.t(()=>{
+        const A = new Map([['k',1]]);
+        const B = new Map([['k','1']]);
+        return !A.eqR(B) && A.eqT(B) && A.eqL(B) && A.eqS(B) && !A.eqV(B)
+    })
+    a.t(()=>{
+        const A = new Map([['k',1]]);
+        const B = new Map([['k',2]]);
+        return !A.eqR(B) && A.eqT(B) && A.eqL(B) && A.eqS(B) && !A.eqV(B)
+    })
+    // Set
+    a.t(()=>{
+        const A = new Set();
+        const B = new Set();
+        return !A.eqR(B) && A.eqT(B) && A.eqL(B) && A.eqS(B) && A.eqV(B)
+    })
+    a.t(()=>{
+        const A = new Set();
+        const B = new Set([['k','v']]);
+        return !A.eqR(B) && A.eqT(B) && !A.eqL(B) && !A.eqS(B) && !A.eqV(B)
+    })
+    a.t(()=>{
+        const A = new Set(['v']);
+        const B = new Set(['v']);
+        console.log()
+        return !A.eqR(B) && A.eqT(B) && A.eqL(B) && A.eqS(B) && A.eqV(B)
+    })
+    a.t(()=>{
+        const A = new Set([1]);
+        const B = new Set(['1']);
+        return !A.eqR(B) && A.eqT(B) && A.eqL(B) && A.eqS(B) && !A.eqV(B)
+    })
+    a.t(()=>{
+        const A = new Set([1]);
+        const B = new Set([2]);
+        return !A.eqR(B) && A.eqT(B) && A.eqL(B) && A.eqS(B) && !A.eqV(B)
+    })
+    // 別の型（コレクションの型が違えば、値の数や型が同じだろうが、別の値と判断する。[1]とnew Set([1])は別値とする。）
+    a.t(()=>{
+        const [A,B] = [[1],new Map([['0',1]])];
+        return !A.eqR(B) && !A.eqT(B) && A.eqL(B) && A.eqS(B) && !A.eqV(B)
+    })
+    a.t(()=>{
+        const A = [1]
+        const M = new Map([['k',1]]);
+        const S = new Set([1]);
+        class C_ {get length(){return 1}}
+        class D_ {get size(){return 1}}
+        const C = new C_();
+        const D = new D_();
+        console.log(!A.eqR(M) , !A.eqT(M) , A.eqL(M) , A.eqS(M) , !A.eqV(M))
+        console.log(A.length, M.size, S.size)
+        console.log('size' in M)
+        console.log('length' in M)
+        return !A.eqR(M) && !A.eqT(M) && A.eqL(M) && A.eqS(M) && !A.eqV(M)
+            && !A.eqR(S) && !A.eqT(S) && A.eqL(S) && A.eqS(S) && !A.eqV(S)
+            && !M.eqR(S) && !M.eqT(S) && M.eqL(S) && M.eqS(S) && !M.eqV(S)
+            && !M.eqR(A) && !M.eqT(A) && M.eqL(A) && M.eqS(A) && !M.eqV(A)
+            && !S.eqR(A) && !S.eqT(A) && S.eqL(A) && S.eqS(A) && !S.eqV(A)
+            && !S.eqR(M) && !S.eqT(M) && S.eqL(M) && S.eqS(M) && !S.eqV(M)
+            &&  A.eqR(A) &&  A.eqT(A) && A.eqL(A) && A.eqS(M) &&  A.eqV(A)
+            &&  M.eqR(M) &&  M.eqT(M) && M.eqL(M) && M.eqS(M) &&  M.eqV(M)
+            &&  S.eqR(S) &&  S.eqT(S) && S.eqL(S) && S.eqS(S) &&  S.eqV(S)
+            && !A.eqR(C) && !A.eqT(C) && A.eqL(C) && A.eqS(C) && !A.eqV(C)
+            && !A.eqR(D) && !A.eqT(D) && A.eqL(D) && A.eqS(D) && !A.eqV(D)
+            && !M.eqR(C) && !M.eqT(C) && M.eqL(C) && M.eqS(C) && !M.eqV(C)
+            && !M.eqR(D) && !M.eqT(D) && M.eqL(D) && M.eqS(D) && !M.eqV(D)
+            && !S.eqR(C) && !S.eqT(C) && S.eqL(C) && S.eqS(C) && !S.eqV(C)
+            && !S.eqR(D) && !S.eqT(D) && S.eqL(D) && S.eqS(D) && !S.eqV(D)
+    })
+    a.fin()
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+</main>
+<footer></footer>
+
