@@ -1,0 +1,21 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/string/timestamp.js"></script>
+<script src="../js/util/file/blob-file.js"></script>
+<script src="../js/util/file/text-file.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion();
+    TextFile.download('ABC');
+    TextFile.download('ABC', 'abc.txt');
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
