@@ -1,0 +1,49 @@
+<meta charset="utf-8">
+<script src="../js/util/test.js"></script>
+<script src="../lib/underscore/1.13.6/min.js"></script>
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/string/timestamp.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion();
+
+    a.t('dates' in String.prototype);
+    a.t('timestamp' in String.prototype);
+    a.t('timezone' in String.prototype);
+    a.t('date' in String.prototype);
+    a.t('datetime' in String.prototype);
+    a.t('time' in String.prototype);
+    a.t('iso' in String.prototype);
+    a.t('formatDatetime' in String.prototype);
+    console.log(''.dates())
+    console.log(''.dates(true))
+    console.log(''.timezone())
+    console.log(''.timestamp())
+    console.log(''.date())
+    console.log(''.datetime())
+    console.log(''.time())
+    console.log(''.iso())
+    console.log(''.dateJa())
+    console.log(''.dateJa(true))
+    console.log(''.timeJa())
+    console.log(''.timeJa(true))
+    console.log(''.datetimeJa())
+    console.log(''.datetimeJa(true))
+    console.log(''.formatDatetime(2,5,false,'日 時 分'.split(' '), true))
+    console.log(''.formatDatetime(0,6,false,'年 月 日 時 分 秒'.split(' '), true))
+    console.log(''.formatDatetime(0,6,false,'年 月 日 時 分 秒'.split(' '), true, true))
+    /*
+    a.t(()=>{
+        
+    })
+    */
+    a.fin();
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
