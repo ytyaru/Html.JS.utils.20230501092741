@@ -1,0 +1,89 @@
+<meta charset="utf-8">
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/event/resize-observer-x.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion();
+    a.t(Type.isCls(ResizeObserverX));
+    /*
+    a.t(Type.isFn(ResizeObserverX.setup));
+    ResizeObserverX.setup(document.body, (entries, observer)=>{
+        console.log(entries);
+        console.log(observer);
+    });
+    const div = document.createElement('div');
+    div.style.border = '5px black solid';
+    div.style.width = '320px';
+    div.style.height = '240px';
+    document.body.append(div);
+    ResizeObserverX.setup(div, (entries, observer)=>{
+        console.log(entries);
+        console.log(observer);
+    });
+    */
+    const observer0 = new ResizeObserverX((entries, observer)=>{
+        console.log(entries);
+        console.log(observer);
+    });
+    console.log(observer0)
+    observer0.observe(document.body);
+
+    const divH = document.createElement('div');
+    divH.style.border = '5px black solid';
+    divH.style.width = '320px';
+    divH.style.height = '240px';
+    divH.innerText = '横書き'
+    divH.style.writingMode = 'horizontal-tb';
+    document.body.append(divH);
+    const observer1 = new ResizeObserverX((entries, observer)=>{
+        console.log('横:',entries);
+        console.log('横:',observer);
+        // content
+        a.t(320===entries[0].content[0].width)
+        a.t(240===entries[0].content[0].height)
+        a.t(320===entries[0].content[0].inlineSize)
+        a.t(240===entries[0].content[0].blockSize)
+        // border
+        a.t(330===entries[0].border[0].width)
+        a.t(250===entries[0].border[0].height)
+        a.t(330===entries[0].border[0].inlineSize)
+        a.t(250===entries[0].border[0].blockSize)
+        a.fin()
+    });
+    observer1.observe(divH);
+
+    const divV = document.createElement('div');
+    divV.style.border = '5px black solid';
+    divV.style.width = '320px';
+    divV.style.height = '240px';
+    divV.innerText = '縦書き'
+    divV.style.writingMode = 'vertical-rl';
+    divV.style.textOrientation = 'mixed';
+    document.body.append(divV);
+    const observer2 = new ResizeObserverX((entries, observer)=>{
+        console.log('縦:',entries);
+        console.log('縦:',observer);
+        // content
+        a.t(320===entries[0].content[0].width)
+        a.t(240===entries[0].content[0].height)
+        a.t(240===entries[0].content[0].inlineSize)
+        a.t(320===entries[0].content[0].blockSize)
+        // border
+        a.t(330===entries[0].border[0].width)
+        a.t(250===entries[0].border[0].height)
+        a.t(250===entries[0].border[0].inlineSize)
+        a.t(330===entries[0].border[0].blockSize)
+        a.fin()
+    });
+    observer2.observe(divV);
+
+    a.fin();
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
