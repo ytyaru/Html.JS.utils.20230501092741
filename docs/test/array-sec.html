@@ -1,0 +1,213 @@
+<meta charset="utf-8">
+<!--<script src="../js/util/test.js"></script>-->
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/test/black-box.js"></script>
+<!--<script src="../lib/underscore/1.13.6/min.js"></script>-->
+<!--<script src="../js/util/array/compare.js"></script>-->
+<!--<script src="../js/util/math/lcm.js"></script>-->
+<script src="../js/util/array/compare.js"></script>
+<script src="../js/util/array/sec.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion()
+    const bb = new BlackBox()
+    a.t(Type.isFn(Array.sec))
+//    a.t(Type.isFn([].sec))
+//    console.log('sec:', Array.sec()) // TypeError: 引数は整数値であるべきです。N:undefined, step:1, init:0
+    console.log('sec:', Array.sec(3))
+    console.log('sec:', Array.sec(3,2))
+    console.log('sec:', Array.sec(3,2,10))
+    a.e(TypeError, `引数は整数値であるべきです。N:undefined, step:1, init:0`, ()=>Array.sec());
+    a.t(()=>{
+        const A = Array.sec(3);
+        console.log(A);
+        return 3===A.length && 0===A[0] && 1===A[1] && 2===A[2];
+    })
+    a.t(()=>{
+        const A = Array.sec(3,2);
+        console.log(A);
+        return 3===A.length && 0===A[0] && 2===A[1] && 4===A[2];
+    })
+    a.t(()=>{
+        const A = Array.sec(3,2,5);
+        console.log(A);
+        return 3===A.length && 5===A[0] && 7===A[1] && 9===A[2];
+    })
+    a.t(()=>{
+        const A = Array.sec(3,0,0);
+        console.log(A);
+        return 3===A.length && 0===A[0] && 0===A[1] && 0===A[2];
+    })
+    /*
+    // sec()
+    ;(function(){
+        const R = Array.sec(['Yamada','Suzuki'], [24, 48, 96], ['Sapporo','Tokyo'])
+        console.log(R)
+        a.t(2===R.length)
+        a.t(R.every(r=>3===r.length))
+        a.t('Yamada'===R[0][0])
+        a.t(24===R[0][1])
+        a.t('Sapporo'===R[0][2])
+        a.t('Suzuki'===R[1][0])
+        a.t(48===R[1][1])
+        a.t('Tokyo'===R[1][2])
+    })();
+    ;(function(){
+        const N = ['Yamada','Suzuki']
+        const A = [24, 48, 96]
+        const P = ['Sapporo','Tokyo']
+        const R = N.sec(A,P)
+        console.log(R)
+        a.t(2===R.length)
+        a.t(R.every(r=>3===r.length))
+        a.t('Yamada'===R[0][0])
+        a.t(24===R[0][1])
+        a.t('Sapporo'===R[0][2])
+        a.t('Suzuki'===R[1][0])
+        a.t(48===R[1][1])
+        a.t('Tokyo'===R[1][2])
+    })();
+    ;(function(){
+        a.e(RangeError, `Invalid array length`, ()=>Array.sec())
+        const R = Array.sec([24, 48, 96])
+        a.t(3===R.length)
+        a.t(R.every(r=>1===r.length))
+        a.t(24===R[0][0])
+        a.t(48===R[1][0])
+        a.t(96===R[2][0])
+    })();
+    ;(function(){
+        const R = [24, 48, 96].sec()
+        a.t(3===R.length)
+        a.t(R.every(r=>1===r.length))
+        a.t(24===R[0][0])
+        a.t(48===R[1][0])
+        a.t(96===R[2][0])
+    })();
+
+    /*
+//    console.log('product:', Array.product(['Yamada','Suzuki'], [24, 48, 96], ['Sapporo','Tokyo']))
+    // product()
+    ;(function(){
+        const R = Array.product(['Yamada','Suzuki'], [24, 48, 96], ['Sapporo','Tokyo'])
+        console.log(R)
+        a.t(12===R.length)
+        a.t(R.every(r=>3===r.length))
+
+        a.t('Yamada'===R[0][0])
+        a.t(24===R[0][1])
+        a.t('Sapporo'===R[0][2])
+
+        a.t('Yamada'===R[1][0])
+        a.t(24===R[1][1])
+        a.t('Tokyo'===R[1][2])
+
+        a.t('Yamada'===R[2][0])
+        a.t(48===R[2][1])
+        a.t('Sapporo'===R[2][2])
+
+        a.t('Yamada'===R[3][0])
+        a.t(48===R[3][1])
+        a.t('Tokyo'===R[3][2])
+
+        a.t('Yamada'===R[4][0])
+        a.t(96===R[4][1])
+        a.t('Sapporo'===R[4][2])
+
+        a.t('Yamada'===R[5][0])
+        a.t(96===R[5][1])
+        a.t('Tokyo'===R[5][2])
+
+        a.t('Suzuki'===R[6][0])
+        a.t(24===R[6][1])
+        a.t('Sapporo'===R[6][2])
+
+        a.t('Suzuki'===R[7][0])
+        a.t(24===R[7][1])
+        a.t('Tokyo'===R[7][2])
+
+        a.t('Suzuki'===R[8][0])
+        a.t(48===R[8][1])
+        a.t('Sapporo'===R[8][2])
+
+        a.t('Suzuki'===R[9][0])
+        a.t(48===R[9][1])
+        a.t('Tokyo'===R[9][2])
+
+        a.t('Suzuki'===R[10][0])
+        a.t(96===R[10][1])
+        a.t('Sapporo'===R[10][2])
+
+        a.t('Suzuki'===R[11][0])
+        a.t(96===R[11][1])
+        a.t('Tokyo'===R[11][2])
+    })();
+    ;(function(){
+        const N = ['Yamada','Suzuki']
+        const A = [24, 48, 96]
+        const P = ['Sapporo','Tokyo']
+        const R = N.product(A,P)
+        console.log(R)
+        a.t(12===R.length)
+        a.t(R.every(r=>3===r.length))
+
+        a.t('Yamada'===R[0][0])
+        a.t(24===R[0][1])
+        a.t('Sapporo'===R[0][2])
+
+        a.t('Yamada'===R[1][0])
+        a.t(24===R[1][1])
+        a.t('Tokyo'===R[1][2])
+
+        a.t('Yamada'===R[2][0])
+        a.t(48===R[2][1])
+        a.t('Sapporo'===R[2][2])
+
+        a.t('Yamada'===R[3][0])
+        a.t(48===R[3][1])
+        a.t('Tokyo'===R[3][2])
+
+        a.t('Yamada'===R[4][0])
+        a.t(96===R[4][1])
+        a.t('Sapporo'===R[4][2])
+
+        a.t('Yamada'===R[5][0])
+        a.t(96===R[5][1])
+        a.t('Tokyo'===R[5][2])
+
+        a.t('Suzuki'===R[6][0])
+        a.t(24===R[6][1])
+        a.t('Sapporo'===R[6][2])
+
+        a.t('Suzuki'===R[7][0])
+        a.t(24===R[7][1])
+        a.t('Tokyo'===R[7][2])
+
+        a.t('Suzuki'===R[8][0])
+        a.t(48===R[8][1])
+        a.t('Sapporo'===R[8][2])
+
+        a.t('Suzuki'===R[9][0])
+        a.t(48===R[9][1])
+        a.t('Tokyo'===R[9][2])
+
+        a.t('Suzuki'===R[10][0])
+        a.t(96===R[10][1])
+        a.t('Sapporo'===R[10][2])
+
+        a.t('Suzuki'===R[11][0])
+        a.t(96===R[11][1])
+        a.t('Tokyo'===R[11][2])
+    })();
+    */
+    a.fin()
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+</main>
+<footer></footer>
+
