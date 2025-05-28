@@ -1,0 +1,70 @@
+<meta charset="utf-8">
+<!--<script src="../js/util/test.js"></script>-->
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/test/black-box.js"></script>
+<!--<script src="../lib/underscore/1.13.6/min.js"></script>-->
+<!--<script src="../js/util/array/compare.js"></script>-->
+<!--<script src="../js/util/math/lcm.js"></script>-->
+<script src="../js/util/type/random.js"></script>
+<script src="../js/util/type/lottery.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion()
+    const bb = new BlackBox()
+    a.t(Type.isIns(Random))
+    a.t(Type.isIns(Lottery))
+    a.t(()=>{
+        const Ws = [1,1,1]; // 0:33%, 1:33%, 2:33%
+        const v = Lottery.draw(Ws);
+        console.log(v, Ws)
+        return 0<=v && v<=2;
+    })
+    a.t(()=>{
+        const Ws = [3,2,1]; // 0:50%, 1:33%, 2:17%
+        const v = Lottery.draw(Ws);
+        console.log(v, Ws)
+        return 0<=v && v<=2;
+    })
+    a.t(()=>{
+        const Ws = [1,3,6]; // 0:10%, 1:30%, 2:60%
+        const v = Lottery.draw(Ws);
+        console.log(v, Ws)
+        return 0<=v && v<=2;
+    })
+    a.t(()=>{// 0を含む場合
+        const Ws = [0,1,1]; // 0:0%, 1:50%, 2:50%
+        const v = Lottery.draw(Ws);
+        console.log(v, Ws)
+        return 1<=v && v<=2;
+    })
+    a.t(()=>{
+        const Ws = [0,0,1]; // 0:0%, 1:0%, 2:100%
+        const v = Lottery.draw(Ws);
+        console.log(v, Ws)
+        return v===2;
+    })
+    a.e(TypeError, `引数は0以上な整数の配列のみ有効です。`, ()=>Lottery.draw())
+    a.e(TypeError, `引数は0以上な整数の配列のみ有効です。`, ()=>Lottery.draw(undefined))
+    a.e(TypeError, `引数は0以上な整数の配列のみ有効です。`, ()=>Lottery.draw(null))
+    a.e(TypeError, `引数は0以上な整数の配列のみ有効です。`, ()=>Lottery.draw(0))
+    a.e(TypeError, `引数は0以上な整数の配列のみ有効です。`, ()=>Lottery.draw(0.1))
+    a.e(TypeError, `引数は0以上な整数の配列のみ有効です。`, ()=>Lottery.draw(1n))
+    a.e(TypeError, `引数は0以上な整数の配列のみ有効です。`, ()=>Lottery.draw(''))
+    a.e(TypeError, `引数は0以上な整数の配列のみ有効です。`, ()=>Lottery.draw(['']))
+    a.e(TypeError, `引数は0以上な整数の配列のみ有効です。`, ()=>Lottery.draw([1,'']))
+    a.e(TypeError, `引数は0以上な整数の配列のみ有効です。`, ()=>Lottery.draw([1,9.8]))
+//    a.e(TypeError, `引数は0以上な整数の配列のみ有効です。`, ()=>Lottery.draw([1,2.0]))
+    a.e(TypeError, `引数の合計は1以上になるべきです。`, ()=>Lottery.draw([]))
+    a.e(TypeError, `引数の合計は1以上になるべきです。`, ()=>Lottery.draw([0]))
+    a.e(TypeError, `引数の合計は1以上になるべきです。`, ()=>Lottery.draw([0,0]))
+    a.fin()
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main>
+</main>
+<footer></footer>
+
