@@ -1,0 +1,257 @@
+<meta charset="utf-8">
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/event/listener.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion();
+    a.t(()=>{
+        const p = document.createElement('p');
+        return !('_listeners' in p) && 'listen unlisten'.split(' ').every(n=>n in p);
+    });
+    // listener: function
+    a.t(()=>{
+        const p = document.createElement('p');
+        const name = 'click';
+        const listener = (e)=>console.log(e);
+        const useCapture = false;
+        p.listen(name, listener);
+        const res = '_listeners' in p
+            && Array.isArray(p._listeners) && 1===p._listeners.length
+            && Type.isObj(p._listeners[0])
+            && 'name listeners useCapture'.split(' ').every(n=>n in p._listeners[0])
+            && name===p._listeners[0].name && listener===p._listeners[0].listeners[0] && useCapture===p._listeners[0].useCapture
+            && 'listen unlisten'.split(' ').every(n=>n in p);
+        p.unlisten();
+        return res && 0===p._listeners.length;
+    })
+    a.t(()=>{
+        const p = document.createElement('p');
+        const name = 'click';
+        const listener = (e)=>console.log(e);
+        const useCapture = false;
+        p.listen(name, listener);
+        const res = '_listeners' in p
+            && Array.isArray(p._listeners) && 1===p._listeners.length
+            && Type.isObj(p._listeners[0])
+            && 'name listeners useCapture'.split(' ').every(n=>n in p._listeners[0])
+            && name===p._listeners[0].name && listener===p._listeners[0].listeners[0] && useCapture===p._listeners[0].useCapture
+            && 'listen unlisten'.split(' ').every(n=>n in p);
+        p.remove(); // 標準APIにあるremove()でもunslisten()が呼び出される。
+        console.log(p, res, 0===p._listeners.length)
+        return res && 0===p._listeners.length;
+    })
+    // listener: async function
+    a.t(()=>{
+        const p = document.createElement('p');
+        const name = 'click';
+        const listener = async(e)=>console.log(e); // Async
+        const useCapture = false;
+        p.listen(name, listener);
+        const res = '_listeners' in p
+            && Array.isArray(p._listeners) && 1===p._listeners.length
+            && Type.isObj(p._listeners[0])
+            && 'name listeners useCapture'.split(' ').every(n=>n in p._listeners[0])
+            && name===p._listeners[0].name && listener===p._listeners[0].listeners[0] && useCapture===p._listeners[0].useCapture
+            && 'listen unlisten'.split(' ').every(n=>n in p);
+        p.unlisten();
+        console.log(res, 0===p._listeners.length)
+        return res && 0===p._listeners.length;
+    })
+    a.t(()=>{
+        const p = document.createElement('p');
+        const name = 'click';
+        const listener = async(e)=>console.log(e); // Async
+        const useCapture = false;
+        p.listen(name, listener);
+        const res = '_listeners' in p
+            && Array.isArray(p._listeners) && 1===p._listeners.length
+            && Type.isObj(p._listeners[0])
+            && 'name listeners useCapture'.split(' ').every(n=>n in p._listeners[0])
+            && name===p._listeners[0].name && listener===p._listeners[0].listeners[0] && useCapture===p._listeners[0].useCapture
+            && 'listen unlisten'.split(' ').every(n=>n in p);
+        p.remove(); // 標準APIにあるremove()でもunslisten()が呼び出される。
+        console.log(p, res, 0===p._listeners.length)
+        return res && 0===p._listeners.length;
+    })
+
+    // listener: function, useCapture: false & true
+    a.t(()=>{
+        const p = document.createElement('p');
+        const name = 'click';
+        const listenerF = (e)=>console.log(e);
+        const listenerT = (e)=>console.log(e);
+        const useCaptureF = false;
+        const useCaptureT = true;
+        p.listen(name, listenerF, useCaptureF);
+        p.listen(name, listenerT, useCaptureT);
+        console.log(p._listeners.length);
+        const res = '_listeners' in p
+            && Array.isArray(p._listeners) && 2===p._listeners.length
+            && Type.isObj(p._listeners[0])
+            && 'name listeners useCapture'.split(' ').every(n=>n in p._listeners[0])
+            && name===p._listeners[0].name && useCaptureF===p._listeners[0].useCapture
+            && name===p._listeners[1].name && useCaptureT===p._listeners[1].useCapture
+            && Array.isArray(p._listeners[0].listeners) && 1===p._listeners[0].listeners.length
+            && Array.isArray(p._listeners[1].listeners) && 1===p._listeners[1].listeners.length
+            && listenerF===p._listeners[0].listeners[0]
+            && listenerT===p._listeners[1].listeners[0]
+            && 'listen unlisten'.split(' ').every(n=>n in p);
+        p.unlisten();
+        console.log(p._listeners.length);
+        return res && 0===p._listeners.length;
+    })
+    // listener: async function, useCapture: false & true
+    a.t(()=>{
+        const p = document.createElement('p');
+        const name = 'click';
+        const listenerF = async(e)=>console.log(e);
+        const listenerT = async(e)=>console.log(e);
+        const useCaptureF = false;
+        const useCaptureT = true;
+        p.listen(name, listenerF, useCaptureF);
+        p.listen(name, listenerT, useCaptureT);
+        console.log(p._listeners.length);
+        const res = '_listeners' in p
+            && Array.isArray(p._listeners) && 2===p._listeners.length
+            && Type.isObj(p._listeners[0])
+            && 'name listeners useCapture'.split(' ').every(n=>n in p._listeners[0])
+            && name===p._listeners[0].name && useCaptureF===p._listeners[0].useCapture
+            && name===p._listeners[1].name && useCaptureT===p._listeners[1].useCapture
+            && Array.isArray(p._listeners[0].listeners) && 1===p._listeners[0].listeners.length
+            && Array.isArray(p._listeners[1].listeners) && 1===p._listeners[1].listeners.length
+            && listenerF===p._listeners[0].listeners[0]
+            && listenerT===p._listeners[1].listeners[0]
+            && 'listen unlisten'.split(' ').every(n=>n in p);
+        p.unlisten();
+        console.log(p._listeners.length);
+        return res && 0===p._listeners.length;
+    })
+
+    // name:click/input, listener: function, useCapture: false & true
+    a.t(()=>{
+        const p = document.createElement('p');
+        const nameC = 'click';
+        const nameI = 'input';
+        const listenerF = (e)=>console.log(e);
+        const listenerA = async(e)=>console.log(e);
+        const useCaptureF = false;
+        const useCaptureT = true;
+        p.listen(nameC, listenerF, useCaptureF);
+        p.listen(nameC, listenerF, useCaptureT);
+        p.listen(nameC, listenerA, useCaptureF);
+        p.listen(nameC, listenerA, useCaptureT);
+        p.listen(nameI, listenerF, useCaptureF);
+        p.listen(nameI, listenerF, useCaptureT);
+        p.listen(nameI, listenerA, useCaptureF);
+        p.listen(nameI, listenerA, useCaptureT);
+        console.log(p._listeners.length);
+        const res = '_listeners' in p
+            && Array.isArray(p._listeners) && 4===p._listeners.length
+            && Type.isObj(p._listeners[0])
+            && 'name listeners useCapture'.split(' ').every(n=>n in p._listeners[0])
+            && nameC===p._listeners[0].name && useCaptureF===p._listeners[0].useCapture && 2===p._listeners[0].listeners.length
+            && nameC===p._listeners[1].name && useCaptureT===p._listeners[1].useCapture && 2===p._listeners[1].listeners.length
+            && nameI===p._listeners[2].name && useCaptureF===p._listeners[2].useCapture && 2===p._listeners[2].listeners.length
+            && nameI===p._listeners[3].name && useCaptureT===p._listeners[3].useCapture && 2===p._listeners[3].listeners.length
+            && listenerF===p._listeners[0].listeners[0]
+            && listenerA===p._listeners[0].listeners[1]
+            && listenerF===p._listeners[1].listeners[0]
+            && listenerA===p._listeners[1].listeners[1]
+            && listenerF===p._listeners[2].listeners[0]
+            && listenerA===p._listeners[2].listeners[1]
+            && listenerF===p._listeners[3].listeners[0]
+            && listenerA===p._listeners[3].listeners[1];
+        p.unlisten();
+        console.log(p._listeners.length);
+        return res && 0===p._listeners.length;
+    })
+
+    // el:p/a, name:click/input, listener: function, useCapture: false & true
+    a.t(()=>{
+        const p = document.createElement('p');
+        const nameC = 'click';
+        const nameI = 'input';
+        const listenerF = (e)=>console.log(e);
+        const listenerA = async(e)=>console.log(e);
+        const useCaptureF = false;
+        const useCaptureT = true;
+        p.listen(nameC, listenerF, useCaptureF);
+        p.listen(nameC, listenerF, useCaptureT);
+        p.listen(nameC, listenerA, useCaptureF);
+        p.listen(nameC, listenerA, useCaptureT);
+        p.listen(nameI, listenerF, useCaptureF);
+        p.listen(nameI, listenerF, useCaptureT);
+        p.listen(nameI, listenerA, useCaptureF);
+        p.listen(nameI, listenerA, useCaptureT);
+        const a = document.createElement('a');
+        a.listen(nameC, listenerF, useCaptureF);
+        a.listen(nameC, listenerF, useCaptureT);
+        a.listen(nameC, listenerA, useCaptureF);
+        a.listen(nameC, listenerA, useCaptureT);
+        a.listen(nameI, listenerF, useCaptureF);
+        a.listen(nameI, listenerF, useCaptureT);
+        a.listen(nameI, listenerA, useCaptureF);
+        a.listen(nameI, listenerA, useCaptureT);
+        console.log(p._listeners.length);
+        const resP = '_listeners' in p
+            && Array.isArray(p._listeners) && 4===p._listeners.length
+            && Type.isObj(p._listeners[0])
+            && 'name listeners useCapture'.split(' ').every(n=>n in p._listeners[0])
+            && nameC===p._listeners[0].name && useCaptureF===p._listeners[0].useCapture && 2===p._listeners[0].listeners.length
+            && nameC===p._listeners[1].name && useCaptureT===p._listeners[1].useCapture && 2===p._listeners[1].listeners.length
+            && nameI===p._listeners[2].name && useCaptureF===p._listeners[2].useCapture && 2===p._listeners[2].listeners.length
+            && nameI===p._listeners[3].name && useCaptureT===p._listeners[3].useCapture && 2===p._listeners[3].listeners.length
+            && listenerF===p._listeners[0].listeners[0]
+            && listenerA===p._listeners[0].listeners[1]
+            && listenerF===p._listeners[1].listeners[0]
+            && listenerA===p._listeners[1].listeners[1]
+            && listenerF===p._listeners[2].listeners[0]
+            && listenerA===p._listeners[2].listeners[1]
+            && listenerF===p._listeners[3].listeners[0]
+            && listenerA===p._listeners[3].listeners[1];
+        const resA = '_listeners' in a
+            && Array.isArray(a._listeners) && 4===a._listeners.length
+            && Type.isObj(a._listeners[0])
+            && 'name listeners useCapture'.split(' ').every(n=>n in a._listeners[0])
+            && nameC===a._listeners[0].name && useCaptureF===a._listeners[0].useCapture && 2===a._listeners[0].listeners.length
+            && nameC===a._listeners[1].name && useCaptureT===a._listeners[1].useCapture && 2===a._listeners[1].listeners.length
+            && nameI===a._listeners[2].name && useCaptureF===a._listeners[2].useCapture && 2===a._listeners[2].listeners.length
+            && nameI===a._listeners[3].name && useCaptureT===a._listeners[3].useCapture && 2===a._listeners[3].listeners.length
+            && listenerF===a._listeners[0].listeners[0]
+            && listenerA===a._listeners[0].listeners[1]
+            && listenerF===a._listeners[1].listeners[0]
+            && listenerA===a._listeners[1].listeners[1]
+            && listenerF===a._listeners[2].listeners[0]
+            && listenerA===a._listeners[2].listeners[1]
+            && listenerF===a._listeners[3].listeners[0]
+            && listenerA===a._listeners[3].listeners[1];
+        p.unlisten();
+        const res2 = 0===p._listeners.length && 4===a._listeners.length
+        a.unlisten();
+        return resP && resA && res2 && 0===p._listeners.length && 0===a._listeners.length;
+    })
+    a.e(TypeError, '第一引数はイベント名（String）であるべきです。', ()=>{
+        const p = document.createElement('p');
+        p.listen();
+    });
+    a.e(TypeError, '第二引数はイベントハンドラ（Function/AsyncFunction）であるべきです。', ()=>{
+        const p = document.createElement('p');
+        p.listen('click');
+    });
+    a.e(TypeError, '第三引数はuseCapture（Boolean）であるべきです。', ()=>{
+        const p = document.createElement('p');
+        console.log(async(e)=>console.log(''))
+        console.log((async(e)=>console.log('')).constructor)
+        console.log(((async(e)=>console.log('')) instanceof ((async(e)=>console.log('')).constructor)))
+        p.listen('click', async(e)=>console.log(''), null);
+    });
+    a.fin();
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
