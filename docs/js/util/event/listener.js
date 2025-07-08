@@ -50,18 +50,20 @@ class Listener {
 }
 HTMLElement.prototype.listen = function(name, handler, useCapture=false) {
     Listener.add(this, name, handler, useCapture);
-}
+};
 HTMLElement.prototype.unlisten = function(name, handler, useCapture) {
     Listener.remove(this, name, handler, useCapture);
-}
+};
 // 要素を削除するときunlistenする
 // 自身と子孫を削除する（再帰。子孫も削除される。標準APIは再帰せずメモリリークしうるので改善した）
 HTMLElement.prototype._remove = HTMLElement.prototype.remove;
 HTMLElement.prototype.remove = function() {//自身と子孫をremoveする
     while (this.firstChild) {this.firstChild.remove(this.firstChild)}
     this.unlisten(); this._remove();
-}
+};
 // 指定した子要素childを削除する（再帰。子孫も削除される。標準APIは再帰せずメモリリークしうるので改善した）
 HTMLElement.prototype._removeChild = HTMLElement.prototype.removeChild;
-HTMLElement.prototype.removeChild = function(child) {if ([...this.children].some(c=>c===child)) {child.remove();}}
+HTMLElement.prototype.removeChild = function(child) {if ([...this.children].some(c=>c===child)) {child.remove();}};
+// 自身は残し子孫だけを削除する
+HTMLElement.prototype.removeChildren = function() {while(this.firstChild){this.firstChild.remove()}};
 })();

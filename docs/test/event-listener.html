@@ -9,6 +9,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
         const p = document.createElement('p');
         return !('_listeners' in p) && 'listen unlisten'.split(' ').every(n=>n in p);
     });
+    a.t(()=>{
+        const p = document.createElement('p');
+        return !('_listeners' in p) && 'listen unlisten'.split(' ').every(n=>n in p);
+    });
     // listener: function
     a.t(()=>{
         const p = document.createElement('p');
@@ -399,6 +403,148 @@ window.addEventListener('DOMContentLoaded', (event) => {
         console.log(p._listeners.length, p._listeners.map(l=>console.log(l.name, l.useCapture, l.handlers.length)));
         return 0===p._listeners.length;
     });
+
+    // remove()
+    a.t(()=>{
+        const p = document.createElement('p');
+        p.id = 'remove-target';
+        const phi1 = (e)=>{};
+        const phi2 = (e)=>{};
+        p.listen('click', (e)=>{});
+        p.listen('input', phi1, false);
+        p.listen('input', phi2, false);
+        p.listen('input', (e)=>{}, true);
+        const a = document.createElement('a');
+        const ahi1 = (e)=>{};
+        const ahi2 = (e)=>{};
+        a.listen('click', (e)=>{});
+        a.listen('input', ahi1, false);
+        a.listen('input', ahi2, false);
+        a.listen('input', (e)=>{}, true);
+        const b = document.createElement('b');
+        const bhi1 = (e)=>{};
+        const bhi2 = (e)=>{};
+        b.listen('click', (e)=>{});
+        b.listen('input', bhi1, false);
+        b.listen('input', bhi2, false);
+        b.listen('input', (e)=>{}, true);
+        a.append(b); p.append(a); document.body.append(p);
+        const res = !!document.querySelector('#remove-target');
+        
+        p.remove();
+        return res && !document.querySelector('#remove-target') && 0===p._listeners.length && 0===a._listeners.length && 0===b._listeners.length;
+    });
+    // removeChild()
+    a.t(()=>{
+        const p = document.createElement('p');
+        p.id = 'remove-target';
+        const phi1 = (e)=>{};
+        const phi2 = (e)=>{};
+        p.listen('click', (e)=>{});
+        p.listen('input', phi1, false);
+        p.listen('input', phi2, false);
+        p.listen('input', (e)=>{}, true);
+        const a = document.createElement('a');
+        const ahi1 = (e)=>{};
+        const ahi2 = (e)=>{};
+        a.listen('click', (e)=>{});
+        a.listen('input', ahi1, false);
+        a.listen('input', ahi2, false);
+        a.listen('input', (e)=>{}, true);
+        const b = document.createElement('b');
+        const bhi1 = (e)=>{};
+        const bhi2 = (e)=>{};
+        b.listen('click', (e)=>{});
+        b.listen('input', bhi1, false);
+        b.listen('input', bhi2, false);
+        b.listen('input', (e)=>{}, true);
+        a.append(b); p.append(a); document.body.append(p);
+        const res = !!document.querySelector('#remove-target');
+        
+        //p.remove();
+        p.removeChild(a);
+        return res && !!document.querySelector('#remove-target') && 0===[...document.querySelector('#remove-target').children].length && 3===p._listeners.length && 0===a._listeners.length && 0===b._listeners.length;
+    });
+    // removeChildren()
+    a.t(()=>{
+        const p = document.createElement('p');
+        p.id = 'remove-target';
+        const phi1 = (e)=>{};
+        const phi2 = (e)=>{};
+        p.listen('click', (e)=>{});
+        p.listen('input', phi1, false);
+        p.listen('input', phi2, false);
+        p.listen('input', (e)=>{}, true);
+        const a = document.createElement('a');
+        const ahi1 = (e)=>{};
+        const ahi2 = (e)=>{};
+        a.listen('click', (e)=>{});
+        a.listen('input', ahi1, false);
+        a.listen('input', ahi2, false);
+        a.listen('input', (e)=>{}, true);
+        const a2 = document.createElement('a');
+        const a2hi1 = (e)=>{};
+        const a2hi2 = (e)=>{};
+        a2.listen('click', (e)=>{});
+        a2.listen('input', a2hi1, false);
+        a2.listen('input', a2hi2, false);
+        a2.listen('input', (e)=>{}, true);
+        const b = document.createElement('b');
+        const bhi1 = (e)=>{};
+        const bhi2 = (e)=>{};
+        b.listen('click', (e)=>{});
+        b.listen('input', bhi1, false);
+        b.listen('input', bhi2, false);
+        b.listen('input', (e)=>{}, true);
+        a.append(b); p.append(a, a2); document.body.append(p);
+        const res = !!document.querySelector('#remove-target');
+        
+        //p.remove();
+        //p.removeChild(a);
+        p.removeChildren();
+        return res && !!document.querySelector('#remove-target') && 0===[...document.querySelector('#remove-target').children].length && 3===p._listeners.length && 0===a._listeners.length && 0===a2._listeners.length && 0===b._listeners.length;
+    });
+    // removeChild()
+    a.t(()=>{
+        const p = document.createElement('p');
+        p.id = 'remove-target';
+        const phi1 = (e)=>{};
+        const phi2 = (e)=>{};
+        p.listen('click', (e)=>{});
+        p.listen('input', phi1, false);
+        p.listen('input', phi2, false);
+        p.listen('input', (e)=>{}, true);
+        const a = document.createElement('a');
+        const ahi1 = (e)=>{};
+        const ahi2 = (e)=>{};
+        a.listen('click', (e)=>{});
+        a.listen('input', ahi1, false);
+        a.listen('input', ahi2, false);
+        a.listen('input', (e)=>{}, true);
+        const a2 = document.createElement('a');
+        const a2hi1 = (e)=>{};
+        const a2hi2 = (e)=>{};
+        a2.listen('click', (e)=>{});
+        a2.listen('input', a2hi1, false);
+        a2.listen('input', a2hi2, false);
+        a2.listen('input', (e)=>{}, true);
+        const b = document.createElement('b');
+        const bhi1 = (e)=>{};
+        const bhi2 = (e)=>{};
+        b.listen('click', (e)=>{});
+        b.listen('input', bhi1, false);
+        b.listen('input', bhi2, false);
+        b.listen('input', (e)=>{}, true);
+        a.append(b); p.append(a, a2); document.body.append(p);
+        const res = !!document.querySelector('#remove-target');
+        
+        //p.remove();
+        p.removeChild(a);
+        //p.removeChildren();
+        //return 0===p._listeners.length && res && !document.querySelector('#remove-target');
+        return res && !!document.querySelector('#remove-target') && 0===[...document.querySelector('#remove-target').children].length && 3===p._listeners.length && 0===a._listeners.length && 3===a2._listeners.length && 0===b._listeners.length;
+    });
+
     a.e(TypeError, '第一引数はイベント名（String）であるべきです。', ()=>{
         const p = document.createElement('p');
         p.listen();
