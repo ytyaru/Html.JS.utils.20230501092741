@@ -9,10 +9,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
         const p = document.createElement('p');
         return !('_listeners' in p) && 'listen unlisten'.split(' ').every(n=>n in p);
     });
-    a.t(()=>{
-        const p = document.createElement('p');
-        return !('_listeners' in p) && 'listen unlisten'.split(' ').every(n=>n in p);
-    });
     // listener: function
     a.t(()=>{
         const p = document.createElement('p');
@@ -544,7 +540,6 @@ window.addEventListener('DOMContentLoaded', (event) => {
         //return 0===p._listeners.length && res && !document.querySelector('#remove-target');
         return res && !!document.querySelector('#remove-target') && 0===[...document.querySelector('#remove-target').children].length && 3===p._listeners.length && 0===a._listeners.length && 3===a2._listeners.length && 0===b._listeners.length;
     });
-
     a.e(TypeError, '第一引数はイベント名（String）であるべきです。', ()=>{
         const p = document.createElement('p');
         p.listen();
@@ -560,6 +555,15 @@ window.addEventListener('DOMContentLoaded', (event) => {
         console.log(((async(e)=>console.log('')) instanceof ((async(e)=>console.log('')).constructor)))
         p.listen('click', async(e)=>console.log(''), null);
     });
+    // tell
+    a.t(()=>{
+        const p = document.createElement('p');
+        let count = 0;
+        p.listen('click', (e)=>{++count});
+        p.tell(new Event('click')); // dispatchEvent の糖衣構文
+        p.remove();
+        return 1===count;
+    })
     a.fin();
 })
 </script>
