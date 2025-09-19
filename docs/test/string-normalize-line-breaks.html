@@ -1,0 +1,31 @@
+<meta charset="utf-8">
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/string/normalize-line-breaks.js"></script>
+<script src="../js/util/string/case.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion();
+    a.t('\n'==='\r\n'.normalizeLineBreaks());
+    a.t('\n'==='\r'.normalizeLineBreaks());
+    a.t('\n\n'==='\r\n\r\n'.normalizeLineBreaks());
+    a.t('\n\n'==='\r\r'.normalizeLineBreaks());
+    a.t('\n\n\n'==='\r\n\r\n\r\n'.normalizeLineBreaks());
+    a.t('\n\n\n'==='\r\r\r'.normalizeLineBreaks());
+    a.t('a\nb\nc\nd'==='a\r\nb\r\nc\r\nd'.normalizeLineBreaks());
+    a.t('a\nb\nc\nd'==='a\rb\rc\rd'.normalizeLineBreaks());
+    a.t('\na\n\n'==='\r\na\r\n\r\n'.normalizeLineBreaks());
+    a.t('\na\n\n'==='\ra\r\r'.normalizeLineBreaks());
+    
+    a.t('\n'==='\n'.normalizeLineBreaks());
+    a.t('\n\n'==='\n\n'.normalizeLineBreaks());
+    a.t('\n\n\n'==='\n\n\n'.normalizeLineBreaks());
+    a.fin();
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
