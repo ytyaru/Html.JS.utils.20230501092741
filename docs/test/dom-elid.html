@@ -1,0 +1,61 @@
+<meta charset="utf-8">
+<script src="../js/util/type.js"></script>
+<script src="../js/util/test/assertion.js"></script>
+<script src="../js/util/dom/elid.js"></script>
+<script src="../js/util/dom/dom.tags.js"></script>
+<script src="../js/util/promise/wait.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', (event) => {
+    const a = new Assertion();
+    a.t(()=>'ElementIdValidator' in window);
+    a.t(()=>'IdDuplicationError' in window);
+    a.t(()=>{
+        const elid = new ElementIdValidator();
+        const valid = elid.validate();
+        console.log(valid);
+        console.log(elid._dups.size);
+        return valid;
+    });
+    a.f(()=>{
+        const elid = new ElementIdValidator();
+        const el = Dom.tags.div(Dom.tags.p({id:'same-id'}), Dom.tags.p({id:'same-id'}));
+        const valid = elid.validate(el);
+        return valid;
+    });
+    a.t(()=>{
+        const elid = new ElementIdValidator();
+        const el = Dom.tags.div(Dom.tags.p({id:'not-same-id'}), Dom.tags.p({id:'diff-id'}));
+        const valid = elid.validate(el);
+        return valid;
+    });
+    a.f(async()=>{
+        const elid = new ElementIdValidator();
+        const el = Dom.tags.div(Dom.tags.p({id:'not-same-id'}), Dom.tags.p({id:'diff-id'}));
+        const valid = elid.validate(el);
+        if (!valid) {return valid}
+        el.querySelector('#not-same-id').id = 'same-id';
+        el.querySelector('#diff-id').id = 'same-id';
+        await wait(1); // MutationObserver.observe()で処理する間待機させないとelid.validが期待値にならない為。
+        return elid.valid;
+    });
+    a.e(IdDuplicationError, IdDuplicationError.MESSAGE, ()=>{
+        const elid = new ElementIdValidator({isThrow:true}); // 例外発生するよう設定する
+        const el = Dom.tags.div(Dom.tags.p({id:'same-id'}), Dom.tags.p({id:'same-id'}));
+        const valid = elid.validate(el); // ここで例外発生するはず
+        return valid;
+    });
+    a.f(()=>{
+        const elid = new ElementIdValidator({isAlert:true}); // アラート発生するよう設定する
+        const el = Dom.tags.div(Dom.tags.p({id:'same-id'}), Dom.tags.p({id:'same-id'}));
+        const valid = elid.validate(el); // ここでアラート発生するはず
+        return valid;
+    });
+    a.fin();
+})
+</script>
+
+<h1></h1>
+<header></header>
+<main></main>
+<footer></footer>
+
