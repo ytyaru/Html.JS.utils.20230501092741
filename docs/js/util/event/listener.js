@@ -34,7 +34,6 @@ class Listener {
         // ハンドラ[一|全]件削除
         const REMOVE = handler
             ? ((t)=>{
-                console.log(t)
                 const i = t.handlers.indexOf(handler);
                 el.removeEventListener(t.name, t.handlers[i], t.useCapture);
                 t.handlers.splice(i, 1);
