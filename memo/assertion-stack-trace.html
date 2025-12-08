@@ -1,0 +1,46 @@
+<!DOCTYPE html>”
+<script defer>
+function getCaller(removeTxt) {
+    const error = new Error();
+    const stack = error.stack || '';
+    const stacks = stack.split('\n');
+    return stacks;
+}
+console.log(getCaller());
+class C {
+    static S() {
+        const error = new Error();
+        const stack = error.stack || '';
+        const stacks = stack.split('\n');
+        console.log(stacks);
+        return stacks;
+    }
+    s() {return C.S()}
+}
+console.log(C.S());
+console.log((new C()).s());
+console.log(C.S().filter(line=>line && -1===line.indexOf('index.html:')));
+
+class D {
+    get(err) {
+        const errs = this.#recursionCause([err])
+//        return errs.map(e=>this.#delStacks(e.stack)).flat()
+        return errs.flat();
+    }
+    #recursionCause(errs) {
+        const last = errs[errs.length-1]
+        if (last.hasOwnProperty('cause') && last.cause) {
+            errs.push(last.cause)
+            return this.#recursionCause(errs)
+        } else { return errs }
+    }
+    #delStacks(stacks) {
+        //const s = Array.isArray(stacks) ? stacks : (this.__isStr(stacks) ? stacks.split('\n') : null)
+        //const s = Array.isArray(stacks) ? stacks : (isS(stacks) ? stacks.split('\n') : null)
+        const s = Array.isArray(stacks) ? stacks : ('string'===typeof stacks ? stacks.split('\n') : null)
+        if (null===s) { throw new Error(`内部エラー。#delStacksの引数は文字列かその配列であるべきです。`, 'exception') }
+        return s.filter(line=>-1===line.indexOf('index.html:'))
+    }
+}
+console.log((new D()).get(new Error('なんかエラーっす')));
+</script>
