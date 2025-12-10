@@ -3,6 +3,13 @@
 <script src="../js/util/type.js"></script>
 <script>
 window.addEventListener('DOMContentLoaded', (event) => {
+function someFn() {}
+async function someAFn() {}
+class C {
+    constructor(){}
+    method(){}
+    async methodAsync(){}
+}
 class TestType extends Tester {
     // isString
     testIsStringBlank() { console.assert(Type.isString('')) }
@@ -838,6 +845,28 @@ class TestType extends Tester {
     testIsFunctionsAryFn0() { console.assert(Type.isFunctions([()=>{},()=>{}])) }
     testIsFunctionsAryFn1() { console.assert(Type.isFunctions([function(){},function(){}])) }
     testIsFunctionsAryIns() { console.assert(!Type.isFunctions([new Map(),new Set()])) }
+
+    /*
+    // isEFn, isAEFn (アロー関数系。残念ながら通常の定義関数やクラスのメソッドと区別できない……)
+    // isEfn アロー関数式なら真を返す
+    testIsExpressionFunctionArrFn() { console.assert( Type.isEFn( (()=>{}) )) }
+    testIsExpressionFunctionDefFn() { console.assert(!Type.isEFn( someFn )) }
+    testIsExpressionFunctionMethod() { console.assert(!Type.isEFn( (new C).method )) }
+    testIsExpressionFunctionAMethod() { console.assert(!Type.isEFn( (new C).methodAsync )) }
+    testIsExpressionFunctionAArrFn() { console.assert(!Type.isEFn( (async()=>{}) )) }
+    testIsExpressionFunctionADefFn() { console.assert(!Type.isEFn( someAFn )) }
+    testIsExpressionFunctionAMethod() { console.assert(!Type.isEFn( (new C).method )) }
+    testIsExpressionFunctionAMethod() { console.assert(!Type.isEFn( (new C).methodAsync )) }
+    // isAEfn 非同期アロー関数式なら真を返す
+    testIsExpressionFunctionArrFn() { console.assert(!Type.isAEFn( (()=>{}) )) }
+    testIsExpressionFunctionDefFn() { console.assert(!Type.isAEFn( someFn )) }
+    testIsExpressionFunctionMethod() { console.assert(!Type.isAEFn( (new C).method )) }
+    testIsExpressionFunctionMethod() { console.assert(!Type.isAEFn( (new C).methodAsync )) } // アロー関数ではないため偽になって欲しいのに真になってしまう！
+    testIsExpressionFunctionAArrFn() { console.assert( Type.isAEFn( (async()=>{}) )) }
+    testIsExpressionFunctionADefFn() { console.assert(!Type.isAEFn( someAFn )) }              // アロー関数ではないため偽になって欲しいのに真になってしまう！
+    testIsExpressionFunctionAMethod() { console.assert(!Type.isAEFn( (new C).method )) }
+    testIsExpressionFunctionAMethod() { console.assert(!Type.isAEFn( (new C).methodAsync )) } // アロー関数ではないため偽になって欲しいのに真になってしまう！
+    */
 }
 new TestType().run()
 });

@@ -1,0 +1,63 @@
+[1mdiff --git a/docs/js/util/type.js b/docs/js/util/type.js[m
+[1mindex 8f44ea5..73c9f92 100644[m
+[1m--- a/docs/js/util/type.js[m
+[1m+++ b/docs/js/util/type.js[m
+[36m@@ -56,7 +56,10 @@[m [mclass Type {[m
+             ['AsyncFunction', [['AsyncFunc', 'AsyncFn', 'AFn'], (v)=>v instanceof this._types.AsyncFunction]],[m
+             ['GeneratorFunction', [['GenFn', 'GFn'], (v)=>v instanceof this._types.GeneratorFunction || v instanceof this._types.AsyncGeneratorFunction]],[m
+             ['SyncGeneratorFunction', [['SyncGenFn', 'SGFn'], (v)=>v instanceof this._types.GeneratorFunction && !(v instanceof this._types.AsyncGeneratorFunction)]],[m
+[31m-            ['AsyncGeneratorFunction', [['AsyncGenFn', 'AGFn'], (v)=>v instanceof this._types.AsyncGeneratorFunction]],[m
+[32m+[m[32m            ['AsyncGeneratorFunction', [['AsyncGenFn', 'AGFn'], (v)=>v instanceof this._types.AsyncGeneratorFunction]], // async *function(){yield 0}[m
+[32m+[m[32m            // アロー関数（残念ながら通常の定義関数やクラスのメソッドと区別できない……）[m
+[32m+[m[32m//            ['ExpressionFunction', [['ExpFn','EFn'], (v)=>this.isSFn(v) && undefined===v.prototype]], // ()=>{}[m
+[32m+[m[32m//            ['AsyncExpressionFunction', [['AsyncExpFn','AEFn'], (v)=>this.isAFn(v) && undefined===v.prototype]], // async()=>{}[m
+             ['Promise', [[], (v)=>v instanceof Promise]],[m
+             ['Iterator', [['Iter', 'Itr', 'It'], (v)=>{[m
+                 if (this.isNullOrUndefined(v)) { return false }[m
+[1mdiff --git a/docs/test/type.html b/docs/test/type.html[m
+[1mindex 6ecfac8..0e91f4f 100644[m
+[1m--- a/docs/test/type.html[m
+[1m+++ b/docs/test/type.html[m
+[36m@@ -3,6 +3,13 @@[m
+ <script src="../js/util/type.js"></script>[m
+ <script>[m
+ window.addEventListener('DOMContentLoaded', (event) => {[m
+[32m+[m[32mfunction someFn() {}[m
+[32m+[m[32masync function someAFn() {}[m
+[32m+[m[32mclass C {[m
+[32m+[m[32m    constructor(){}[m
+[32m+[m[32m    method(){}[m
+[32m+[m[32m    async methodAsync(){}[m
+[32m+[m[32m}[m
+ class TestType extends Tester {[m
+     // isString[m
+     testIsStringBlank() { console.assert(Type.isString('')) }[m
+[36m@@ -838,6 +845,28 @@[m [mclass TestType extends Tester {[m
+     testIsFunctionsAryFn0() { console.assert(Type.isFunctions([()=>{},()=>{}])) }[m
+     testIsFunctionsAryFn1() { console.assert(Type.isFunctions([function(){},function(){}])) }[m
+     testIsFunctionsAryIns() { console.assert(!Type.isFunctions([new Map(),new Set()])) }[m
+[32m+[m
+[32m+[m[32m    /*[m
+[32m+[m[32m    // isEFn, isAEFn (アロー関数系。残念ながら通常の定義関数やクラスのメソッドと区別できない……)[m
+[32m+[m[32m    // isEfn アロー関数式なら真を返す[m
+[32m+[m[32m    testIsExpressionFunctionArrFn() { console.assert( Type.isEFn( (()=>{}) )) }[m
+[32m+[m[32m    testIsExpressionFunctionDefFn() { console.assert(!Type.isEFn( someFn )) }[m
+[32m+[m[32m    testIsExpressionFunctionMethod() { console.assert(!Type.isEFn( (new C).method )) }[m
+[32m+[m[32m    testIsExpressionFunctionAMethod() { console.assert(!Type.isEFn( (new C).methodAsync )) }[m
+[32m+[m[32m    testIsExpressionFunctionAArrFn() { console.assert(!Type.isEFn( (async()=>{}) )) }[m
+[32m+[m[32m    testIsExpressionFunctionADefFn() { console.assert(!Type.isEFn( someAFn )) }[m
+[32m+[m[32m    testIsExpressionFunctionAMethod() { console.assert(!Type.isEFn( (new C).method )) }[m
+[32m+[m[32m    testIsExpressionFunctionAMethod() { console.assert(!Type.isEFn( (new C).methodAsync )) }[m
+[32m+[m[32m    // isAEfn 非同期アロー関数式なら真を返す[m
+[32m+[m[32m    testIsExpressionFunctionArrFn() { console.assert(!Type.isAEFn( (()=>{}) )) }[m
+[32m+[m[32m    testIsExpressionFunctionDefFn() { console.assert(!Type.isAEFn( someFn )) }[m
+[32m+[m[32m    testIsExpressionFunctionMethod() { console.assert(!Type.isAEFn( (new C).method )) }[m
+[32m+[m[32m    testIsExpressionFunctionMethod() { console.assert(!Type.isAEFn( (new C).methodAsync )) } // アロー関数ではないため偽になって欲しいのに真になってしまう！[m
+[32m+[m[32m    testIsExpressionFunctionAArrFn() { console.assert( Type.isAEFn( (async()=>{}) )) }[m
+[32m+[m[32m    testIsExpressionFunctionADefFn() { console.assert(!Type.isAEFn( someAFn )) }              // アロー関数ではないため偽になって欲しいのに真になってしまう！[m
+[32m+[m[32m    testIsExpressionFunctionAMethod() { console.assert(!Type.isAEFn( (new C).method )) }[m
+[32m+[m[32m    testIsExpressionFunctionAMethod() { console.assert(!Type.isAEFn( (new C).methodAsync )) } // アロー関数ではないため偽になって欲しいのに真になってしまう！[m
+[32m+[m[32m    */[m
+ }[m
+ new TestType().run()[m
+ });[m

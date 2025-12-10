@@ -56,7 +56,10 @@ class Type {
             ['AsyncFunction', [['AsyncFunc', 'AsyncFn', 'AFn'], (v)=>v instanceof this._types.AsyncFunction]],
             ['GeneratorFunction', [['GenFn', 'GFn'], (v)=>v instanceof this._types.GeneratorFunction || v instanceof this._types.AsyncGeneratorFunction]],
             ['SyncGeneratorFunction', [['SyncGenFn', 'SGFn'], (v)=>v instanceof this._types.GeneratorFunction && !(v instanceof this._types.AsyncGeneratorFunction)]],
-            ['AsyncGeneratorFunction', [['AsyncGenFn', 'AGFn'], (v)=>v instanceof this._types.AsyncGeneratorFunction]],
+            ['AsyncGeneratorFunction', [['AsyncGenFn', 'AGFn'], (v)=>v instanceof this._types.AsyncGeneratorFunction]], // async *function(){yield 0}
+            // アロー関数（残念ながら通常の定義関数やクラスのメソッドと区別できない……）
+//            ['ExpressionFunction', [['ExpFn','EFn'], (v)=>this.isSFn(v) && undefined===v.prototype]], // ()=>{}
+//            ['AsyncExpressionFunction', [['AsyncExpFn','AEFn'], (v)=>this.isAFn(v) && undefined===v.prototype]], // async()=>{}
             ['Promise', [[], (v)=>v instanceof Promise]],
             ['Iterator', [['Iter', 'Itr', 'It'], (v)=>{
                 if (this.isNullOrUndefined(v)) { return false }
