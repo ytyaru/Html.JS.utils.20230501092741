@@ -97,7 +97,9 @@ class Unitest {
                             c.stacks = error.stack.split('\n');
                             */
                             c = {...c, ...this.#makeStacks(AssertError, `テスト失敗。${c.expected ? '真' : '偽'}が期待される所で${c.actual}になりました。`)};
-                            c.codeStr = this.#getTestCode(c);
+                            if (c.notFn) {c.codeStr = this.#getTestCode(c)}
+                            //if (isB(c.expected) && !c.isAsync) {c.codeStr = this.#getTestCode(c)}
+//                            c.codeStr = this.#getTestCode(c);
                             Console.fail(c);
                         }
                     } else {//else if ('rejected'===results[i].status) {
@@ -106,7 +108,9 @@ class Unitest {
                         //c.stacks = (()=>{new AssertError(`テスト例外。真偽値が期待される所で例外発生しました。`, e)})().stack.split('\n');
                         //c.stacks = this._.st.make(new AssertError(`テスト例外。真偽値が期待される所で例外発生しました。`, results[i].reason));
                         c = {...c, ...this.#makeStacks(AssertError, `テスト例外。真偽値が期待される所で例外発生しました。`, results[i].reason)};
-                        c.codeStr = this.#getTestCode(c);
+                        //if (isB(c.expected) && !c.isAsync) {c.codeStr = this.#getTestCode(c)}
+                        if (c.notFn) {c.codeStr = this.#getTestCode(c)}
+                        //c.codeStr = this.#getTestCode(c);
                         Console.exception(c);
                     }// else {throw new Error(`起こり得ない`)}
                 } else {// 異常系テスト（指定した例外が発生するか確認する）
@@ -116,7 +120,9 @@ class Unitest {
                         //c.stacks = (()=>{new AssertError(`テスト失敗。例外発生が期待される所で発生しなかった。`)})().stack.split('\n');
                         //c.stacks = this._.st.make(new AssertError(`テスト失敗。例外発生が期待される所で発生しませんでした。`));
                         c = {...c, ...this.#makeStacks(AssertError, `テスト失敗。例外発生が期待される所で発生しませんでした。`)};
-                        c.codeStr = this.#getTestCode(c);
+                        if (c.notFn) {c.codeStr = this.#getTestCode(c)}
+                        //if (isB(c.expected) && !c.isAsync) {c.codeStr = this.#getTestCode(c)}
+                        //c.codeStr = this.#getTestCode(c);
                         Console.fail(c);
                     } else {//else if ('rejected'===results[i].status) {
                         const e = results[i].reason;
@@ -130,7 +136,9 @@ class Unitest {
                         const msg = (isFailedType ? `テスト失敗。例外の型が違います。\n期待値:${c.expected.type.name}\n実際値:${e.constructor.name}` : '')
                             + (isFailedMsg ? `テスト失敗。例外のメッセージが違います。\n期待値:${c.expected.msg}\n実際値:${e.message}` : '');
                         c.statusCode = msg ? 1 : 0; // Failed/Succeed
-                        c.codeStr = this.#getTestCode(c);
+                        if (c.notFn) {c.codeStr = this.#getTestCode(c)}
+                        //if (isB(c.expected) && !c.isAsync) {c.codeStr = this.#getTestCode(c)}
+                        //c.codeStr = this.#getTestCode(c);
                         if (msg) {
                             //c.stacks = this._.st.getErrorStacks(new Assertion(msg));
                             //c.stacks = (()=>{new AssertError(msg)})().split('\n');
@@ -179,7 +187,9 @@ class Unitest {
                     //c.stacks = (()=>{new AssertError(`テスト失敗。${c.expected ? '真' : '偽'}が期待される所で${c.actual}になりました。`)})().split('\n'); // Exception テスト中で想定外の例外発生。
                     //c.stacks = this._.st.make(new AssertError(`テスト失敗。${c.expected ? '真' : '偽'}が期待される所で${c.actual}になりました。`));
                     c = {...c, ...this.#makeStacks(AssertError, `テスト失敗。${c.expected ? '真' : '偽'}が期待される所で${c.actual}になりました。`)};
-                    c.codeStr = this.#getTestCode(c);
+                    if (c.notFn) {c.codeStr = this.#getTestCode(c)}
+                    //if (isB(c.expected) && !c.isAsync) {c.codeStr = this.#getTestCode(c)}
+                    //c.codeStr = this.#getTestCode(c);
                     Console.fail(c);
                 }
                 /*
@@ -197,7 +207,9 @@ class Unitest {
                 //c.stacks = (()=>{new AssertError(`テスト例外。真偽値が期待される所で例外発生しました。`, e)})().split('\n'); // Exception テスト中で想定外の例外発生。
                 //c.stacks = this._.st.make(new AssertError(`テスト例外。真偽値が期待される所で例外発生しました。`, e));
                 c = {...c, ...this.#makeStacks(AssertError, `テスト例外。真偽値が期待される所で例外発生しました。`, e)};
-                c.codeStr = this.#getTestCode(c);
+                if (c.notFn) {c.codeStr = this.#getTestCode(c)}
+                //if (isB(c.expected) && !c.isAsync) {c.codeStr = this.#getTestCode(c)}
+                //c.codeStr = this.#getTestCode(c);
                 Console.exception(c);
             }
         } else {// 異常系（指定した例外が発生するか確認する）
@@ -209,7 +221,9 @@ class Unitest {
                 //c.stacks = (()=>{new AssertError(`テスト失敗。例外発生が期待される所で発生しなかった。`)})().split('\n');
 //                c.stacks = this._.st.make(new AssertError(`テスト失敗。例外発生が期待される所で発生しなかった。`));
                 c = {...c, ...this.#makeStacks(AssertError, `テスト失敗。例外発生が期待される所で発生しなかった。`)};
-                c.codeStr = this.#getTestCode(c);
+                //if (isB(c.expected) && !c.isAsync) {c.codeStr = this.#getTestCode(c)}
+                if (c.notFn) {c.codeStr = this.#getTestCode(c)}
+                //c.codeStr = this.#getTestCode(c);
                 Console.fail(c);
             } catch (e) {
                 //const isFailedType = e instanceof c.expected.type;
@@ -222,7 +236,9 @@ class Unitest {
                 const msg = (isFailedType ? `テスト失敗。例外の型が違います。\n期待値:${c.expected.type.name}\n実際値:${e.constructor.name}` : '')
                     + (isFailedMsg ? `テスト失敗。例外のメッセージが違います。\n期待値:${c.expected.msg}\n実際値:${e.message}` : '');
                 c.statusCode = msg ? 1 : 0; // Failed/Succeed
-                c.codeStr = this.#getTestCode(c);
+                //if (isB(c.expected) && !c.isAsync) {c.codeStr = this.#getTestCode(c)}
+                if (c.notFn) {c.codeStr = this.#getTestCode(c)}
+                //c.codeStr = this.#getTestCode(c);
                 if (msg) {
                     //c.stacks = this._.st.getErrorStacks(new Assertion(msg));
                     //c.stacks = (()=>{new AssertError(msg)})().split('\n');
@@ -234,6 +250,16 @@ class Unitest {
         }
     }
     #getTestCode(c) {// id(id番目のテストコード)からテストコード文字列を取得する（もしテストコード中でfor文内でa.t()を呼び出す等していたら位置が狂ってしまう！。他にもa.t(a.t())などネストしていても狂う！）
+        const [testCode, paramName, assertCodes] = this.#getAssertCodes(c);
+        console.log(`testCode:${testCode}, paramName:${paramName}, assertCodes:${assertCodes}`);
+        const start = this.#nthAssertCodeIndexOf(testCode, assertCodes, c.id+1);
+        const startStr = testCode.slice(start);
+        const end = this.#findMatchingCloseParen(startStr, startStr.indexOf('('), '(', ')') + start + 1;
+        const code = testCode.slice(start, end);
+        console.log(`id:${c.id} start:${start} end:${end} 開始(:${start + testCode.slice(start).indexOf('(')} 予想元コード:${code}`);
+        return code;
+
+        /*
         const testCode = `${this._.fn}`;
         // テストコードの定義 (a)=>{...}, async(a)=>{}, function(a){}, async function(a){} このうち引数名がAssertionのインスタンス名であり取得したい値。どうする？
         const paramName = testCode.match(/\((?<paramName>.+)\)/).groups?.paramName;
@@ -248,7 +274,38 @@ class Unitest {
         //console.log(`target:${target} id:${c.id} start:${start} 開始(:${start + testCode.slice(start).indexOf('(')} 予想元コード:${code}`);
         console.log(`id:${c.id} start:${start} end:${end} 開始(:${start + testCode.slice(start).indexOf('(')} 予想元コード:${code}`);
         return code;
+        */
     }
+
+    // アサーションコード文字列を生成する
+    #getAssertCodes(c) {
+        const testCode = `${this._.fn}`;
+        // テストコードの定義 (a)=>{...}, async(a)=>{}, function(a){}, async function(a){} このうち引数名がAssertionのインスタンス名であり取得したい値。どうする？
+        const paramName = testCode.match(/\((?<paramName>.+)\)/).groups?.paramName;
+        // アサーションコード文字列
+        const tfe = 't f e'.split(' ');
+        const cs = tfe.map(v=>v+'c');
+        const assertCodes = [...tfe, ...cs].map(n=>`${paramName}.${n}(`);
+        return [testCode, paramName, assertCodes];
+    }
+    /**
+    * 文字列s内でN番目のアサーションコード開始位置を取得する
+    * @param {string}  s  テストコード文字列
+    * @param {array}   as 全アサーションコード開始文字列を含む配列
+    * @param {number}  n  何番目の出現位置か（1から始まる）
+    */
+    #nthAssertCodeIndexOf(s, as, n) {
+        if (n<1) {throw new TypeError(`nは1以上の整数値であるべきです。`)}
+        let index = -1;
+        let cands = null;
+        for (let i=0; i<n; i++) {
+            const idxs = as.map(a=>s.indexOf(a, index+1)).filter(v=>-1<v);
+            if (0===idxs.length) {return -1}
+            index = Math.min(...idxs);
+        }
+        return index;
+    }
+
     /**
      * 文字列str内で部分文字列subStrのN番目の出現位置のインデックスを取得します。
      * 
@@ -441,12 +498,14 @@ const Status = {
     success:   {name:'成功', color:{f:'#008800',b:'#AEFFBD'}},
 };
 class Console {
-    static fail(o) {this.#log('fail', o)}
-    static exception(o) {this.#log('exception', o)}
-    static #log(status, o) {console.log(`%c${o.msg}\n${this.#testCode(o)}\n${o.stacks.join('\n')}`, `background-color:${Status[status].color.b};color:${Status[status].color.f};`)}
-    //static #testCode(o) {return o.notFn ? `対象id:${o.id}` : '対象:' + (isB(o.expected) && !o.isAsync ? `${o.test}`.replace('()=>','') : `${o.test}`);}
-    //static #testCode(o) {return `対象id:${o.id}` + (o.notFn ? '' : (` コード:` + (isB(o.expected) && !o.isAsync ? `${o.test}`.replace('()=>','') : `${o.test}`)));}
-    static #testCode(o) {return `対象id:${o.id}` + (o.notFn ? '' : (` コード:` + (isB(o.expected) && !o.isAsync ? `${o.test}`.replace('()=>','') : `${o.test}`))) + '\n予想元コード:' + o.codeStr;}
+    static fail(c) {this.#log('fail', c)}
+    static exception(c) {this.#log('exception', c)}
+    static #log(status, c) {console.log(`%c${c.msg}\n${this.#testCode(c)}\n${c.stacks.join('\n')}`, `background-color:${Status[status].color.b};color:${Status[status].color.f};`)}
+    //static #testCode(c) {return c.notFn ? `対象id:${c.id}` : '対象:' + (isB(c.expected) && !c.isAsync ? `${c.test}`.replace('()=>','') : `${c.test}`);}
+    //static #testCode(c) {return `対象id:${c.id}` + (c.notFn ? '' : (` コード:` + (isB(c.expected) && !c.isAsync ? `${c.test}`.replace('()=>','') : `${c.test}`)));}
+    //static #testCode(c) {return `対象id:${c.id}` + (c.notFn ? '' : (` コード:` + (isB(c.expected) && !c.isAsync ? `${c.test}`.replace('()=>','') : `${c.test}`))) + '\n予想元コード:' + c.codeStr;}
+    //static #testCode(c) {const hasCode = 'codeStr' in c; return `対象id:${c.id}` + ` ${hasCode ? '予想' : ''}コード:` + (hasCode ? c.codeStr : ((isB(c.expected) && !c.isAsync ? `${c.test}`.replace('()=>','') : `${c.test}`)));}
+    static #testCode(c) {const hasCode = 'codeStr' in c; return `対象id:${c.id}` + ` ${hasCode ? '予想' : ''}コード:` + (hasCode ? c.codeStr : `${c.test}`);}
 
 
 
