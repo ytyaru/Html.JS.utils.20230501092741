@@ -24,6 +24,22 @@ window.addEventListener('DOMContentLoaded', (event) => {
         return res;
     });
     a.t(()=>{
+        let count = 0;
+        const el = Dom.tags.div({name:'なんか', listeners:{click:[(e)=>++count, false]}});
+        console.log(el)
+        const res = 'DIV'===el.tagName && el.hasAttribute('name') && 'なんか'===el.getAttribute('name') && 1===el._listeners.length;
+        el.remove(); // el.unlisten()でも可
+        return res;
+    });
+    a.t(()=>{
+        let count = 0;
+        const el = Dom.tags.div({name:'なんか', listeners:{click:(e)=>++count}});
+        console.log(el)
+        const res = 'DIV'===el.tagName && el.hasAttribute('name') && 'なんか'===el.getAttribute('name') && 1===el._listeners.length;
+        el.remove(); // el.unlisten()でも可
+        return res;
+    });
+    a.t(()=>{
         const HTML = Dom.tags();
         const el = HTML.span();
         return 'SPAN'===el.tagName && !el.hasAttribute('name');
